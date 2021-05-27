@@ -13,27 +13,21 @@ public class goldControl : MonoBehaviour
     public GameObject[] hexes = new GameObject[20];
     public GameObject[] itemHexes = new GameObject[3]; // item hexes - h1, h12, h17
 
-    public bool movEnd;
+    public bool movEnd;  //sets "true" from turnEnd.cs
     int turnNo;
 
     void Awake()
     {
-        gBar.transform.position = hexes[10].transform.position;
-       
-    }
-
-    void Start()
-    {
-        
-    }
+        gBar.transform.position = hexes[10].transform.position;       
+    }  
 
     
     void Update()
     {
         turnNo = gameObject.GetComponent<turnEnd>().turnNo;
-        print(turnNo);
+        print("Turn "+turnNo);
 
-        if (movEnd)
+        if (movEnd && gBar.active)  //gold pick up
         {
             if (gBar.transform.position==pl1.transform.position) { pl1.GetComponent<stats>().gold++; gBar.SetActive(false); }
             if (gBar.transform.position==pl2.transform.position) { pl2.GetComponent<stats>().gold++; gBar.SetActive(false); }
@@ -41,14 +35,29 @@ public class goldControl : MonoBehaviour
 
             movEnd = false;
         }
+        
 
-        if (turnNo == 6 && gBar.active == false)
+        if ((turnNo==6 || turnNo==11) && gBar.active == false) //new gold add
         {
             print("add gold");
 
-            var pos = hexes.Except(itemHexes).OrderBy(n=>UnityEngine.Random.value).FirstOrDefault().transform.position;
-            
-        }
+            gBar.SetActive(true);
+            gBar.transform.position = hexes.Where(el => el != null).Except(itemHexes).OrderBy(n => Random.value).FirstOrDefault().transform.position;
 
+        }       
+
+    }
+    public void goldSwap(GameObject plA, GameObject plB, GameObject plC)  //gold exchange, used in plCollision (turnEnd.cs)
+    {
+        if (plA.transform.position==plB.transform.position && plB.transform.position==plC.transform.position)
+        {
+            //do nothing?
+        }
+        else if (plA.transform.position == plB.transform.position)  //will swap EVERY time on collision
+        {
+            int t = plA.GetComponent<stats>().gold;
+            plA.GetComponent<stats>().gold = plB.GetComponent<stats>().gold;
+            plB.GetComponent<stats>().gold = t;
+        }
     }
 }

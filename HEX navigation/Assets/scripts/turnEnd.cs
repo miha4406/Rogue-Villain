@@ -116,8 +116,7 @@ public class turnEnd : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
 
         if (plA.transform.position == plB.transform.position)
-        {
-            //yield return new WaitForSeconds(0.5f);
+        {            
             plA.GetComponent<stats>().hitCount++; 
             plB.GetComponent<stats>().hitCount++;            
             if (plB.transform.position == plC.transform.position)
@@ -130,6 +129,8 @@ public class turnEnd : MonoBehaviour
             StopAllCoroutines();       
             //StopCoroutine(hitCountClear(plA, plB, plC));
             StartCoroutine( hitCountClear(plA, plB, plC) );
+
+            gameObject.GetComponent<goldControl>().goldSwap(plA, plB, plC);
         }
       
     }  
@@ -142,7 +143,7 @@ public class turnEnd : MonoBehaviour
         
         bWait = false;
 
-        print("TURN END"); turnNo++;
+        turnNo++;
         gameObject.GetComponent<goldControl>().movEnd = true;
     }
  
@@ -197,7 +198,7 @@ public class turnEnd : MonoBehaviour
     void movEndCheck()
     {
         if (movSw) { 
-            print("TURN END"); turnNo++;
+            turnNo++;
             gameObject.GetComponent<goldControl>().movEnd=true; 
             movSw = false; 
         }
