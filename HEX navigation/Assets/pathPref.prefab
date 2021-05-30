@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3042633832253606299}
   - component: {fileID: 3042633832253606298}
   - component: {fileID: 3042633832253606301}
-  - component: {fileID: 3042633832253606300}
   - component: {fileID: 5001465737077947823}
   m_Layer: 0
   m_Name: pathPref
@@ -60,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 332034ce4d0e32c4da9a2c2bc3914ac5, type: 2}
+  - {fileID: 2100000, guid: ade50db567f855b42aa409a9a82b4e83, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81,20 +80,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &3042633832253606300
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3042633832253606303}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!114 &5001465737077947823
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,6 +89,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3042633832253606303}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75dafd749a092e143a1f19adccac0461, type: 3}
+  m_Script: {fileID: 11500000, guid: 19aca537c14d03347bc929ffc4afb59f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
