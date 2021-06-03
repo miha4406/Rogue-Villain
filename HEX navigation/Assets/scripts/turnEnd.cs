@@ -7,15 +7,16 @@ public class turnEnd : MonoBehaviour
     [SerializeField] GameObject pl1;
     [SerializeField] GameObject pl2;
     [SerializeField] GameObject pl3;
-    public int pl1dist = 2; 
-    public int pl2dist = 2;
-    public int pl3dist = 2; //copy from pl stats?
+    int pl1dist; 
+    int pl2dist;
+    int pl3dist; 
 
     public Vector3[] p1Path = new Vector3[6];    
     int mov1StepNo = 1;
     public int lastMov1 = 0;
     bool bMove1 = false;
 
+    public bool pl2atk = false;
     public Vector3[] p2Path = new Vector3[6];
     int mov2StepNo = 1;
     public int lastMov2 = 0;
@@ -30,6 +31,19 @@ public class turnEnd : MonoBehaviour
     bool movSw = false;   
     public bool bMoveEnd = false;  //all movement ended
     public int turnNo = 1;
+
+    void Awake()
+    {
+        pl1.GetComponent<stats>().movDist = 2;
+        pl2.GetComponent<stats>().movDist = 1;
+        pl3.GetComponent<stats>().movDist = 1;
+
+        pl1dist = pl1.GetComponent<stats>().movDist;
+        pl2dist = pl2.GetComponent<stats>().movDist;
+        pl3dist = pl3.GetComponent<stats>().movDist;
+    }
+
+
 
     void Update()
     {
@@ -166,6 +180,8 @@ public class turnEnd : MonoBehaviour
 
     void pl2move(int stepNo)
     {
+        if (pl2atk == true) { pl2.GetComponent<stats>().pasSkillHex = p2Path[1]; for (int i = 1; i < +5; i++) { p2Path[i] = Vector3.down; } } //if attack
+
         if (p2Path[stepNo] != Vector3.down && (stepNo <= pl2dist))
         {
             pl2.transform.position = Vector3.MoveTowards(pl2.transform.position, p2Path[stepNo], plMovSp*1.00f *Time.deltaTime);

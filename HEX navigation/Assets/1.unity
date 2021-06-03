@@ -1540,7 +1540,6 @@ MonoBehaviour:
   pFinder: {fileID: 122545169}
   pathPref: {fileID: 3042633832253606303, guid: 5fd3bf7715318064780b6fd4f5289881,
     type: 3}
-  plDist: 2
   nearHex:
   - {fileID: 0}
   - {fileID: 0}
@@ -1630,8 +1629,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02c040120f3a19148a6241a3e64fe7c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movDist: 0
   hitCount: 0
   gold: 0
+  pasSkillHex: {x: -10, y: -10, z: -10}
 --- !u!1001 &1112362864
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1794,7 +1795,6 @@ MonoBehaviour:
   pFinder: {fileID: 122545169}
   pathPref: {fileID: 3042633832253606303, guid: 5fd3bf7715318064780b6fd4f5289881,
     type: 3}
-  plDist: 2
   nearHex:
   - {fileID: 0}
   - {fileID: 0}
@@ -1822,8 +1822,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02c040120f3a19148a6241a3e64fe7c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movDist: 0
   hitCount: 0
   gold: 0
+  pasSkillHex: {x: -10, y: -10, z: -10}
 --- !u!1001 &1225640070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2304,7 +2306,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682901983}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalPosition: {x: 0, y: -10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1553009899}
@@ -2426,7 +2428,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1748383721}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
+  m_LocalPosition: {x: 0, y: -10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 23558337}
@@ -2807,7 +2809,6 @@ MonoBehaviour:
   pFinder: {fileID: 122545169}
   pathPref: {fileID: 3042633832253606303, guid: 5fd3bf7715318064780b6fd4f5289881,
     type: 3}
-  plDist: 2
   nearHex:
   - {fileID: 0}
   - {fileID: 0}
@@ -2835,8 +2836,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02c040120f3a19148a6241a3e64fe7c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movDist: 0
   hitCount: 0
   gold: 0
+  pasSkillHex: {x: 0, y: -1, z: 0}
 --- !u!1 &1947684161 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100000, guid: a415174bfd1c4214c8fa8a3dd313aba6,
@@ -3183,9 +3186,6 @@ MonoBehaviour:
   pl1: {fileID: 1936078877}
   pl2: {fileID: 1175583844}
   pl3: {fileID: 1038420203}
-  pl1dist: 2
-  pl2dist: 2
-  pl3dist: 2
   p1Path:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
@@ -3194,6 +3194,7 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   lastMov1: 0
+  p2atk: 0
   p2Path:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}

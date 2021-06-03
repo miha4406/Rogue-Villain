@@ -8,7 +8,7 @@ public class plControl : MonoBehaviour
 
     [SerializeField] GameObject pFinder;
     [SerializeField] GameObject pathPref;
-    public int plDist = 2;
+    int plDist;
     GameObject[] hexes = new GameObject[20];
     public GameObject[] nearHex = new GameObject[7];
     public Vector3[] path = new Vector3[6];
@@ -25,14 +25,12 @@ public class plControl : MonoBehaviour
         pfCor = pFinder.transform.position + Vector3.down;
       
     }
-    void Start()
-    {
-  
-        
-    }
+    
 
     void OnEnable()
     {
+        plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
+
         foreach (GameObject x in hexes)
         {
             if (x != null)
