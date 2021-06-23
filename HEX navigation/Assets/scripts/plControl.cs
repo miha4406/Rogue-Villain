@@ -13,6 +13,9 @@ public class plControl : MonoBehaviour
     public GameObject[] nearHex = new GameObject[7];
     public Vector3[] path = new Vector3[6];
 
+    public bool bChallenge = false;
+    public GameObject skillTarget;
+
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;   
 
@@ -50,11 +53,17 @@ public class plControl : MonoBehaviour
         path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         pFinder.transform.position = transform.position +Vector3.up;
         clHex = transform.position;
+
+        skillTarget = null;
     }
 
     void OnDisable()
     {
-
+        if (bChallenge && skillTarget!=null) {
+            gameObject.GetComponent<stats>().actSkillObj[0] = skillTarget;
+            gameObject.GetComponent<stats>().skillCD = 4;
+        }
+        bChallenge = false;
     }
 
 

@@ -13,6 +13,8 @@ public class p3control : MonoBehaviour
     public GameObject[] nearHex = new GameObject[7];
     public Vector3[] path = new Vector3[6];
 
+    public bool bGoldGet = false;
+
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
 
@@ -56,7 +58,8 @@ public class p3control : MonoBehaviour
 
     void OnDisable()
     {
- 
+        if (bGoldGet) { gameObject.GetComponent<stats>().actSkillObj[0] = gameObject; }
+        bGoldGet = false;
     }
 
 

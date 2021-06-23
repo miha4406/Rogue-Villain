@@ -13,6 +13,15 @@ public class p2control : MonoBehaviour
     public GameObject[] nearHex = new GameObject[7];
     public Vector3[] path = new Vector3[6];
 
+    public bool bShootPrep = false;
+    [SerializeField] GameObject shootProbePref;
+    GameObject shootProbeB, shootProbeF;
+    public GameObject[] shootHexes = new GameObject[4];
+    Vector3 dir = new Vector3(-1, -1, -1);
+    Ray detectRay = new Ray(Vector3.up, Vector3.down);
+    RaycastHit hit2;
+    int s = 0;
+
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
 
@@ -52,11 +61,14 @@ public class p2control : MonoBehaviour
         path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         pFinder.transform.position = transform.position + Vector3.up;
         clHex = transform.position;
+
+        shootHexes = new GameObject[4];
     }
 
     void OnDisable()
     {
-
+        if (bShootPrep && shootHexes[0]!=null) { gameObject.GetComponent<stats>().actSkillObj = shootHexes; }
+        bShootPrep = false;
     }
 
 
@@ -87,6 +99,7 @@ public class p2control : MonoBehaviour
             }
         }
 
+        if (bShootPrep) { pl2shootPrep(); }
 
     }
 
@@ -134,6 +147,77 @@ public class p2control : MonoBehaviour
         pathFind();       
     }
 
+    void pl2shootPrep() //if bShoot //if path[1] //only once!
+    {     
+        if (Input.GetMouseButtonUp(0) && (path[1] != Vector3.down))  //on mouse click
+        {
+            shootHexes = new GameObject[4];
+
+            dir = (path[1] - gameObject.transform.position).normalized;
+
+            shootProbeB = Instantiate(shootProbePref, gameObject.transform.position+Vector3.up, Quaternion.identity);                        
+
+        }  
+
+        if (shootProbeB != null)
+        {            
+            detectRay = new Ray(shootProbeB.transform.position, Vector3.down);
+            Debug.DrawRay(shootProbeB.transform.position, Vector3.down * 2, Color.black);
+
+            shootProbeB.transform.Translate(-dir * Time.deltaTime *5);
+
+            if (Physics.Raycast(detectRay, out hit2)){
+                if(hit2.collider.gameObject.tag=="ground" && hit2.collider.gameObject.transform.position != gameObject.transform.position)
+                {
+                    shootHexes[0] = hit2.collider.gameObject;
+                    //bShoot = false; //stops translate and undo attack prep
+
+                    Destroy(shootProbeB);
+                    shootProbeF = Instantiate(shootProbePref, gameObject.transform.position+Vector3.up, Quaternion.identity);
+                    s = 0;
+                }
+            }
+
+            if(shootProbeB.gameObject.transform.position.z>5 || shootProbeB.gameObject.transform.position.z<-5 
+                || shootProbeB.gameObject.transform.position.x>5 || shootProbeB.gameObject.transform.position.z<-5)
+            {                
+                if (shootHexes[0] == null) { print("Can't shoot! No space behind."); }                
+
+                Destroy(shootProbeB);
+                shootProbeF = Instantiate(shootProbePref, gameObject.transform.position + Vector3.up, Quaternion.identity);
+                s = 0;
+            }
+            
+        }
+
+        if (shootProbeF != null)  //on shootProbeB destoy
+        {
+            detectRay = new Ray(shootProbeF.transform.position, Vector3.down);
+            Debug.DrawRay(shootProbeF.transform.position, Vector3.down * 2, Color.black);
+
+            shootProbeF.transform.Translate(dir * Time.deltaTime * 5);
+
+            if (Physics.Raycast(detectRay, out hit2))
+            {
+                if (hit2.collider.gameObject.tag == "ground" && hit2.collider.gameObject.transform.position != gameObject.transform.position)
+                {
+                    if (hit2.collider.gameObject != shootHexes[s])
+                    {
+                        s++;
+                        shootHexes[s] = hit2.collider.gameObject;
+                    }
+
+                }
+            }
+
+            if(shootProbeF.gameObject.transform.position.z>5 || shootProbeF.gameObject.transform.position.z<-5 
+                || shootProbeF.gameObject.transform.position.x>5 || shootProbeF.gameObject.transform.position.z<-5)
+            {            
+               Destroy(shootProbeF);              
+            }
+        }
+        
+    }
 
 }
 

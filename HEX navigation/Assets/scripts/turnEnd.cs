@@ -15,12 +15,12 @@ public class turnEnd : MonoBehaviour
     int mov1StepNo = 1;
     public int lastMov1 = 0;
     bool bMove1 = false;
-
-    public bool pl2atk = false;
+        
     public Vector3[] p2Path = new Vector3[6];
     int mov2StepNo = 1;
     public int lastMov2 = 0;
     bool bMove2 = false;
+    public bool pl2atk1 = false;   
 
     public Vector3[] p3Path = new Vector3[6];
     int mov3StepNo = 1;
@@ -120,7 +120,8 @@ public class turnEnd : MonoBehaviour
           // print("pl3 hits"); 
             if (lastMov3-pl3.GetComponent<stats>().hitCount >= 0) { pl3.transform.position = Vector3.MoveTowards(pl3.transform.position, p3Path[lastMov3-pl3.GetComponent<stats>().hitCount], plMovSp * 0.95f * Time.deltaTime); }
         }
-      
+     //////////////////////////////////////////////////////////        
+    
     }
 
     IEnumerator plCollision(GameObject plA, GameObject plB, GameObject plC)
@@ -164,6 +165,10 @@ public class turnEnd : MonoBehaviour
 
     void pl1move(int stepNo) 
     {
+        //if (pl1.GetComponent<stats>().actSkillObj[0] != null){   //if p1 active skill is used
+        //    for (int i = 1; i <= 5; i++) { p1Path[i] = Vector3.down; }
+        //}
+
         if (p1Path[stepNo] != Vector3.down && (stepNo <= pl1dist))
         {
             pl1.transform.position = Vector3.MoveTowards(pl1.transform.position, p1Path[stepNo], plMovSp*1.05f *Time.deltaTime);
@@ -180,7 +185,10 @@ public class turnEnd : MonoBehaviour
 
     void pl2move(int stepNo)
     {
-        if (pl2atk == true) { pl2.GetComponent<stats>().pasSkillHex = p2Path[1]; for (int i = 1; i < +5; i++) { p2Path[i] = Vector3.down; } } //if attack
+        if (pl2atk1 || pl2.GetComponent<stats>().actSkillObj[0]!=null) {   //if p2 attack or shoot is used
+            pl2.GetComponent<stats>().pasSkillHex = p2Path[1]; 
+            for (int i=1; i<=5; i++) { p2Path[i] = Vector3.down; }
+        } 
 
         if (p2Path[stepNo] != Vector3.down && (stepNo <= pl2dist))
         {
@@ -197,6 +205,10 @@ public class turnEnd : MonoBehaviour
     }
     void pl3move(int stepNo)
     {
+        if ( pl3.GetComponent<stats>().actSkillObj[0] != null)  {  //if p3 active skill is used
+            for (int i=1; i<=5; i++) { p3Path[i] = Vector3.down; }
+        }
+
         if (p3Path[stepNo] != Vector3.down && (stepNo <= pl3dist))
         {
             pl3.transform.position = Vector3.MoveTowards(pl3.transform.position, p3Path[stepNo], plMovSp * Time.deltaTime);

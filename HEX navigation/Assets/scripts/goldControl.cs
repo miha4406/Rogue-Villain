@@ -11,7 +11,8 @@ public class goldControl : MonoBehaviour
     [SerializeField] GameObject pl1;
     [SerializeField] GameObject pl2;
     [SerializeField] GameObject pl3;
-   
+
+    bool b1skill = false;
 
     public GameObject[] hexes = new GameObject[20];
     public GameObject[] itemHexes = new GameObject[3]; // item hexes - h1, h12, h17
@@ -34,10 +35,15 @@ public class goldControl : MonoBehaviour
         if (turnNo>5) { gHex2(); }
         if (turnNo>10){ gHex3(); }
 
+        p1Challenge();
+
         p2Attack();
+        p2Shoot();
+
+        p3GoldGet();
+
 
         movEnd = false;
-
     }
 
     void gHex1()
@@ -141,30 +147,110 @@ public class goldControl : MonoBehaviour
         }
         else if (plA.transform.position == plB.transform.position)  //will swap EVERY time on collision
         {
-            int t = plA.GetComponent<stats>().gold;
-            plA.GetComponent<stats>().gold = plB.GetComponent<stats>().gold;
-            plB.GetComponent<stats>().gold = t;
+            if ( b1skill && (plA==pl1 && plB==pl1.GetComponent<stats>().actSkillObj[0]) )
+            {
+                print("pl1 challenge succeed!"); b1skill = false;  //only once!
+
+                if (plB.GetComponent<stats>().gold >= 3) { plB.GetComponent<stats>().gold -=3; plA.GetComponent<stats>().gold +=3; }
+                if (plB.GetComponent<stats>().gold == 2) { plB.GetComponent<stats>().gold -=2; plA.GetComponent<stats>().gold +=2; }
+                if (plB.GetComponent<stats>().gold == 1) { plB.GetComponent<stats>().gold -=1; plA.GetComponent<stats>().gold +=1; }
+            }
+            else if ( b1skill && (plB==pl1 && plA==pl1.GetComponent<stats>().actSkillObj[0]) )
+            {
+                print("pl1 challenge succeed!"); b1skill = false;  //only once!
+
+                if (plA.GetComponent<stats>().gold >= 3) { plA.GetComponent<stats>().gold -=3; plB.GetComponent<stats>().gold +=3; }
+                if (plA.GetComponent<stats>().gold == 2) { plA.GetComponent<stats>().gold -=2; plB.GetComponent<stats>().gold +=2; }
+                if (plA.GetComponent<stats>().gold == 1) { plA.GetComponent<stats>().gold -=1; plB.GetComponent<stats>().gold +=1; }
+            }
+            else
+            {
+                int t = plA.GetComponent<stats>().gold;
+                plA.GetComponent<stats>().gold = plB.GetComponent<stats>().gold;
+                plB.GetComponent<stats>().gold = t;
+            }
+        }
+    }
+
+    ////////////////////////// SKILLS /////////////////////////
+
+    public void p1Challenge()
+    {
+        if (movEnd && pl1.GetComponent<stats>().skillCD !=0 )
+        {
+            if (pl1.GetComponent<stats>().skillCD == 4) { b1skill = true; }
+            if (pl1.GetComponent<stats>().skillCD == 3) { 
+                b1skill = false; pl1.GetComponent<stats>().actSkillObj[0] = null;
+            }
+
+            pl1.GetComponent<stats>().skillCD--; print(pl1.GetComponent<stats>().skillCD);
         }
     }
 
     public void p2Attack()
     {
-        if (movEnd && gameObject.GetComponent<turnEnd>().pl2atk)
+        if (movEnd && gameObject.GetComponent<turnEnd>().pl2atk1)
         {
             if (pl2.GetComponent<stats>().pasSkillHex == pl1.transform.position) //attack on pl1
             {
-                print("p1 !!");
+                print("Attack on pl1!");
                 if (pl1.GetComponent<stats>().gold >= 2) { pl1.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                 else if (pl1.GetComponent<stats>().gold == 1) { pl1.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
             }
             if (pl2.GetComponent<stats>().pasSkillHex == pl3.transform.position) //attack on pl3
             {
-                print("p3 !!");
+                print("Attack on pl3!");
                 if (pl3.GetComponent<stats>().gold >= 2) { pl3.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                 else if (pl3.GetComponent<stats>().gold == 1) { pl3.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
             }
 
-            gameObject.GetComponent<turnEnd>().pl2atk = false;
+            gameObject.GetComponent<turnEnd>().pl2atk1 = false;
         }
+    }
+    public void p2Shoot() //after shoot prep
+    {
+        if (movEnd && pl2.GetComponent<stats>().actSkillObj[0] != null)
+        {
+            if (pl2.GetComponent<stats>().actSkillObj[0].transform.position == pl1.transform.position 
+                || pl2.GetComponent<stats>().actSkillObj[0].transform.position == pl3.transform.position) {
+                print("Can't shoot! Obstacle behind.");
+            }
+            else
+            {
+                for(int j=1; j<=3; j++)
+                {
+                    if (pl2.GetComponent<stats>().actSkillObj[j] != null)
+                    {
+                        if (pl2.GetComponent<stats>().actSkillObj[j].transform.position == pl1.transform.position)
+                        {
+                            print("Shoot in pl1!");
+                            if (pl1.GetComponent<stats>().gold >= 2) { pl1.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
+                            else if (pl1.GetComponent<stats>().gold == 1) { pl1.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
+                        }
+                        if (pl2.GetComponent<stats>().actSkillObj[j].transform.position == pl3.transform.position)
+                        {
+                            print("Shoot in pl3!");
+                            if (pl3.GetComponent<stats>().gold >= 2) { pl3.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
+                            else if (pl3.GetComponent<stats>().gold == 1) { pl3.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
+                        }
+                    }
+                }
+            }
+            
+            pl2.GetComponent<stats>().actSkillObj = new GameObject[4];
+        }
+    }
+
+    public void p3GoldGet()
+    {
+        if (pl3.GetComponent<stats>().actSkillObj[0] != null)
+        {
+            print("pl3 gets gold!");
+
+            pl3.GetComponent<stats>().gold++;
+
+            pl3.GetComponent<stats>().actSkillObj[0] = null;
+        }        
+        
     }
 }

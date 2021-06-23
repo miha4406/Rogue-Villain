@@ -11,6 +11,8 @@ public class stats : MonoBehaviour
 
     public Vector3 pasSkillHex = Vector3.down; //needs for passive skills
 
+    public GameObject[] actSkillObj = new GameObject[4];  //active skill target(s)
 
+    public int skillCD = 0;  //active skill cooldown
 }
 
