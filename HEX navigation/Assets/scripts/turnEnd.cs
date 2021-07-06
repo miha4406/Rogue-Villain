@@ -160,15 +160,12 @@ public class turnEnd : MonoBehaviour
 
         turnNo++;
         gameObject.GetComponent<goldControl>().movEnd = true;
+        gameObject.GetComponent<itemControl>().movEnd = true;
     }
  
 
     void pl1move(int stepNo) 
-    {
-        //if (pl1.GetComponent<stats>().actSkillObj[0] != null){   //if p1 active skill is used
-        //    for (int i = 1; i <= 5; i++) { p1Path[i] = Vector3.down; }
-        //}
-
+    {      
         if (p1Path[stepNo] != Vector3.down && (stepNo <= pl1dist))
         {
             pl1.transform.position = Vector3.MoveTowards(pl1.transform.position, p1Path[stepNo], plMovSp*1.05f *Time.deltaTime);
@@ -227,7 +224,8 @@ public class turnEnd : MonoBehaviour
     {
         if (movSw) { 
             turnNo++;
-            gameObject.GetComponent<goldControl>().movEnd=true; 
+            gameObject.GetComponent<goldControl>().movEnd = true;
+            gameObject.GetComponent<itemControl>().movEnd = true;
             movSw = false; 
         }
           

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using UnityEngine.UI;
 using UnityEngine;
 
 public class p2control : MonoBehaviour
@@ -8,6 +8,7 @@ public class p2control : MonoBehaviour
 
     [SerializeField] GameObject pFinder;
     [SerializeField] GameObject pathPref;
+    GameObject[] destroy = new GameObject[5];
     int plDist;
     GameObject[] hexes = new GameObject[20];
     public GameObject[] nearHex = new GameObject[7];
@@ -24,6 +25,11 @@ public class p2control : MonoBehaviour
 
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
+
+    [SerializeField] Sprite p2logo;
+    [SerializeField] Sprite p2a;
+    [SerializeField] Sprite p2p;
+   
 
     void Awake()
     {
@@ -63,11 +69,33 @@ public class p2control : MonoBehaviour
         clHex = transform.position;
 
         shootHexes = new GameObject[4];
+
+        GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p2logo;
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p2a;
+        GameObject.Find("ScreenCanvas/butPas").GetComponent<Image>().sprite = p2p;
+        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = true;
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener(() => {
+            bShootPrep = !bShootPrep;            
+        });
+        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.AddListener(() => {
+            GameObject.Find("GameLogic").GetComponent<turnEnd>().pl2atk1 = !GameObject.Find("GameLogic").GetComponent<turnEnd>().pl2atk1;
+        });
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = true;
+        if (gameObject.GetComponent<stats>().skillCD != 0)
+        {
+            GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = false;
+            GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().skillCD.ToString();
+        }
+        else { GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = ""; }
     }
 
     void OnDisable()
     {
-        if (bShootPrep && shootHexes[0]!=null) { gameObject.GetComponent<stats>().actSkillObj = shootHexes; }
+        if (bShootPrep && shootHexes[0]!=null) { 
+            gameObject.GetComponent<stats>().actSkillObj = shootHexes;
+            gameObject.GetComponent<stats>().skillCD = 4;
+        }
         bShootPrep = false;
     }
 
@@ -87,6 +115,9 @@ public class p2control : MonoBehaviour
                 pfCor = transform.position;
 
                 InvokeRepeating("pfRoutine", 0f, 0.1f);
+
+                destroy = GameObject.FindGameObjectsWithTag("pathPref");
+                for (int i = 0; i < destroy.Length; i++) { Destroy(destroy[i]); }
             }
         }
         if (clHex == pfCor)
@@ -97,6 +128,8 @@ public class p2control : MonoBehaviour
             {
                 Instantiate(pathPref, path[i], transform.rotation);
             }
+
+            clHex = new Vector3(-10, -10, -10);
         }
 
         if (bShootPrep) { pl2shootPrep(); }
@@ -164,7 +197,7 @@ public class p2control : MonoBehaviour
             detectRay = new Ray(shootProbeB.transform.position, Vector3.down);
             Debug.DrawRay(shootProbeB.transform.position, Vector3.down * 2, Color.black);
 
-            shootProbeB.transform.Translate(-dir * Time.deltaTime *5);
+            shootProbeB.transform.Translate(-dir * Time.deltaTime *15);
 
             if (Physics.Raycast(detectRay, out hit2)){
                 if(hit2.collider.gameObject.tag=="ground" && hit2.collider.gameObject.transform.position != gameObject.transform.position)
@@ -195,7 +228,7 @@ public class p2control : MonoBehaviour
             detectRay = new Ray(shootProbeF.transform.position, Vector3.down);
             Debug.DrawRay(shootProbeF.transform.position, Vector3.down * 2, Color.black);
 
-            shootProbeF.transform.Translate(dir * Time.deltaTime * 5);
+            shootProbeF.transform.Translate(dir * Time.deltaTime * 15);
 
             if (Physics.Raycast(detectRay, out hit2))
             {

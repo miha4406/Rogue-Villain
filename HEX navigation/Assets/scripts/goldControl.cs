@@ -15,7 +15,7 @@ public class goldControl : MonoBehaviour
     bool b1skill = false;
 
     public GameObject[] hexes = new GameObject[20];
-    public GameObject[] itemHexes = new GameObject[3]; // item hexes - h1, h12, h17
+    public GameObject[] itemHexes = new GameObject[3]; // item hexes from itemControl
 
     public bool movEnd;  //sets "true" from turnEnd.cs
     int turnNo;
@@ -30,6 +30,8 @@ public class goldControl : MonoBehaviour
     {
         turnNo = gameObject.GetComponent<turnEnd>().turnNo;
         print("Turn "+turnNo);
+
+        itemHexes = gameObject.GetComponent<itemControl>().itemHexes;
 
         if (turnNo>0) { gHex1(); }
         if (turnNo>5) { gHex2(); }
@@ -172,6 +174,27 @@ public class goldControl : MonoBehaviour
         }
     }
 
+    public void hexInfo(Vector3 clHex)
+    {
+        if (clHex == gBar1?.transform.position || clHex == gBar2?.transform.position || clHex == gBar3?.transform.position)
+        {
+            print("GOLD HEX");
+        }
+        if(clHex == pl2.transform.position)
+        {
+            print("player2 HEX");
+        }
+        if (clHex == pl3.transform.position)
+        {
+            print("player3 HEX");
+        }
+        if (clHex == hexes[1].transform.position || clHex == hexes[12].transform.position || clHex == hexes[17].transform.position)
+        {
+            print("ITEM HEX");
+        }
+        else { print("PLAIN HEX"); }
+    }
+
     ////////////////////////// SKILLS /////////////////////////
 
     public void p1Challenge()
@@ -183,7 +206,7 @@ public class goldControl : MonoBehaviour
                 b1skill = false; pl1.GetComponent<stats>().actSkillObj[0] = null;
             }
 
-            pl1.GetComponent<stats>().skillCD--; print(pl1.GetComponent<stats>().skillCD);
+            pl1.GetComponent<stats>().skillCD--;
         }
     }
 
@@ -235,10 +258,12 @@ public class goldControl : MonoBehaviour
                         }
                     }
                 }
+                pl2.transform.position = pl2.GetComponent<stats>().actSkillObj[0].transform.position;
             }
             
             pl2.GetComponent<stats>().actSkillObj = new GameObject[4];
         }
+        if (movEnd && pl2.GetComponent<stats>().skillCD!=0) { pl2.GetComponent<stats>().skillCD--; }
     }
 
     public void p3GoldGet()
@@ -250,7 +275,9 @@ public class goldControl : MonoBehaviour
             pl3.GetComponent<stats>().gold++;
 
             pl3.GetComponent<stats>().actSkillObj[0] = null;
-        }        
+        }
+
+        if (movEnd && pl3.GetComponent<stats>().skillCD!=0) { pl3.GetComponent<stats>().skillCD--; }
         
     }
 }

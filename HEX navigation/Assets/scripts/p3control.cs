@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using UnityEngine.UI;
 using UnityEngine;
 
 public class p3control : MonoBehaviour
@@ -8,6 +8,7 @@ public class p3control : MonoBehaviour
 
     [SerializeField] GameObject pFinder;
     [SerializeField] GameObject pathPref;
+    GameObject[] destroy = new GameObject[5];
     int plDist;
     GameObject[] hexes = new GameObject[20];
     public GameObject[] nearHex = new GameObject[7];
@@ -17,6 +18,9 @@ public class p3control : MonoBehaviour
 
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
+
+    [SerializeField] Sprite p3logo;
+    [SerializeField] Sprite p3a;
 
     void Awake()
     {
@@ -54,12 +58,31 @@ public class p3control : MonoBehaviour
         path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         pFinder.transform.position = transform.position + Vector3.up;
         clHex = transform.position;
+
+        GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p3logo;
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p3a;
+        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = false;
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener( () => { bGoldGet = !bGoldGet; } );
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = true;
+        if (gameObject.GetComponent<stats>().skillCD != 0)
+        {
+            GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = false;
+            GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().skillCD.ToString();
+        }
+        else { GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = ""; }
+
     }
 
     void OnDisable()
     {
-        if (bGoldGet) { gameObject.GetComponent<stats>().actSkillObj[0] = gameObject; }
+        if (bGoldGet) { 
+            gameObject.GetComponent<stats>().actSkillObj[0] = gameObject;
+            gameObject.GetComponent<stats>().skillCD = 3;
+        }
         bGoldGet = false;
+
+
     }
 
 
@@ -78,6 +101,9 @@ public class p3control : MonoBehaviour
                 pfCor = transform.position;
 
                 InvokeRepeating("pfRoutine", 0f, 0.1f);
+
+                destroy = GameObject.FindGameObjectsWithTag("pathPref");
+                for (int i = 0; i < destroy.Length; i++) { Destroy(destroy[i]); }
             }
         }
         if (clHex == pfCor)
@@ -88,6 +114,8 @@ public class p3control : MonoBehaviour
             {
                 Instantiate(pathPref, path[i], transform.rotation);
             }
+
+            clHex = new Vector3(-10, -10, -10);
         }
 
 

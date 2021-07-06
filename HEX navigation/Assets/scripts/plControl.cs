@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using UnityEngine.UI;
 using UnityEngine;
 
 public class plControl : MonoBehaviour
@@ -8,6 +8,7 @@ public class plControl : MonoBehaviour
 
     [SerializeField] GameObject pFinder;
     [SerializeField] GameObject pathPref;
+    GameObject[] destroy = new GameObject[5];
     int plDist;
     GameObject[] hexes = new GameObject[20];
     public GameObject[] nearHex = new GameObject[7];
@@ -17,7 +18,13 @@ public class plControl : MonoBehaviour
     public GameObject skillTarget;
 
     Vector3 pfCor; //pathfinder Y-height correction
-    int pfStepNo = 0;   
+    int pfStepNo = 0;
+
+    [SerializeField] Sprite p1logo;
+    [SerializeField] Sprite p1a;
+    [SerializeField] GameObject p1panel;
+    [SerializeField] GameObject pl2;
+    [SerializeField] GameObject pl3;
 
     void Awake()
     {
@@ -26,7 +33,10 @@ public class plControl : MonoBehaviour
         clHex = pFinder.transform.position;        
 
         pfCor = pFinder.transform.position + Vector3.down;
-      
+
+        GameObject.Find("ScreenCanvas/p1panel/but2").GetComponent<Button>().onClick.AddListener(() => { skillTarget = pl2; p1panel.SetActive(false); } );
+        GameObject.Find("ScreenCanvas/p1panel/but3").GetComponent<Button>().onClick.AddListener(() => { skillTarget = pl3; p1panel.SetActive(false); } );
+        p1panel.SetActive(false);
     }
     
 
@@ -55,6 +65,23 @@ public class plControl : MonoBehaviour
         clHex = transform.position;
 
         skillTarget = null;
+
+        GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p1logo;
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p1a;
+        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = false;        
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener(() => { 
+            bChallenge = !bChallenge;
+            skillTarget = null;
+            p1panel.active = !p1panel.active;
+        } );
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = true;
+        if (gameObject.GetComponent<stats>().skillCD != 0)
+        {
+            GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = false;
+            GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().skillCD.ToString();
+        }
+        else { GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = ""; }
     }
 
     void OnDisable()
@@ -81,7 +108,10 @@ public class plControl : MonoBehaviour
                 path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
                 pfCor = transform.position;
 
-                InvokeRepeating("pfRoutine", 0f, 0.1f);  
+                InvokeRepeating("pfRoutine", 0f, 0.1f);
+
+                destroy = GameObject.FindGameObjectsWithTag("pathPref");
+                for(int i=0; i<destroy.Length; i++) { Destroy(destroy[i]); }
             }
         }
         if (clHex == pfCor) 
@@ -92,6 +122,10 @@ public class plControl : MonoBehaviour
             {
                 Instantiate(pathPref, path[i], transform.rotation);
             }
+
+            GameObject.Find("GameLogic").GetComponent<goldControl>().hexInfo(clHex);
+
+            clHex = new Vector3(-10,-10,-10);
         }
        
 
@@ -140,6 +174,5 @@ public class plControl : MonoBehaviour
         nearHexSearch();
         pathFind();    
     }
-
-
+  
 }
