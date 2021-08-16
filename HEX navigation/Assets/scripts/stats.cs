@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 public class stats : MonoBehaviour
 {
@@ -16,6 +15,20 @@ public class stats : MonoBehaviour
     public int skillCD = 0;  //active skill cooldown
 
     public int item1 = 0; 
-    public int item2 = 0;  //items ID
+    public int item2 = 0; 
+ 
+    public Vector3[] item1Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+    public Vector3[] item2Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+
+    //public int goldBonus = 0;  //needs for jewel item (d) 
+    void Awake()
+    {
+        pasSkillHex = Vector3.down;
+
+        item1Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+        item2Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+    }
 }
+
+
 

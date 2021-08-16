@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using UnityEngine.UI;
 using UnityEngine;
 using System.Linq;
 
@@ -16,6 +16,7 @@ public class goldControl : MonoBehaviour
 
     public GameObject[] hexes = new GameObject[20];
     public GameObject[] itemHexes = new GameObject[3]; // item hexes from itemControl
+    [SerializeField] GameObject hexPanel;
 
     public bool movEnd;  //sets "true" from turnEnd.cs
     int turnNo;
@@ -174,25 +175,45 @@ public class goldControl : MonoBehaviour
         }
     }
 
-    public void hexInfo(Vector3 clHex)
+    public void hexInfo(Vector3 clHex, Vector3 plHex)
     {
-        if (clHex == gBar1?.transform.position || clHex == gBar2?.transform.position || clHex == gBar3?.transform.position)
+        Text[] newText = hexPanel.GetComponentsInChildren<Text>();
+
+        if (clHex == pl1.transform.position)
         {
-            print("GOLD HEX");
+            newText[0].text = "Phantom thief (player 1)";
+            newText[1].text = "About player 1";
+            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();            
         }
-        if(clHex == pl2.transform.position)
+        else if (clHex == pl2.transform.position)
         {
-            print("player2 HEX");
+            newText[0].text = "Pirate (player 2)";
+            newText[1].text = "About player 2";
+            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();
         }
-        if (clHex == pl3.transform.position)
+        else if (clHex == pl3.transform.position)
         {
-            print("player3 HEX");
+            newText[0].text = "Explorer (player 3)";
+            newText[1].text = "About player 3";
+            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();
         }
-        if (clHex == hexes[1].transform.position || clHex == hexes[12].transform.position || clHex == hexes[17].transform.position)
+        else if (clHex==gBar1?.transform.position || clHex==gBar2?.transform.position || clHex==gBar3?.transform.position)
         {
-            print("ITEM HEX");
+            newText[0].text = "Gold bar HEX";
+            newText[1].text = "Can pick up gold bar";
+            newText[2].text = "Distance: " + Mathf.FloorToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();            
+        }        
+        else if (clHex==itemHexes[0].transform.position || clHex==itemHexes[1].transform.position || clHex==itemHexes[2].transform.position) 
+        {
+            newText[0].text = "Item HEX";
+            newText[1].text = "Can pick up item";
+            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();            
         }
-        else { print("PLAIN HEX"); }
+        else {
+            newText[0].text = "Plain HEX";
+            newText[1].text = "No effect";
+            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();            
+        }
     }
 
     ////////////////////////// SKILLS /////////////////////////

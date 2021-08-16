@@ -26,6 +26,21 @@ public class plControl : MonoBehaviour
     [SerializeField] GameObject pl2;
     [SerializeField] GameObject pl3;
 
+    [SerializeField] GameObject bomb;
+    int bombCntr = 0;
+    [SerializeField] GameObject slime;
+    GameObject s0 = null; GameObject s1 = null; GameObject s2 = null; GameObject s3 = null; GameObject s4 = null;
+    bool bSlimePlaced = false;
+
+    public bool bItem1a = false; public bool bItem2a = false;  //bombs
+    public bool bItem1b = false; public bool bItem2b = false;  //boots
+    public bool bItem1c = false; public bool bItem2c = false;  //slime
+
+    Vector3[] itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down};
+
+    int turnNo;
+
+
     void Awake()
     {
         hexes = GameObject.Find("GameLogic").GetComponent<goldControl>().hexes;
@@ -42,6 +57,9 @@ public class plControl : MonoBehaviour
 
     void OnEnable()
     {
+        turnNo = GameObject.Find("GameLogic").GetComponent<turnEnd>().turnNo;
+
+        if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; }  //pl1
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
 
         foreach (GameObject x in hexes)
@@ -82,6 +100,134 @@ public class plControl : MonoBehaviour
             GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().skillCD.ToString();
         }
         else { GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = ""; }
+
+
+        if(gameObject.GetComponent<stats>().item1 != 0) {   //item buttons
+            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().interactable = true;
+            GameObject.Find("ScreenCanvas/butItem1").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().item1.ToString();
+        }
+        else { GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().interactable = false; }
+        if (gameObject.GetComponent<stats>().item2 != 0)
+        {   
+            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().interactable = true;
+            GameObject.Find("ScreenCanvas/butItem2").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().item2.ToString();
+        }
+        else { GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().interactable = false; }
+
+
+        if (gameObject.GetComponent<stats>().item1==1 || gameObject.GetComponent<stats>().item1==2 || gameObject.GetComponent<stats>().item1==3)  //bomb buttons
+        {
+            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
+                bItem1a = !bItem1a;
+                itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+                bombCntr = 0;
+                GameObject.Find("GameLogic").GetComponent<itemControl>().bombClear();
+            });
+        }
+        if (gameObject.GetComponent<stats>().item2==1 || gameObject.GetComponent<stats>().item2==2 || gameObject.GetComponent<stats>().item2==3)  
+        {
+            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
+                bItem2a = !bItem2a;
+                itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+                bombCntr = 0;
+                GameObject.Find("GameLogic").GetComponent<itemControl>().bombClear();
+            });
+        }
+
+
+        if (gameObject.GetComponent<stats>().item1==4 || gameObject.GetComponent<stats>().item1==5 || gameObject.GetComponent<stats>().item1==6)  //boots buttons
+        {
+            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
+                bItem1b = !bItem1b;
+                if (gameObject.GetComponent<stats>().movDist==2) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item1-3); }
+                else { gameObject.GetComponent<stats>().movDist = 2; } //pl1
+
+                foreach (GameObject x in hexes)
+                {
+                    if (x != null)
+                    {
+                        if (Vector3.Distance(x.transform.position, transform.position) < gameObject.GetComponent<stats>().movDist+0.5f)
+                        {
+                            x.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
+                            x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.blue);
+                        }
+                        else
+                        {
+                            x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.black);
+                        }
+                    }
+                }
+            });
+        }
+        if (gameObject.GetComponent<stats>().item2==4 || gameObject.GetComponent<stats>().item2==5 || gameObject.GetComponent<stats>().item2==6)  
+        {
+            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
+                bItem2b = !bItem2b;
+                if (gameObject.GetComponent<stats>().movDist == 2) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item2-3); }
+                else { gameObject.GetComponent<stats>().movDist = 2; }  //pl1
+
+                foreach (GameObject x in hexes)
+                {
+                    if (x != null)
+                    {
+                        if (Vector3.Distance(x.transform.position, transform.position) < gameObject.GetComponent<stats>().movDist + 0.5f)
+                        {
+                            x.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
+                            x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.blue);
+                        }
+                        else
+                        {
+                            x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.black);
+                        }
+                    }
+                }
+            });
+        }
+
+
+        if (gameObject.GetComponent<stats>().item1==7 || gameObject.GetComponent<stats>().item1==8 || gameObject.GetComponent<stats>().item1==9)  //slime buttons
+        {
+            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
+                bItem1c = !bItem1c;
+                itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+                bSlimePlaced = false;
+                foreach (GameObject slime in GameObject.FindGameObjectsWithTag("slimePref"))
+                {
+                    if (slime.GetComponent<slimeScript>().crTurn==turnNo && slime.GetComponent<slimeScript>().user==gameObject) { Destroy(slime); }
+                }       
+            });
+        }
+        if (gameObject.GetComponent<stats>().item2==7 || gameObject.GetComponent<stats>().item2==8 || gameObject.GetComponent<stats>().item2==9) 
+        {
+            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
+                bItem2c = !bItem2c;
+                itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+                bSlimePlaced = false;
+                foreach (GameObject slime in GameObject.FindGameObjectsWithTag("slimePref"))
+                {
+                    if (slime.GetComponent<slimeScript>().crTurn==turnNo && slime.GetComponent<slimeScript>().user==gameObject) { Destroy(slime); }
+                }   
+            });
+        }
+
+
+        if (gameObject.GetComponent<stats>().item1==10 || gameObject.GetComponent<stats>().item1==11 || gameObject.GetComponent<stats>().item1==12)  //jewel button
+        {
+            if (gameObject.GetComponent<stats>().item1Targets[0] == Vector3.down) { gameObject.GetComponent<stats>().item1Targets[0] = gameObject.transform.position; }
+            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners(); //do nothing
+        }
+        if (gameObject.GetComponent<stats>().item2==10 || gameObject.GetComponent<stats>().item2==11 || gameObject.GetComponent<stats>().item2==12)  
+        {
+            if (gameObject.GetComponent<stats>().item2Targets[0] == Vector3.down) { gameObject.GetComponent<stats>().item2Targets[0] = gameObject.transform.position; }
+            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners(); //do nothing
+        }
+
     }
 
     void OnDisable()
@@ -91,6 +237,52 @@ public class plControl : MonoBehaviour
             gameObject.GetComponent<stats>().skillCD = 4;
         }
         bChallenge = false;
+
+        if (bItem1a && itemTargets[0]!=Vector3.down)
+        {
+            gameObject.GetComponent<stats>().item1Targets = itemTargets;
+
+            bItem1a = false; itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+        }
+        if (bItem2a && itemTargets[0] != Vector3.down)
+        {
+            gameObject.GetComponent<stats>().item2Targets = itemTargets;
+
+            bItem2a = false; itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+        }
+
+        if (bItem1b) 
+        {
+            gameObject.GetComponent<stats>().item1 = 0;
+            bItem1b = false;
+        }
+        if (bItem2b)
+        {
+            gameObject.GetComponent<stats>().item2 = 0;
+            bItem1b = false;
+        }
+
+        if (bItem1c && itemTargets[0]!=Vector3.down)
+        {
+            if (gameObject.GetComponent<stats>().item1==7 || bSlimePlaced==true)
+            {
+                gameObject.GetComponent<stats>().item1Targets = itemTargets; //needs to stop movement
+                //gameObject.GetComponent<stats>().item1 = 0; 
+
+                bItem1c = false; itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };                
+            }
+        }
+        if (bItem2c && itemTargets[0]!=Vector3.down)
+        {
+            if (gameObject.GetComponent<stats>().item2==7 || bSlimePlaced==true)
+            {                         
+                gameObject.GetComponent<stats>().item2Targets = itemTargets;                
+
+                bItem2c = false; itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+            }
+        }
+        bSlimePlaced = false;
+
     }
 
 
@@ -123,30 +315,32 @@ public class plControl : MonoBehaviour
                 Instantiate(pathPref, path[i], transform.rotation);
             }
 
-            GameObject.Find("GameLogic").GetComponent<goldControl>().hexInfo(clHex);
+            GameObject.Find("GameLogic").GetComponent<goldControl>().hexInfo(clHex,transform.position);
 
             clHex = new Vector3(-10,-10,-10);
         }
-       
 
+        if (bItem1a || bItem1c) { item1Prep(); }
+        if (bItem2a || bItem2c) { item2Prep(); }
     }
+
 
     void nearHexSearch() // +correction to hex pos (x,0,z)!!!
-    {           
-            int j = 1;
-            for (int i = 1; i <= hexes.Length-1; i++)
+    {
+        int j = 1;
+        for (int i = 1; i <= hexes.Length - 1; i++)
+        {
+            if (Vector3.Distance(hexes[i].transform.position, pfCor) < 1.15f) //hex size!
             {
-                if (Vector3.Distance(hexes[i].transform.position, pfCor) < 1.15f) //hex size!
+                if (hexes[i].transform.position != pfCor)
                 {
-                    if (hexes[i].transform.position != pfCor)
-                    {
-                        nearHex[j] = hexes[i];
-                        j++;
-                    }
+                    nearHex[j] = hexes[i];
+                    j++;
                 }
-            }             
-
+            }
+        }
     }
+
 
     void pathFind()
     {
@@ -167,12 +361,226 @@ public class plControl : MonoBehaviour
 
         pFinder.transform.position = nearHex[s].transform.position + Vector3.up;   
     }
-
     void pfRoutine()
     {        
         pfStepNo++;
         nearHexSearch();
         pathFind();    
     }
-  
+
+
+    void item1Prep()  //define target hexes for item in slot1
+    {
+        int itemID = gameObject.GetComponent<stats>().item1;        
+
+        if (itemID==1 || itemID==2 || itemID==3)  //bombs
+        { 
+
+            Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);              
+
+            if (Input.GetMouseButtonUp(0) && bombCntr<itemID) 
+            {
+                if (Physics.Raycast(mRay, out hit))
+                {
+                    clHex = hit.collider.transform.position;
+
+                    itemTargets[bombCntr] = clHex;
+                    bombCntr++;                    
+
+                    foreach(Vector3 pos in itemTargets)
+                    {
+                        if(pos != Vector3.down) { Instantiate(bomb, pos, Quaternion.identity); }
+                    }                    
+                }
+            }
+
+        }
+
+        if (itemID==7 || itemID==8 || itemID==9)  //slime
+        {
+            Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (itemTargets[0] == Vector3.down)
+                {
+                    if (Physics.Raycast(mRay, out hit))
+                    {
+                        GameObject.Find("GameLogic").GetComponent<itemControl>().bombClear();
+
+                        clHex = hit.collider.transform.position;
+
+                        itemTargets[0] = clHex;
+                        s0 = Instantiate(slime, itemTargets[0], Quaternion.identity);
+
+                        if (itemID==8 && itemTargets[0]!=Vector3.down)  //slime 2 (3 hexes)
+                        {
+                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);                           
+
+                            s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                                             
+                        }
+                        else if (itemID==9 && itemTargets[0]!=Vector3.down)  //slime 3 (5 hexes)
+                        {
+                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+
+                            s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+
+                            s3 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
+
+                            s4 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
+                            s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                        }
+                    }
+                }
+                else
+                {  //on 2nd click
+                    if (itemID==8 || itemID==9)
+                    {                
+                        bSlimePlaced = true;
+                    }
+                }
+            }
+            if (itemID==8 && !bSlimePlaced)
+            {
+                if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                {
+                    s1.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
+                    s2.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
+                }
+                if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+                {
+                    s1.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
+                    s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
+                }
+            }
+            if (itemID==9 && !bSlimePlaced)
+            {
+                if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                {
+                    s1.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s2.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s3.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                }
+                if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+                {
+                    s1.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s3.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s4.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                }
+            }
+
+        }
+    }
+    void item2Prep()  //define target hexes for item in slot2
+    {
+        int itemID = gameObject.GetComponent<stats>().item2;        
+
+        if (itemID==1 || itemID==2 || itemID==3)  //bombs
+        { 
+            Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);              
+
+            if (Input.GetMouseButtonUp(0) && bombCntr<itemID) 
+            {
+                if (Physics.Raycast(mRay, out hit))
+                {
+                    clHex = hit.collider.transform.position;
+
+                    itemTargets[bombCntr] = clHex;
+                    bombCntr++;                    
+
+                    foreach(Vector3 pos in itemTargets)
+                    {
+                        if(pos != Vector3.down) { Instantiate(bomb, pos, Quaternion.identity); }
+                    }                    
+                }
+            }
+
+        }
+
+        if (itemID==7 || itemID==8 || itemID==9)  //slime
+        {
+            Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (itemTargets[0] == Vector3.down)
+                {
+                    if (Physics.Raycast(mRay, out hit))
+                    {
+                        GameObject.Find("GameLogic").GetComponent<itemControl>().bombClear();
+
+                        clHex = hit.collider.transform.position;
+
+                        itemTargets[0] = clHex;
+                        s0 = Instantiate(slime, itemTargets[0], Quaternion.identity);
+
+                        if (itemID==8 && itemTargets[0]!=Vector3.down)  //slime 2 (3 hexes)
+                        {
+                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);                           
+
+                            s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                                             
+                        }
+                        else if (itemID==9 && itemTargets[0]!=Vector3.down)  //slime 3 (5 hexes)
+                        {
+                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+
+                            s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+
+                            s3 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
+
+                            s4 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
+                            s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                        }
+                    }
+                }
+                else
+                {  //on 2nd click
+                    if (itemID==8 || itemID==9)
+                    {                
+                        bSlimePlaced = true;
+                    }
+                }
+            }
+            if (itemID==8 && !bSlimePlaced)
+            {
+                if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                {
+                    s1.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
+                    s2.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
+                }
+                if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+                {
+                    s1.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
+                    s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
+                }
+            }
+            if (itemID==9 && !bSlimePlaced)
+            {
+                if (Input.GetAxis("Mouse ScrollWheel") < 0f)
+                {
+                    s1.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s2.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s3.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                }
+                if (Input.GetAxis("Mouse ScrollWheel") > 0f)
+                {
+                    s1.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s3.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s4.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                }
+            }
+
+        }
+    }
+ 
+    
+
 }
