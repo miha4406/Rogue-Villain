@@ -1,12 +1,13 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
+using Photon.Pun;
 
 public class p3control : MonoBehaviour
 {
     RaycastHit hit;
     Vector3 clHex;
 
-    [SerializeField] GameObject pFinder;
+    GameObject pFinder;
     [SerializeField] GameObject pathPref;
     GameObject[] destroy = new GameObject[5];
     int plDist;
@@ -18,6 +19,9 @@ public class p3control : MonoBehaviour
 
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
+
+    Text pNick, pGold;
+    GameObject pl1, pl2;
 
     [SerializeField] Sprite p3logo;
     [SerializeField] Sprite p3a;
@@ -39,9 +43,11 @@ public class p3control : MonoBehaviour
 
     void Awake()
     {
+        pFinder = GameObject.Find("pathFinder");
+
         plDist = gameObject.GetComponent<stats>().movDist;
 
-        hexes = GameObject.Find("GameLogic").GetComponent<goldControl>().hexes;
+        hexes = map.mapS.hexes;
 
         clHex = pFinder.transform.position;
 
@@ -49,10 +55,20 @@ public class p3control : MonoBehaviour
 
     }
 
+    void Start() //can't set in Awake
+    {
+        pNick = GameObject.Find("ScreenCanvas/Panel2/nicknameText").GetComponent<Text>();
+        pNick.text = PhotonNetwork.NickName;
+        pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
+
+        pl1 = GameObject.FindGameObjectWithTag("player1");
+        pl2 = GameObject.FindGameObjectWithTag("player2");        
+    }
+
 
     void OnEnable()
     {
-        turnNo = GameObject.Find("GameLogic").GetComponent<turnEnd>().turnNo;
+        turnNo = turnEnd.turnEndS.turnNo;
 
         if (gameObject.GetComponent<stats>().movDist != 1) { gameObject.GetComponent<stats>().movDist = 1; }
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
@@ -221,6 +237,9 @@ public class p3control : MonoBehaviour
 
     void OnDisable()
     {
+        gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
+        gameObject.GetComponent<stats>().path = path;
+
         if (bGoldGet) { 
             gameObject.GetComponent<stats>().actSkillObj[0] = gameObject;
             gameObject.GetComponent<stats>().skillCD = 3;
@@ -278,6 +297,13 @@ public class p3control : MonoBehaviour
 
     void Update()
     {
+        if (!GetComponent<PhotonView>().IsMine)
+        {
+            return;
+        }
+
+        pGold.text = "Gold: " + gameObject.GetComponent<stats>().gold.ToString();
+
         pfCor = pFinder.transform.position + Vector3.down;
 
         Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);   //click detect
@@ -310,6 +336,11 @@ public class p3control : MonoBehaviour
 
         if (bItem1a || bItem1c) { item1Prep(); }
         if (bItem2a || bItem2c) { item2Prep(); }
+
+        if (Input.GetKeyDown(KeyCode.Return))  //on Enter
+        {
+            GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.All);  //to Host only?
+        }
 
     }
 
@@ -569,5 +600,14 @@ public class p3control : MonoBehaviour
 
         }
     }
+
+    [PunRPC] public void RPC_pl3stop()
+    {
+        GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
+
+        turnEnd.turnEndS.endTurn(); //last one!        
+    }
+
+
 }
 

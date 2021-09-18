@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using Photon.Pun;
+using UnityEngine;
 
-public class stats : MonoBehaviour
+public class stats : MonoBehaviour, IPunObservable
 {
+    public Vector3[] path = new Vector3[6];
+
     public int movDist; //players mobility
 
     public int hitCount = 0; //needs for collision
@@ -20,13 +23,46 @@ public class stats : MonoBehaviour
     public Vector3[] item1Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
     public Vector3[] item2Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
 
-    //public int goldBonus = 0;  //needs for jewel item (d) 
+    
     void Awake()
     {
         pasSkillHex = Vector3.down;
 
         item1Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
         item2Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+    }
+
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting) // We own this player -> send the others our data
+        {
+            stream.SendNext(path);
+            stream.SendNext(movDist);
+            stream.SendNext(hitCount);
+            stream.SendNext(gold);
+            stream.SendNext(pasSkillHex);
+            stream.SendNext(actSkillObj);
+            stream.SendNext(skillCD);
+            stream.SendNext(item1);
+            stream.SendNext(item2);
+            stream.SendNext(item1Targets);
+            stream.SendNext(item2Targets);
+        }
+        else  // It's network player -> receive data
+        {            
+            this.path = (Vector3[])stream.ReceiveNext();
+            this.movDist = (int)stream.ReceiveNext();
+            this.hitCount = (int)stream.ReceiveNext();
+            this.gold = (int)stream.ReceiveNext();
+            this.pasSkillHex = (Vector3)stream.ReceiveNext();
+            this.actSkillObj = (GameObject[])stream.ReceiveNext();
+            this.skillCD = (int)stream.ReceiveNext();
+            this.item1 = (int)stream.ReceiveNext();
+            this.item2 = (int)stream.ReceiveNext();
+            this.item1Targets = (Vector3[])stream.ReceiveNext();
+            this.item2Targets = (Vector3[])stream.ReceiveNext();
+        }
     }
 }
 

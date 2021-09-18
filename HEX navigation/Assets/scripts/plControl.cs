@@ -1,12 +1,13 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
+using Photon.Pun;
 
 public class plControl : MonoBehaviour
 {
     RaycastHit hit;
     Vector3 clHex;    
 
-    [SerializeField] GameObject pFinder;
+    GameObject pFinder;
     [SerializeField] GameObject pathPref;
     GameObject[] destroy = new GameObject[5];
     int plDist;
@@ -20,11 +21,11 @@ public class plControl : MonoBehaviour
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
 
+    Text pNick, pGold;
+    GameObject pl1, pl2, pl3;
     [SerializeField] Sprite p1logo;
     [SerializeField] Sprite p1a;
-    [SerializeField] GameObject p1panel;
-    [SerializeField] GameObject pl2;
-    [SerializeField] GameObject pl3;
+    GameObject p1panel;    
 
     [SerializeField] GameObject bomb;
     int bombCntr = 0;
@@ -43,21 +44,37 @@ public class plControl : MonoBehaviour
 
     void Awake()
     {
-        hexes = GameObject.Find("GameLogic").GetComponent<goldControl>().hexes;
+        pFinder = GameObject.Find("pathFinder");
+
+        hexes = map.mapS.hexes;
 
         clHex = pFinder.transform.position;        
 
         pfCor = pFinder.transform.position + Vector3.down;
 
+        p1panel = GameObject.Find("ScreenCanvas/p1panel");
         GameObject.Find("ScreenCanvas/p1panel/but2").GetComponent<Button>().onClick.AddListener(() => { skillTarget = pl2; p1panel.SetActive(false); } );
         GameObject.Find("ScreenCanvas/p1panel/but3").GetComponent<Button>().onClick.AddListener(() => { skillTarget = pl3; p1panel.SetActive(false); } );
         p1panel.SetActive(false);
     }
-    
+
+
+    void Start() //can't set in Awake
+    {
+        pNick = GameObject.Find("ScreenCanvas/Panel2/nicknameText").GetComponent<Text>();
+        pNick.text = PhotonNetwork.NickName;
+        pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
+
+        pl1 = gameObject;
+        pl2 = GameObject.FindGameObjectWithTag("player2");
+        pl3 = GameObject.FindGameObjectWithTag("player3");        
+    }
+
 
     void OnEnable()
     {
-        turnNo = GameObject.Find("GameLogic").GetComponent<turnEnd>().turnNo;
+        turnNo = turnEnd.turnEndS.turnNo;
+        print("Turn " + turnNo);
 
         if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; }  //pl1
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
@@ -232,6 +249,9 @@ public class plControl : MonoBehaviour
 
     void OnDisable()
     {
+        gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
+        gameObject.GetComponent<stats>().path = path;
+
         if (bChallenge && skillTarget!=null) {
             gameObject.GetComponent<stats>().actSkillObj[0] = skillTarget;
             gameObject.GetComponent<stats>().skillCD = 4;
@@ -287,7 +307,14 @@ public class plControl : MonoBehaviour
 
 
     void Update()
-    {       
+    {
+        if (!GetComponent<PhotonView>().IsMine)
+        {
+            return;
+        }
+
+        pGold.text = "Gold: " + gameObject.GetComponent<stats>().gold.ToString();
+
         pfCor = pFinder.transform.position + Vector3.down;
 
         Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);  //click detect
@@ -315,13 +342,18 @@ public class plControl : MonoBehaviour
                 Instantiate(pathPref, path[i], transform.rotation);
             }
 
-            GameObject.Find("GameLogic").GetComponent<goldControl>().hexInfo(clHex,transform.position);
+            //GameObject.Find("GameLogic").GetComponent<goldControl>().hexInfo(clHex,transform.position);
 
             clHex = new Vector3(-10,-10,-10);
         }
 
         if (bItem1a || bItem1c) { item1Prep(); }
         if (bItem2a || bItem2c) { item2Prep(); }
+
+        if (Input.GetKeyDown(KeyCode.Return))  //on Enter
+        {
+            GetComponent<PhotonView>().RPC("RPC_pl2start", RpcTarget.All);
+        }
     }
 
 
@@ -580,7 +612,13 @@ public class plControl : MonoBehaviour
 
         }
     }
- 
-    
+
+    [PunRPC] public void RPC_pl2start()
+    {
+        GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = true;
+        GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = false;
+    }
+
+
 
 }

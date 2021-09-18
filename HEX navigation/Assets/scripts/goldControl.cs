@@ -1,36 +1,47 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
 using System.Linq;
+using Photon.Pun;
 
 public class goldControl : MonoBehaviour
 {
-    [SerializeField] GameObject gBar1;
-    [SerializeField] GameObject gBar2;
-    [SerializeField] GameObject gBar3;
+    GameObject pl1, pl2, pl3;
 
-    [SerializeField] GameObject pl1;
-    [SerializeField] GameObject pl2;
-    [SerializeField] GameObject pl3;
+    GameObject gBar1, gBar2, gBar3;
 
     bool b1skill = false;
 
-    public GameObject[] hexes = new GameObject[20];
+    GameObject[] hexes = new GameObject[20];
     public GameObject[] itemHexes = new GameObject[3]; // item hexes from itemControl
-    [SerializeField] GameObject hexPanel;
+    GameObject hexPanel;
 
     public bool movEnd;  //sets "true" from turnEnd.cs
     int turnNo;
 
+
     void Awake()
     {
+        pl1 = GameObject.FindGameObjectWithTag("player1");
+        pl2 = GameObject.FindGameObjectWithTag("player2");
+        pl3 = GameObject.FindGameObjectWithTag("player3");
+
+        hexes = map.mapS.hexes;
+        hexPanel = map.mapS.hexInfoPanel;
+
+        gBar1 = map.mapS.gBar1;
+        gBar2 = map.mapS.gBar2;
+        gBar3 = map.mapS.gBar3;
+
         gBar1.transform.position = hexes[10].transform.position;       
     }  
 
     
     void Update()
     {
-        turnNo = gameObject.GetComponent<turnEnd>().turnNo;
-        print("Turn "+turnNo);
+        if (!GetComponent<PhotonView>().IsMine) { return; } //host only
+
+
+        turnNo = gameObject.GetComponent<turnEnd>().turnNo;        
 
         itemHexes = gameObject.GetComponent<itemControl>().itemHexes;
 

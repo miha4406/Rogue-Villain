@@ -1,21 +1,18 @@
 using System.Collections;
 using UnityEngine;
 using System.Linq;
+using Photon.Pun;
 
 public class itemControl : MonoBehaviour
 {
-    [SerializeField] GameObject pl1;
-    [SerializeField] GameObject pl2;
-    [SerializeField] GameObject pl3;
+    GameObject pl1, pl2, pl3;   
 
     GameObject[] hexes;
-    public GameObject[] itemHexes = new GameObject[3];    
+    public GameObject[] itemHexes = new GameObject[3];   //public!
     [SerializeField] Material itemMat;
     [SerializeField] Material groundMat;
 
-    [SerializeField] GameObject gBar1;
-    [SerializeField] GameObject gBar2;
-    [SerializeField] GameObject gBar3;
+    GameObject gBar1, gBar2, gBar3;
 
     public bool movEnd;  //sets "true" from turnEnd.cs
     int turnNo;
@@ -26,15 +23,31 @@ public class itemControl : MonoBehaviour
 
     bool bSw1 = true;
 
+
+    void Awake()
+    {
+        pl1 = GameObject.FindGameObjectWithTag("player1");
+        pl2 = GameObject.FindGameObjectWithTag("player2");
+        pl3 = GameObject.FindGameObjectWithTag("player3");
+
+        hexes = map.mapS.hexes;
+
+        gBar1 = map.mapS.gBar1;
+        gBar2 = map.mapS.gBar2;
+        gBar3 = map.mapS.gBar3;
+    }
+
+
     void Start()
     {
-        hexes = gameObject.GetComponent<goldControl>().hexes;        
-
+        itemHexes = new GameObject[3] { map.mapS.hexes[1], map.mapS.hexes[12], map.mapS.hexes[17] };
     }
 
     
     void Update()
     {
+        if (!GetComponent<PhotonView>().IsMine) { return; } //host only
+
         turnNo = gameObject.GetComponent<turnEnd>().turnNo;
 
         if (movEnd)  //item pick up

@@ -8,6 +8,11 @@ TagManager:
   - pathPref
   - bombPref
   - slimePref
+  - player1
+  - player2
+  - player3
+  - Statics
+  - GameLogic
   layers:
   - Default
   - TransparentFX

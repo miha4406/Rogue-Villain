@@ -1,12 +1,13 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
+using Photon.Pun;
 
 public class p2control : MonoBehaviour
 {
     RaycastHit hit;
     Vector3 clHex;
 
-    [SerializeField] GameObject pFinder;
+    GameObject pFinder;
     [SerializeField] GameObject pathPref;
     GameObject[] destroy = new GameObject[5];
     int plDist;
@@ -25,6 +26,9 @@ public class p2control : MonoBehaviour
 
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
+
+    Text pNick, pGold;
+    GameObject pl1, pl2, pl3;
 
     [SerializeField] Sprite p2logo;
     [SerializeField] Sprite p2a;
@@ -47,19 +51,32 @@ public class p2control : MonoBehaviour
 
     void Awake()
     {
+        pFinder = GameObject.Find("pathFinder");
+
         plDist = gameObject.GetComponent<stats>().movDist;
 
-        hexes = GameObject.Find("GameLogic").GetComponent<goldControl>().hexes;
+        hexes = map.mapS.hexes;
 
         clHex = pFinder.transform.position;
 
         pfCor = pFinder.transform.position + Vector3.down;        
     }
-   
+
+    void Start() //can't set in Awake
+    {
+        pNick = GameObject.Find("ScreenCanvas/Panel2/nicknameText").GetComponent<Text>();
+        pNick.text = PhotonNetwork.NickName;
+        pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
+
+        pl1 = GameObject.FindGameObjectWithTag("player1");
+        pl2 = gameObject;
+        pl3 = GameObject.FindGameObjectWithTag("player3");
+    }
+
 
     void OnEnable()
     {
-        turnNo = GameObject.Find("GameLogic").GetComponent<turnEnd>().turnNo;
+        turnNo = turnEnd.turnEndS.turnNo;
 
         if (gameObject.GetComponent<stats>().movDist!=1) { gameObject.GetComponent<stats>().movDist = 1; }
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
@@ -236,6 +253,9 @@ public class p2control : MonoBehaviour
 
     void OnDisable()
     {
+        gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
+        gameObject.GetComponent<stats>().path = path;
+
         if (bShootPrep && shootHexes[0]!=null) { 
             gameObject.GetComponent<stats>().actSkillObj = shootHexes;
             gameObject.GetComponent<stats>().skillCD = 4;
@@ -293,6 +313,13 @@ public class p2control : MonoBehaviour
 
     void Update()
     {
+        if (!GetComponent<PhotonView>().IsMine)
+        {
+            return;
+        }
+
+        pGold.text = "Gold: " + gameObject.GetComponent<stats>().gold.ToString();
+
         pfCor = pFinder.transform.position + Vector3.down;
 
         Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);  //click detect
@@ -327,6 +354,11 @@ public class p2control : MonoBehaviour
 
         if (bItem1a || bItem1c) { item1Prep(); }
         if (bItem2a || bItem2c) { item2Prep(); }
+
+        if (Input.GetKeyDown(KeyCode.Return))  //on Enter
+        {
+            GetComponent<PhotonView>().RPC("RPC_pl3start", RpcTarget.All);
+        }
     }
 
 
@@ -657,7 +689,13 @@ public class p2control : MonoBehaviour
 
         }
     }
- 
+
+
+    [PunRPC] public void RPC_pl3start()
+    {
+        GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = true;
+        GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = false;
+    }
 
 }
 
