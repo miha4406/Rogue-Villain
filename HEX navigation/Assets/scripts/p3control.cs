@@ -241,7 +241,7 @@ public class p3control : MonoBehaviour
         gameObject.GetComponent<stats>().path = path;
 
         if (bGoldGet) { 
-            gameObject.GetComponent<stats>().actSkillObj[0] = gameObject;
+            gameObject.GetComponent<stats>().actSkillTrg[0] = new Vector3(3f,3f,3f);  //3rd player himself
             gameObject.GetComponent<stats>().skillCD = 3;
         }
         bGoldGet = false;

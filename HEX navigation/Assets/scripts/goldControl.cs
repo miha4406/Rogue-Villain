@@ -161,7 +161,13 @@ public class goldControl : MonoBehaviour
         }
         else if (plA.transform.position == plB.transform.position)  //will swap EVERY time on collision
         {
-            if ( b1skill && (plA==pl1 && plB==pl1.GetComponent<stats>().actSkillObj[0]) )
+            GameObject pl1trg = null;  //can't stream GameObjects!
+            if (pl1.GetComponent<stats>().actSkillTrg[0] != Vector3.down) {
+                pl1trg = (pl1.GetComponent<stats>().actSkillTrg[0] == new Vector3(2f, 2f, 2f)) ? pl2 : pl3;
+            }
+            
+
+            if ( b1skill && (plA==pl1 && plB==pl1trg) )
             {
                 print("pl1 challenge succeed!"); b1skill = false;  //only once!
 
@@ -169,7 +175,7 @@ public class goldControl : MonoBehaviour
                 if (plB.GetComponent<stats>().gold == 2) { plB.GetComponent<stats>().gold -=2; plA.GetComponent<stats>().gold +=2; }
                 if (plB.GetComponent<stats>().gold == 1) { plB.GetComponent<stats>().gold -=1; plA.GetComponent<stats>().gold +=1; }
             }
-            else if ( b1skill && (plB==pl1 && plA==pl1.GetComponent<stats>().actSkillObj[0]) )
+            else if ( b1skill && (plB==pl1 && plA==pl1trg) )
             {
                 print("pl1 challenge succeed!"); b1skill = false;  //only once!
 
@@ -235,7 +241,7 @@ public class goldControl : MonoBehaviour
         {
             if (pl1.GetComponent<stats>().skillCD == 4) { b1skill = true; }
             if (pl1.GetComponent<stats>().skillCD == 3) { 
-                b1skill = false; pl1.GetComponent<stats>().actSkillObj[0] = null;
+                b1skill = false; pl1.GetComponent<stats>().actSkillTrg[0] = Vector3.down;
             }
 
             pl1.GetComponent<stats>().skillCD--;
@@ -244,7 +250,7 @@ public class goldControl : MonoBehaviour
 
     public void p2Attack()
     {
-        if (movEnd && gameObject.GetComponent<turnEnd>().pl2atk1)
+        if (movEnd && pl2.GetComponent<stats>().pasSkillHex!=Vector3.down)
         {
             if (pl2.GetComponent<stats>().pasSkillHex == pl1.transform.position) //attack on pl1
             {
@@ -259,30 +265,30 @@ public class goldControl : MonoBehaviour
                 else if (pl3.GetComponent<stats>().gold == 1) { pl3.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
             }
 
-            gameObject.GetComponent<turnEnd>().pl2atk1 = false;
+            pl2.GetComponent<stats>().pasSkillHex = Vector3.down;
         }
     }
     public void p2Shoot() //after shoot prep
     {
-        if (movEnd && pl2.GetComponent<stats>().actSkillObj[0] != null)
+        if (movEnd && pl2.GetComponent<stats>().actSkillTrg[0]!=Vector3.down)
         {
-            if (pl2.GetComponent<stats>().actSkillObj[0].transform.position == pl1.transform.position 
-                || pl2.GetComponent<stats>().actSkillObj[0].transform.position == pl3.transform.position) {
-                print("Can't shoot! Obstacle behind.");
+            if (pl2.GetComponent<stats>().actSkillTrg[0] == pl1.transform.position 
+                || pl2.GetComponent<stats>().actSkillTrg[0] == pl3.transform.position) {
+                print("Can't shoot! Obstacle player behind.");
             }
             else
             {
                 for(int j=1; j<=3; j++)
                 {
-                    if (pl2.GetComponent<stats>().actSkillObj[j] != null)
+                    if (pl2.GetComponent<stats>().actSkillTrg[j] != Vector3.down)
                     {
-                        if (pl2.GetComponent<stats>().actSkillObj[j].transform.position == pl1.transform.position)
+                        if (pl2.GetComponent<stats>().actSkillTrg[j] == pl1.transform.position)
                         {
                             print("Shoot in pl1!");
                             if (pl1.GetComponent<stats>().gold >= 2) { pl1.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                             else if (pl1.GetComponent<stats>().gold == 1) { pl1.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
                         }
-                        if (pl2.GetComponent<stats>().actSkillObj[j].transform.position == pl3.transform.position)
+                        if (pl2.GetComponent<stats>().actSkillTrg[j] == pl3.transform.position)
                         {
                             print("Shoot in pl3!");
                             if (pl3.GetComponent<stats>().gold >= 2) { pl3.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
@@ -290,26 +296,25 @@ public class goldControl : MonoBehaviour
                         }
                     }
                 }
-                pl2.transform.position = pl2.GetComponent<stats>().actSkillObj[0].transform.position;
+                pl2.transform.position = pl2.GetComponent<stats>().actSkillTrg[0];
             }
             
-            pl2.GetComponent<stats>().actSkillObj = new GameObject[4];
+            pl2.GetComponent<stats>().actSkillTrg = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         }
         if (movEnd && pl2.GetComponent<stats>().skillCD!=0) { pl2.GetComponent<stats>().skillCD--; }
     }
 
     public void p3GoldGet()
     {
-        if (pl3.GetComponent<stats>().actSkillObj[0] != null)
+        if (pl3.GetComponent<stats>().actSkillTrg[0] != Vector3.down)
         {
             print("pl3 gets gold!");
 
             pl3.GetComponent<stats>().gold++;
 
-            pl3.GetComponent<stats>().actSkillObj[0] = null;
+            pl3.GetComponent<stats>().actSkillTrg[0] = Vector3.down;
         }
 
-        if (movEnd && pl3.GetComponent<stats>().skillCD!=0) { pl3.GetComponent<stats>().skillCD--; }
-        
+        if (movEnd && pl3.GetComponent<stats>().skillCD!=0) { pl3.GetComponent<stats>().skillCD--; }        
     }
 }

@@ -16,7 +16,7 @@ public class plControl : MonoBehaviour
     public Vector3[] path = new Vector3[6];
 
     public bool bChallenge = false;
-    public GameObject skillTarget;
+    public Vector3 skillTarget;
 
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
@@ -53,8 +53,8 @@ public class plControl : MonoBehaviour
         pfCor = pFinder.transform.position + Vector3.down;
 
         p1panel = GameObject.Find("ScreenCanvas/p1panel");
-        GameObject.Find("ScreenCanvas/p1panel/but2").GetComponent<Button>().onClick.AddListener(() => { skillTarget = pl2; p1panel.SetActive(false); } );
-        GameObject.Find("ScreenCanvas/p1panel/but3").GetComponent<Button>().onClick.AddListener(() => { skillTarget = pl3; p1panel.SetActive(false); } );
+        GameObject.Find("ScreenCanvas/p1panel/but2").GetComponent<Button>().onClick.AddListener(() => { skillTarget = new Vector3(2f,2f,2f); p1panel.SetActive(false); } );
+        GameObject.Find("ScreenCanvas/p1panel/but3").GetComponent<Button>().onClick.AddListener(() => { skillTarget = new Vector3(3f,3f,3f); p1panel.SetActive(false); } );
         p1panel.SetActive(false);
     }
 
@@ -99,7 +99,7 @@ public class plControl : MonoBehaviour
         pFinder.transform.position = transform.position +Vector3.up;
         clHex = transform.position;
 
-        skillTarget = null;
+        skillTarget = Vector3.down;
 
         GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p1logo;
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p1a;
@@ -107,7 +107,7 @@ public class plControl : MonoBehaviour
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener(() => { 
             bChallenge = !bChallenge;
-            skillTarget = null;
+            skillTarget = Vector3.down;
             p1panel.active = !p1panel.active;
         } );
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = true;
@@ -252,8 +252,8 @@ public class plControl : MonoBehaviour
         gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         gameObject.GetComponent<stats>().path = path;
 
-        if (bChallenge && skillTarget!=null) {
-            gameObject.GetComponent<stats>().actSkillObj[0] = skillTarget;
+        if (bChallenge && skillTarget!=Vector3.down) {
+            gameObject.GetComponent<stats>().actSkillTrg[0] = skillTarget;
             gameObject.GetComponent<stats>().skillCD = 4;
         }
         bChallenge = false;

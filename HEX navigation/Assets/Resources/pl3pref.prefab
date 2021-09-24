@@ -149,11 +149,11 @@ MonoBehaviour:
   hitCount: 0
   gold: 0
   pasSkillHex: {x: -10, y: -10, z: -10}
-  actSkillObj:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  actSkillTrg:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
   skillCD: 0
   item1: 0
   item2: 0
@@ -180,8 +180,8 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
+  Synchronization: 1
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 6220951236113785544}

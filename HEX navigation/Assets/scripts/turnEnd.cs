@@ -1,4 +1,5 @@
 ﻿using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using UnityEngine;
 
@@ -19,8 +20,7 @@ public class turnEnd : MonoBehaviour, IPunObservable
     Vector3[] p2Path = new Vector3[6];
     int mov2StepNo = 1;
     int lastMov2 = 0;
-    bool bMove2 = false;
-    public bool pl2atk1 = false;   
+    bool bMove2 = false;    
 
     Vector3[] p3Path = new Vector3[6];
     int mov3StepNo = 1;
@@ -28,20 +28,20 @@ public class turnEnd : MonoBehaviour, IPunObservable
     bool bMove3 = false;
 
     bool bWait = false;     //if "true", all controls blocked
-    bool movSw = false;   
-    //public bool bMoveEnd = false;  //if "true", all movement ended
+    bool movSw = false;       
     public int turnNo = 1;
 
+    Player[] roomPlayers = new Player[4];
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting) // We own this player -> send the others our data
         {
-            stream.SendNext(turnNo);            
+            stream.SendNext(turnNo);
         }
         else  // It's network player -> receive data
         {
-            this.turnNo = (int)stream.ReceiveNext();            
+            this.turnNo = (int)stream.ReceiveNext();           
         }
     }
 
@@ -56,7 +56,11 @@ public class turnEnd : MonoBehaviour, IPunObservable
 
         pl1.GetComponent<stats>().movDist = 2;
         pl2.GetComponent<stats>().movDist = 1;
-        pl3.GetComponent<stats>().movDist = 1;        
+        pl3.GetComponent<stats>().movDist = 1;
+
+        roomPlayers[1] = pl1.GetComponent<PhotonView>().Controller;
+        roomPlayers[2] = pl2.GetComponent<PhotonView>().Controller;
+        roomPlayers[3] = pl3.GetComponent<PhotonView>().Controller;
     }
 
 
@@ -70,33 +74,7 @@ public class turnEnd : MonoBehaviour, IPunObservable
         pl3dist = pl3.GetComponent<stats>().movDist;
 
 
-        //if (bWait) { print("WAIT"); }      
-        if (!bWait)
-        {
-            //if (Input.GetKeyDown(KeyCode.Alpha1))
-            //{
-            //    pl1.GetComponent<plControl>().enabled = true;
-            //    pl2.GetComponent<p2control>().enabled = false;
-            //    pl3.GetComponent<p3control>().enabled = false;
-            //}
-            //if (Input.GetKeyDown(KeyCode.Alpha2))
-            //{
-            //    pl1.GetComponent<plControl>().enabled = false;
-            //    pl2.GetComponent<p2control>().enabled = true;
-            //    pl3.GetComponent<p3control>().enabled = false;
-            //}
-            //if (Input.GetKeyDown(KeyCode.Alpha3))
-            //{
-            //    pl1.GetComponent<plControl>().enabled = false;
-            //    pl2.GetComponent<p2control>().enabled = false;
-            //    pl3.GetComponent<p3control>().enabled = true;
-            //}
-        }
-
-        //if (Input.GetKeyDown(KeyCode.Space)) {
-
-        //    endTurn();
-        //}        
+        //if (bWait) { print("WAIT"); }               
 
         if (bMove1) { bWait = true; pl1move(mov1StepNo); }
         if (bMove2) { bWait = true; pl2move(mov2StepNo); }
@@ -173,6 +151,13 @@ public class turnEnd : MonoBehaviour, IPunObservable
  
     public void endTurn()
     {
+        if (!GetComponent<PhotonView>().IsMine) { return; } //host only
+
+
+        if (!pl1.GetComponent<PhotonView>().IsMine) {  pl1.GetComponent<PhotonView>().RequestOwnership();  }
+        if (!pl2.GetComponent<PhotonView>().IsMine) {  pl2.GetComponent<PhotonView>().RequestOwnership();  }
+        if (!pl3.GetComponent<PhotonView>().IsMine) {  pl3.GetComponent<PhotonView>().RequestOwnership();  }     
+
         p1Path = pl1.GetComponent<stats>().path;
         p1Path[0] = pl1.transform.position; //can return to start pos
         bMove1 = true;
@@ -183,11 +168,7 @@ public class turnEnd : MonoBehaviour, IPunObservable
 
         p3Path = pl3.GetComponent<stats>().path;
         p3Path[0] = pl3.transform.position;
-        bMove3 = true;
-
-        //pl1.GetComponent<plControl>().enabled = false;
-        //pl2.GetComponent<p2control>().enabled = false;
-        //pl3.GetComponent<p3control>().enabled = false;
+        bMove3 = true;        
 
         movSw = true;
     }
@@ -234,7 +215,7 @@ public class turnEnd : MonoBehaviour, IPunObservable
 
     void pl2move(int stepNo)
     {
-        if (pl2atk1 || pl2.GetComponent<stats>().actSkillObj[0]!=null) {   //if p2 attack or shoot is used
+        if (pl2.GetComponent<stats>().pasSkillHex!=Vector3.down || pl2.GetComponent<stats>().actSkillTrg[0]!=Vector3.down) {   //if p2 attack or shoot is used
             pl2.GetComponent<stats>().pasSkillHex = p2Path[1]; 
             for (int i=1; i<=5; i++) { p2Path[i] = Vector3.down; }
         } 
@@ -279,7 +260,7 @@ public class turnEnd : MonoBehaviour, IPunObservable
     }
     void pl3move(int stepNo)
     {
-        if ( pl3.GetComponent<stats>().actSkillObj[0] != null)  {  //if p3 active skill is used
+        if ( pl3.GetComponent<stats>().actSkillTrg[0] != Vector3.down)  {  //if p3 active skill is used
             for (int i=1; i<=5; i++) { p3Path[i] = Vector3.down; }
         }
 
@@ -336,7 +317,11 @@ public class turnEnd : MonoBehaviour, IPunObservable
 
 
     [PunRPC] public void RPC_pl1start()
-    {
+    {    
+        pl1.GetComponent<PhotonView>().TransferOwnership(roomPlayers[1]);
+        pl2.GetComponent<PhotonView>().TransferOwnership(roomPlayers[2]);
+        pl3.GetComponent<PhotonView>().TransferOwnership(roomPlayers[3]);
+
         GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = true;
     }
 

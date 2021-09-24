@@ -15,14 +15,16 @@ public class p2control : MonoBehaviour
     public GameObject[] nearHex = new GameObject[7];
     public Vector3[] path = new Vector3[6];
 
-    public bool bShootPrep = false;
+    bool bShootPrep = false;
     [SerializeField] GameObject shootProbePref;
     GameObject shootProbeB, shootProbeF;
-    public GameObject[] shootHexes = new GameObject[4];
+    public Vector3[] shootHexes = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };  //can't stream GameObjects!
     Vector3 dir = new Vector3(-1, -1, -1);
     Ray detectRay = new Ray(Vector3.up, Vector3.down);
     RaycastHit hit2;
     int s = 0;
+
+    bool bPasAtk = false;  //passive attack
 
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
@@ -76,6 +78,11 @@ public class p2control : MonoBehaviour
 
     void OnEnable()
     {
+        if (!GetComponent<PhotonView>().IsMine)
+        {
+            return;
+        }
+
         turnNo = turnEnd.turnEndS.turnNo;
 
         if (gameObject.GetComponent<stats>().movDist!=1) { gameObject.GetComponent<stats>().movDist = 1; }
@@ -101,7 +108,9 @@ public class p2control : MonoBehaviour
         pFinder.transform.position = transform.position + Vector3.up;
         clHex = transform.position;
 
-        shootHexes = new GameObject[4];
+        shootHexes = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };
+
+        bPasAtk = false;
 
         GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p2logo;
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p2a;
@@ -111,8 +120,11 @@ public class p2control : MonoBehaviour
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener(() => {
             bShootPrep = !bShootPrep;            
         });
+        //GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.RemoveAllListeners(); //
         GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.AddListener(() => {
-            GameObject.Find("GameLogic").GetComponent<turnEnd>().pl2atk1 = !GameObject.Find("GameLogic").GetComponent<turnEnd>().pl2atk1;
+            if (!GetComponent<PhotonView>().IsMine) { return; }  //?
+            bPasAtk = !bPasAtk;
+            print(bPasAtk);
         });
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = true;
         if (gameObject.GetComponent<stats>().skillCD != 0)
@@ -253,14 +265,22 @@ public class p2control : MonoBehaviour
 
     void OnDisable()
     {
+        if (!GetComponent<PhotonView>().IsMine)
+        {
+            return;
+        }
+
         gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         gameObject.GetComponent<stats>().path = path;
 
-        if (bShootPrep && shootHexes[0]!=null) { 
-            gameObject.GetComponent<stats>().actSkillObj = shootHexes;
+        //print(bPasAtk);
+        if (bPasAtk) { gameObject.GetComponent<stats>().pasSkillHex = path[1];  bPasAtk = false; }
+
+        if (bShootPrep && shootHexes[0]!=Vector3.down) { 
+            gameObject.GetComponent<stats>().actSkillTrg = shootHexes;
             gameObject.GetComponent<stats>().skillCD = 4;
         }
-        bShootPrep = false;
+        bShootPrep = false;       
 
 
         if (bItem1a && itemTargets[0]!=Vector3.down)
@@ -410,7 +430,7 @@ public class p2control : MonoBehaviour
     {     
         if (Input.GetMouseButtonUp(0) && (path[1] != Vector3.down))  //on mouse click
         {
-            shootHexes = new GameObject[4];
+            shootHexes = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };
 
             dir = (path[1] - gameObject.transform.position).normalized;
 
@@ -421,15 +441,17 @@ public class p2control : MonoBehaviour
         if (shootProbeB != null)
         {            
             detectRay = new Ray(shootProbeB.transform.position, Vector3.down);
-            Debug.DrawRay(shootProbeB.transform.position, Vector3.down * 2, Color.black);
+            //Debug.DrawRay(shootProbeB.transform.position, Vector3.down * 2, Color.black);
 
             shootProbeB.transform.Translate(-dir * Time.deltaTime *15);
 
             if (Physics.Raycast(detectRay, out hit2)){
-                if(hit2.collider.gameObject.tag=="ground" && hit2.collider.gameObject.transform.position != gameObject.transform.position)
+                if(hit2.collider.gameObject.tag=="ground" && hit2.collider.gameObject.transform.position!=gameObject.transform.position)
                 {
-                    shootHexes[0] = hit2.collider.gameObject;
-                    //bShoot = false; //stops translate and undo attack prep
+                    if (hit2.collider.gameObject!=null)
+                    {
+                        shootHexes[0] = hit2.collider.gameObject.transform.position;
+                    }                                   
 
                     Destroy(shootProbeB);
                     shootProbeF = Instantiate(shootProbePref, gameObject.transform.position+Vector3.up, Quaternion.identity);
@@ -440,7 +462,7 @@ public class p2control : MonoBehaviour
             if(shootProbeB.gameObject.transform.position.z>5 || shootProbeB.gameObject.transform.position.z<-5 
                 || shootProbeB.gameObject.transform.position.x>5 || shootProbeB.gameObject.transform.position.z<-5)
             {                
-                if (shootHexes[0] == null) { print("Can't shoot! No space behind."); }                
+                if (shootHexes[0] == Vector3.down) { print("Can't shoot! No space behind."); }                
 
                 Destroy(shootProbeB);
                 shootProbeF = Instantiate(shootProbePref, gameObject.transform.position + Vector3.up, Quaternion.identity);
@@ -460,12 +482,11 @@ public class p2control : MonoBehaviour
             {
                 if (hit2.collider.gameObject.tag == "ground" && hit2.collider.gameObject.transform.position != gameObject.transform.position)
                 {
-                    if (hit2.collider.gameObject != shootHexes[s])
+                    if (hit2.collider.gameObject.transform.position != shootHexes[s])
                     {
                         s++;
-                        shootHexes[s] = hit2.collider.gameObject;
+                        shootHexes[s] = hit2.collider.gameObject.transform.position;
                     }
-
                 }
             }
 

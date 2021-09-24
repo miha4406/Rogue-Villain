@@ -47,7 +47,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plMovSp: 1
-  pl2atk1: 0
   turnNo: 1
 --- !u!114 &7556761108287141344
 MonoBehaviour:

@@ -13,7 +13,7 @@ public class stats : MonoBehaviour, IPunObservable
 
     public Vector3 pasSkillHex = Vector3.down; //needs for passive skills
 
-    public GameObject[] actSkillObj = new GameObject[4];  //active skill target(s)
+    public Vector3[] actSkillTrg = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };  //active skill target(s)  //can't stream GameObject!
 
     public int skillCD = 0;  //active skill cooldown
 
@@ -42,7 +42,7 @@ public class stats : MonoBehaviour, IPunObservable
             stream.SendNext(hitCount);
             stream.SendNext(gold);
             stream.SendNext(pasSkillHex);
-            stream.SendNext(actSkillObj);
+            stream.SendNext(actSkillTrg);
             stream.SendNext(skillCD);
             stream.SendNext(item1);
             stream.SendNext(item2);
@@ -56,7 +56,7 @@ public class stats : MonoBehaviour, IPunObservable
             this.hitCount = (int)stream.ReceiveNext();
             this.gold = (int)stream.ReceiveNext();
             this.pasSkillHex = (Vector3)stream.ReceiveNext();
-            this.actSkillObj = (GameObject[])stream.ReceiveNext();
+            this.actSkillTrg = (Vector3[])stream.ReceiveNext();
             this.skillCD = (int)stream.ReceiveNext();
             this.item1 = (int)stream.ReceiveNext();
             this.item2 = (int)stream.ReceiveNext();
