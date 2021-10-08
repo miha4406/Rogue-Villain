@@ -75,17 +75,18 @@ public class Statics : MonoBehaviourPun
     {
         if (GameObject.FindGameObjectWithTag("player1") != null 
             && GameObject.FindGameObjectWithTag("player2") != null
-            && GameObject.FindGameObjectWithTag("player3") != null)
-        {
+            && GameObject.FindGameObjectWithTag("player3") != null) {
+
             if (GameObject.FindGameObjectWithTag("GameLogic") == null)  //only one GL per room
             {
                 if (PhotonNetwork.IsMasterClient) { PhotonNetwork.Instantiate("GameLogic", new Vector3(-10f, -10f, -10f), Quaternion.identity); }
             }
-            
-            
-            GameObject.FindGameObjectWithTag("GameLogic").GetComponent<PhotonView>().RPC("RPC_pl1start", RpcTarget.All);
-            
 
+            if (PhotonNetwork.IsMasterClient) {
+                GameObject.FindGameObjectWithTag("GameLogic").GetComponent<PhotonView>().RPC("RPC_pl1start",
+                    GameObject.FindGameObjectWithTag("player1").GetComponent<PhotonView>().Owner);
+            }                
+            
             bStart = true;
         }        
     }

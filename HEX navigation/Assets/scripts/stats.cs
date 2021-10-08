@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class stats : MonoBehaviour, IPunObservable
 {
+    public Vector3 plPos;  
+
     public Vector3[] path = new Vector3[6];
 
     public int movDist; //players mobility
@@ -13,7 +15,7 @@ public class stats : MonoBehaviour, IPunObservable
 
     public Vector3 pasSkillHex = Vector3.down; //needs for passive skills
 
-    public Vector3[] actSkillTrg = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };  //active skill target(s)  //can't stream GameObject!
+    public Vector3[] actSkillTrg = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };  //active skill target(s)  
 
     public int skillCD = 0;  //active skill cooldown
 
@@ -27,6 +29,7 @@ public class stats : MonoBehaviour, IPunObservable
     void Awake()
     {
         pasSkillHex = Vector3.down;
+        actSkillTrg = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };  //can't stream GameObject!
 
         item1Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
         item2Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -35,8 +38,9 @@ public class stats : MonoBehaviour, IPunObservable
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (stream.IsWriting) // We own this player -> send the others our data
+        if (stream.IsWriting) // send the others our data
         {
+            stream.SendNext(plPos);
             stream.SendNext(path);
             stream.SendNext(movDist);
             stream.SendNext(hitCount);
@@ -49,8 +53,9 @@ public class stats : MonoBehaviour, IPunObservable
             stream.SendNext(item1Targets);
             stream.SendNext(item2Targets);
         }
-        else  // It's network player -> receive data
-        {            
+        else  // receive data
+        {
+            this.plPos = (Vector3)stream.ReceiveNext();
             this.path = (Vector3[])stream.ReceiveNext();
             this.movDist = (int)stream.ReceiveNext();
             this.hitCount = (int)stream.ReceiveNext();
@@ -62,6 +67,18 @@ public class stats : MonoBehaviour, IPunObservable
             this.item2 = (int)stream.ReceiveNext();
             this.item1Targets = (Vector3[])stream.ReceiveNext();
             this.item2Targets = (Vector3[])stream.ReceiveNext();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (GetComponent<PhotonView>().IsMine)
+        {
+            plPos = transform.position;
+        }
+        else
+        {
+            transform.position = plPos;
         }
     }
 }

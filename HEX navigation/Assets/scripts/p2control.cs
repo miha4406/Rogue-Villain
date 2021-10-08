@@ -15,7 +15,7 @@ public class p2control : MonoBehaviour
     public GameObject[] nearHex = new GameObject[7];
     public Vector3[] path = new Vector3[6];
 
-    bool bShootPrep = false;
+    public bool bShootPrep = false;
     [SerializeField] GameObject shootProbePref;
     GameObject shootProbeB, shootProbeF;
     public Vector3[] shootHexes = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };  //can't stream GameObjects!
@@ -24,13 +24,13 @@ public class p2control : MonoBehaviour
     RaycastHit hit2;
     int s = 0;
 
-    bool bPasAtk = false;  //passive attack
+    public bool bPasAtk = false;  //passive attack
 
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
 
     Text pNick, pGold;
-    GameObject pl1, pl2, pl3;
+    //GameObject pl1, pl2, pl3;
 
     [SerializeField] Sprite p2logo;
     [SerializeField] Sprite p2a;
@@ -70,23 +70,32 @@ public class p2control : MonoBehaviour
         pNick.text = PhotonNetwork.NickName;
         pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
 
-        pl1 = GameObject.FindGameObjectWithTag("player1");
-        pl2 = gameObject;
-        pl3 = GameObject.FindGameObjectWithTag("player3");
+        //pl1 = GameObject.FindGameObjectWithTag("player1");
+        //pl2 = gameObject;
+        //pl3 = GameObject.FindGameObjectWithTag("player3");
     }
 
 
     void OnEnable()
     {
-        if (!GetComponent<PhotonView>().IsMine)
-        {
-            return;
-        }
+        //print("pl2 enabled");
+        if (!GetComponent<PhotonView>().IsMine) { return; }
 
-        turnNo = turnEnd.turnEndS.turnNo;
+        if (GetComponent<PhotonView>().IsMine) { turnNo = turnEnd.turnEndS.turnNo; print("Turn " + turnNo); }
 
-        if (gameObject.GetComponent<stats>().movDist!=1) { gameObject.GetComponent<stats>().movDist = 1; }
+        if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; } //
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
+
+        foreach (GameObject hex in hexes) //fix synch inaccuracy
+        {
+            if (hex != null)
+            {
+                if (Vector3.Distance(hex.transform.position, transform.position) < 0.3f)
+                {
+                    transform.position = hex.transform.position;
+                }
+            }
+        }
 
         foreach (GameObject x in hexes)
         {
@@ -116,13 +125,14 @@ public class p2control : MonoBehaviour
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p2a;
         GameObject.Find("ScreenCanvas/butPas").GetComponent<Image>().sprite = p2p;
         GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = true;
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        //GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener(() => {
+            if (!GetComponent<PhotonView>().IsMine) { return; }
             bShootPrep = !bShootPrep;            
         });
-        //GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.RemoveAllListeners(); //
+        //GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.RemoveAllListeners(); 
         GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.AddListener(() => {
-            if (!GetComponent<PhotonView>().IsMine) { return; }  //?
+            if (!GetComponent<PhotonView>().IsMine) { return; }  
             bPasAtk = !bPasAtk;
             print(bPasAtk);
         });
@@ -150,7 +160,7 @@ public class p2control : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==1 || gameObject.GetComponent<stats>().item1==2 || gameObject.GetComponent<stats>().item1==3)  //bomb buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1a = !bItem1a;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -160,7 +170,7 @@ public class p2control : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==1 || gameObject.GetComponent<stats>().item2==2 || gameObject.GetComponent<stats>().item2==3)  
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2a = !bItem2a;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -172,7 +182,7 @@ public class p2control : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==4 || gameObject.GetComponent<stats>().item1==5 || gameObject.GetComponent<stats>().item1==6)  //boots buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1b = !bItem1b;
                 if (gameObject.GetComponent<stats>().movDist == 1) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item1-3); }
@@ -197,7 +207,7 @@ public class p2control : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==4 || gameObject.GetComponent<stats>().item2==5 || gameObject.GetComponent<stats>().item2==6)  
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2b = !bItem2b;
                 if (gameObject.GetComponent<stats>().movDist == 1) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item2-3); }
@@ -224,7 +234,7 @@ public class p2control : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==7 || gameObject.GetComponent<stats>().item1==8 || gameObject.GetComponent<stats>().item1==9)  //slime buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1c = !bItem1c;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -237,7 +247,7 @@ public class p2control : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==7 || gameObject.GetComponent<stats>().item2==8 || gameObject.GetComponent<stats>().item2==9) 
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2c = !bItem2c;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -264,12 +274,7 @@ public class p2control : MonoBehaviour
     }
 
     void OnDisable()
-    {
-        if (!GetComponent<PhotonView>().IsMine)
-        {
-            return;
-        }
-
+    {    
         gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         gameObject.GetComponent<stats>().path = path;
 
@@ -328,6 +333,11 @@ public class p2control : MonoBehaviour
         }
         bSlimePlaced = false;
 
+        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+
     }
 
 
@@ -377,7 +387,9 @@ public class p2control : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Return))  //on Enter
         {
-            GetComponent<PhotonView>().RPC("RPC_pl3start", RpcTarget.All);
+            //GetComponent<PhotonView>().RPC("RPC_pl3start", RpcTarget.All);
+            GetComponent<PhotonView>().RPC("RPC_pl3start", GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
+            GetComponent<p2control>().enabled = false;
         }
     }
 
@@ -394,7 +406,7 @@ public class p2control : MonoBehaviour
                    nearHex[j] = hexes[i];
                    j++; 
                 }
-            }
+            }            
         }
 
     }
@@ -715,7 +727,7 @@ public class p2control : MonoBehaviour
     [PunRPC] public void RPC_pl3start()
     {
         GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = true;
-        GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = false;
+        //GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = false;
     }
 
 }

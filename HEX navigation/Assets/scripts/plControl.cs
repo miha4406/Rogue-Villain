@@ -22,7 +22,7 @@ public class plControl : MonoBehaviour
     int pfStepNo = 0;
 
     Text pNick, pGold;
-    GameObject pl1, pl2, pl3;
+    //GameObject pl1, pl2, pl3;
     [SerializeField] Sprite p1logo;
     [SerializeField] Sprite p1a;
     GameObject p1panel;    
@@ -65,19 +65,30 @@ public class plControl : MonoBehaviour
         pNick.text = PhotonNetwork.NickName;
         pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
 
-        pl1 = gameObject;
-        pl2 = GameObject.FindGameObjectWithTag("player2");
-        pl3 = GameObject.FindGameObjectWithTag("player3");        
+        //pl1 = gameObject;
+        //pl2 = GameObject.FindGameObjectWithTag("player2");
+        //pl3 = GameObject.FindGameObjectWithTag("player3");        
     }
 
 
     void OnEnable()
     {
-        turnNo = turnEnd.turnEndS.turnNo;
-        print("Turn " + turnNo);
+        //print("pl1 enabled");
+        if (GetComponent<PhotonView>().IsMine) { turnNo = turnEnd.turnEndS.turnNo; print("Turn " + turnNo); }       
 
         if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; }  //pl1
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
+
+        foreach(GameObject hex in hexes) //fix synch inaccuracy
+        {
+            if(hex != null)
+            {
+                if (Vector3.Distance(hex.transform.position, transform.position)<0.3f)
+                {
+                    transform.position = hex.transform.position;
+                }
+            }
+        }
 
         foreach (GameObject x in hexes)
         {
@@ -103,9 +114,10 @@ public class plControl : MonoBehaviour
 
         GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p1logo;
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p1a;
-        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = false;        
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener(() => { 
+        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = false;
+        //GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener(() => {
+            if (!GetComponent<PhotonView>().IsMine) { return; }
             bChallenge = !bChallenge;
             skillTarget = Vector3.down;
             p1panel.active = !p1panel.active;
@@ -134,7 +146,7 @@ public class plControl : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==1 || gameObject.GetComponent<stats>().item1==2 || gameObject.GetComponent<stats>().item1==3)  //bomb buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1a = !bItem1a;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -144,7 +156,7 @@ public class plControl : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==1 || gameObject.GetComponent<stats>().item2==2 || gameObject.GetComponent<stats>().item2==3)  
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2a = !bItem2a;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -156,7 +168,7 @@ public class plControl : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==4 || gameObject.GetComponent<stats>().item1==5 || gameObject.GetComponent<stats>().item1==6)  //boots buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1b = !bItem1b;
                 if (gameObject.GetComponent<stats>().movDist==2) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item1-3); }
@@ -181,7 +193,7 @@ public class plControl : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==4 || gameObject.GetComponent<stats>().item2==5 || gameObject.GetComponent<stats>().item2==6)  
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2b = !bItem2b;
                 if (gameObject.GetComponent<stats>().movDist == 2) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item2-3); }
@@ -208,7 +220,7 @@ public class plControl : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==7 || gameObject.GetComponent<stats>().item1==8 || gameObject.GetComponent<stats>().item1==9)  //slime buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1c = !bItem1c;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -221,7 +233,7 @@ public class plControl : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==7 || gameObject.GetComponent<stats>().item2==8 || gameObject.GetComponent<stats>().item2==9) 
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2c = !bItem2c;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -303,6 +315,9 @@ public class plControl : MonoBehaviour
         }
         bSlimePlaced = false;
 
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
     }
 
 
@@ -352,7 +367,9 @@ public class plControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Return))  //on Enter
         {
-            GetComponent<PhotonView>().RPC("RPC_pl2start", RpcTarget.All);
+            //GetComponent<PhotonView>().RPC("RPC_pl2start", RpcTarget.All);
+            GetComponent<PhotonView>().RPC("RPC_pl2start", GameObject.FindGameObjectWithTag("player2").GetComponent<PhotonView>().Owner);
+            GetComponent<plControl>().enabled = false;
         }
     }
 
@@ -616,7 +633,7 @@ public class plControl : MonoBehaviour
     [PunRPC] public void RPC_pl2start()
     {
         GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = true;
-        GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = false;
+        //GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = false;
     }
 
 

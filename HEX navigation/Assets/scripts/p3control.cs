@@ -21,7 +21,7 @@ public class p3control : MonoBehaviour
     int pfStepNo = 0;
 
     Text pNick, pGold;
-    GameObject pl1, pl2;
+    //GameObject pl1, pl2;
 
     [SerializeField] Sprite p3logo;
     [SerializeField] Sprite p3a;
@@ -60,18 +60,29 @@ public class p3control : MonoBehaviour
         pNick = GameObject.Find("ScreenCanvas/Panel2/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
         pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
-
-        pl1 = GameObject.FindGameObjectWithTag("player1");
-        pl2 = GameObject.FindGameObjectWithTag("player2");        
+           
     }
 
 
     void OnEnable()
     {
-        turnNo = turnEnd.turnEndS.turnNo;
+        //print("pl3 enabled");
+
+        if (GetComponent<PhotonView>().IsMine) { turnNo = turnEnd.turnEndS.turnNo; print("Turn " + turnNo); }
 
         if (gameObject.GetComponent<stats>().movDist != 1) { gameObject.GetComponent<stats>().movDist = 1; }
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
+
+        foreach (GameObject hex in hexes) //fix synch inaccuracy
+        {
+            if (hex != null)
+            {
+                if (Vector3.Distance(hex.transform.position, transform.position) < 0.3f)
+                {
+                    transform.position = hex.transform.position;
+                }
+            }
+        }
 
         foreach (GameObject x in hexes)
         {
@@ -96,8 +107,11 @@ public class p3control : MonoBehaviour
         GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p3logo;
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p3a;
         GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = false;
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener( () => { bGoldGet = !bGoldGet; } );
+        //GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener( () => {
+            if (!GetComponent<PhotonView>().IsMine) { return; }
+            bGoldGet = !bGoldGet; 
+        } );
         GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = true;
         if (gameObject.GetComponent<stats>().skillCD != 0)
         {
@@ -122,7 +136,7 @@ public class p3control : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==1 || gameObject.GetComponent<stats>().item1==2 || gameObject.GetComponent<stats>().item1==3)  //bomb buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1a = !bItem1a;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -132,7 +146,7 @@ public class p3control : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==1 || gameObject.GetComponent<stats>().item2==2 || gameObject.GetComponent<stats>().item2==3)  
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2a = !bItem2a;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -144,7 +158,7 @@ public class p3control : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==4 || gameObject.GetComponent<stats>().item1==5 || gameObject.GetComponent<stats>().item1==6)  //boots buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1b = !bItem1b;
                 if (gameObject.GetComponent<stats>().movDist == 1) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item1-3); }
@@ -169,7 +183,7 @@ public class p3control : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==4 || gameObject.GetComponent<stats>().item2==5 || gameObject.GetComponent<stats>().item2==6)  
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2b = !bItem2b;
                 if (gameObject.GetComponent<stats>().movDist == 1) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item2-3); }
@@ -196,7 +210,7 @@ public class p3control : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1==7 || gameObject.GetComponent<stats>().item1==8 || gameObject.GetComponent<stats>().item1==9)  //slime buttons
         {
-            GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.AddListener(() => {
                 bItem1c = !bItem1c;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -209,7 +223,7 @@ public class p3control : MonoBehaviour
         }
         if (gameObject.GetComponent<stats>().item2==7 || gameObject.GetComponent<stats>().item2==8 || gameObject.GetComponent<stats>().item2==9) 
         {
-            GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+            //GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.AddListener(() => {
                 bItem2c = !bItem2c;
                 itemTargets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
@@ -292,6 +306,9 @@ public class p3control : MonoBehaviour
         }
         bSlimePlaced = false;
 
+        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
     }
 
 
@@ -339,7 +356,10 @@ public class p3control : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Return))  //on Enter
         {
-            GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.All);  //to Host only?
+            GetComponent<p3control>().enabled = false;
+
+            // GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only
+            Invoke("StopPl3", 1f);
         }
 
     }
@@ -357,7 +377,7 @@ public class p3control : MonoBehaviour
                     nearHex[j] = hexes[i];
                     j++;
                 }
-            }
+            }            
         }
 
     }
@@ -603,11 +623,14 @@ public class p3control : MonoBehaviour
 
     [PunRPC] public void RPC_pl3stop()
     {
-        GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
+        //GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
 
         turnEnd.turnEndS.endTurn(); //last one!        
     }
 
-
+    void StopPl3()
+    {
+        GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only
+    }
 }
 

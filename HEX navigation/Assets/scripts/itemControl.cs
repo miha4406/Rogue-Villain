@@ -15,6 +15,7 @@ public class itemControl : MonoBehaviour
     GameObject gBar1, gBar2, gBar3;
 
     public bool movEnd;  //sets "true" from turnEnd.cs
+    public bool goldEnd; //sets "true" from goldControl.cs
     int turnNo;
 
     int[] r1 = new int[] { 1, 4, 7, 10 };
@@ -26,6 +27,8 @@ public class itemControl : MonoBehaviour
 
     void Awake()
     {
+        if (PhotonNetwork.IsMasterClient) { this.enabled = true; }
+
         pl1 = GameObject.FindGameObjectWithTag("player1");
         pl2 = GameObject.FindGameObjectWithTag("player2");
         pl3 = GameObject.FindGameObjectWithTag("player3");
@@ -50,9 +53,11 @@ public class itemControl : MonoBehaviour
 
         turnNo = gameObject.GetComponent<turnEnd>().turnNo;
 
-        if (movEnd)  //item pick up
+        if (bSw1) { itemHexChange(); } 
+
+        if (movEnd && goldEnd)  
         {
-            foreach (GameObject x in itemHexes)
+            foreach (GameObject x in itemHexes)   //item pick up
             {
                 if (x.transform.position == pl1.transform.position)
                 {
@@ -76,15 +81,23 @@ public class itemControl : MonoBehaviour
                     else if (pl3.GetComponent<stats>().item2 == 0) { item2Generator(pl3); }
                 }
             }
-        }
 
-        if(movEnd) { item1use(); }
-        if(movEnd) { item2use(); }
+            item1use(); item2use();
 
-        if(bSw1) { itemHexChange(); }        
+            pl1.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[1]);
+            pl2.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[2]);
+            pl3.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[3]);
 
-        movEnd = false;
+            turnEnd.turnEndS.turnNo++;  //next turn
+            Invoke("pl1startDelay", 2f);  //wait for ownership return before run pl1
+
+
+            movEnd = false; goldEnd = false;
+        }        
+        
     }
+
+
     void itemHexChange()
     {
         if (turnNo==6 || turnNo==11)
@@ -337,5 +350,15 @@ public class itemControl : MonoBehaviour
         return false;
     }
 
+
+    [PunRPC] public void RPC_pl1start()
+    {
+        pl1.GetComponent<plControl>().enabled = true;
+    }
+
+    void pl1startDelay()
+    {        
+        GetComponent<PhotonView>().RPC("RPC_pl1start", pl1.GetComponent<PhotonView>().Owner);
+    }
 
 }

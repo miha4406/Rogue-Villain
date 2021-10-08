@@ -21,6 +21,8 @@ public class goldControl : MonoBehaviour
 
     void Awake()
     {
+        if (PhotonNetwork.IsMasterClient) { this.enabled = true; }
+
         pl1 = GameObject.FindGameObjectWithTag("player1");
         pl2 = GameObject.FindGameObjectWithTag("player2");
         pl3 = GameObject.FindGameObjectWithTag("player3");
@@ -41,6 +43,7 @@ public class goldControl : MonoBehaviour
         if (!GetComponent<PhotonView>().IsMine) { return; } //host only
 
 
+
         turnNo = gameObject.GetComponent<turnEnd>().turnNo;        
 
         itemHexes = gameObject.GetComponent<itemControl>().itemHexes;
@@ -58,6 +61,7 @@ public class goldControl : MonoBehaviour
 
 
         movEnd = false;
+        gameObject.GetComponent<itemControl>().goldEnd = true;
     }
 
     void gHex1()
@@ -316,5 +320,10 @@ public class goldControl : MonoBehaviour
         }
 
         if (movEnd && pl3.GetComponent<stats>().skillCD!=0) { pl3.GetComponent<stats>().skillCD--; }        
+    }
+
+    public void CheckPos()  //if networking synchronisation problem
+    {
+
     }
 }

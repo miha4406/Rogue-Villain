@@ -27,19 +27,20 @@ public class turnEnd : MonoBehaviour, IPunObservable
     int lastMov3 = 0;
     bool bMove3 = false;
 
-    bool bWait = false;     //if "true", all controls blocked
-    bool movSw = false;       
+    bool bWait = false;     //if "true", all controls blocked   
+    bool bTurnEnd = false;  //turn end seq. started
+    bool bColEnd = false;  //all collisions ended
     public int turnNo = 1;
 
-    Player[] roomPlayers = new Player[4];
+    public Player[] roomPlayers = new Player[4];
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (stream.IsWriting) // We own this player -> send the others our data
+        if (stream.IsWriting) // send the others our data
         {
             stream.SendNext(turnNo);
         }
-        else  // It's network player -> receive data
+        else  // receive data
         {
             this.turnNo = (int)stream.ReceiveNext();           
         }
@@ -48,6 +49,8 @@ public class turnEnd : MonoBehaviour, IPunObservable
 
     void Awake()
     {
+        if (PhotonNetwork.IsMasterClient) { this.enabled = true; }        
+
         turnEndS = this;
 
         pl1 = GameObject.FindGameObjectWithTag("player1");
@@ -73,49 +76,66 @@ public class turnEnd : MonoBehaviour, IPunObservable
         pl2dist = pl2.GetComponent<stats>().movDist;
         pl3dist = pl3.GetComponent<stats>().movDist;
 
-
-        //if (bWait) { print("WAIT"); }               
-
+        //if (bWait) { print("WAIT"); }          
         if (bMove1) { bWait = true; pl1move(mov1StepNo); }
         if (bMove2) { bWait = true; pl2move(mov2StepNo); }
         if (bMove3) { bWait = true; pl3move(mov3StepNo); }
 
-        
-     /////////////////////collisions//////////////////////////
-        if (!bMove1 && !bMove2 && !bMove3) { 
 
-            if (pl1.transform.position == pl2.transform.position) { StartCoroutine(plCollision(pl1, pl2, pl3)); }
-            if (pl1.transform.position == pl3.transform.position) { StartCoroutine(plCollision(pl1, pl3, pl2)); }
-            if (pl2.transform.position == pl3.transform.position) { StartCoroutine(plCollision(pl2, pl3, pl1)); }
-            else { movEndCheck(); }
-        }
-        if (pl1.GetComponent<stats>().hitCount!=0)
+        /////////////////////collisions//////////////////////////
+        if (bTurnEnd)
         {
-           // print("pl1 hits"); 
-            if (lastMov1-pl1.GetComponent<stats>().hitCount >= 0) { pl1.transform.position = Vector3.MoveTowards(pl1.transform.position, p1Path[lastMov1-pl1.GetComponent<stats>().hitCount], plMovSp * 1.05f * Time.deltaTime); }       
+            if (!bMove1 && !bMove2 && !bMove3)
+            {  //end of move
+                if ((pl1.transform.position == pl2.transform.position) || (pl1.transform.position == pl3.transform.position) || (pl2.transform.position == pl3.transform.position))
+                {
+                    if (pl1.transform.position == pl2.transform.position) { StartCoroutine(plCollision(pl1, pl2, pl3)); }
+                    if (pl1.transform.position == pl3.transform.position) { StartCoroutine(plCollision(pl1, pl3, pl2)); }
+                    if (pl2.transform.position == pl3.transform.position) { StartCoroutine(plCollision(pl2, pl3, pl1)); }
+                }
+                //else { bColEnd = true; }
+                else {
+                    Invoke("endTurnDelay", 2f);
+                } //time to synch
+
+                movEndCheck();
+            }
+            if (pl1.GetComponent<stats>().hitCount != 0)
+            {
+                // print("pl1 hits"); 
+                if (lastMov1 - pl1.GetComponent<stats>().hitCount >= 0)
+                {
+                    pl1.transform.position = Vector3.MoveTowards(pl1.transform.position, p1Path[lastMov1 - pl1.GetComponent<stats>().hitCount], plMovSp * 1.05f * Time.deltaTime);
+                }
+            }
+            if (pl2.GetComponent<stats>().hitCount != 0)
+            {
+                // print("pl2 hits"); 
+                if (lastMov2 - pl2.GetComponent<stats>().hitCount >= 0)
+                {
+                    pl2.transform.position = Vector3.MoveTowards(pl2.transform.position, p2Path[lastMov2 - pl2.GetComponent<stats>().hitCount], plMovSp * Time.deltaTime);
+                }
+            }
+            if (pl3.GetComponent<stats>().hitCount != 0)
+            {
+                // print("pl3 hits"); 
+                if (lastMov3 - pl3.GetComponent<stats>().hitCount >= 0)
+                {
+                    pl3.transform.position = Vector3.MoveTowards(pl3.transform.position, p3Path[lastMov3 - pl3.GetComponent<stats>().hitCount], plMovSp * 0.95f * Time.deltaTime);
+                }
+            }
         }
-        if (pl2.GetComponent<stats>().hitCount!=0)
-        {
-           // print("pl2 hits"); 
-            if (lastMov2-pl2.GetComponent<stats>().hitCount >= 0) { pl2.transform.position = Vector3.MoveTowards(pl2.transform.position, p2Path[lastMov2-pl2.GetComponent<stats>().hitCount], plMovSp * Time.deltaTime); }
-        }
-        if (pl3.GetComponent<stats>().hitCount != 0)
-        {
-          // print("pl3 hits"); 
-            if (lastMov3-pl3.GetComponent<stats>().hitCount >= 0) { pl3.transform.position = Vector3.MoveTowards(pl3.transform.position, p3Path[lastMov3-pl3.GetComponent<stats>().hitCount], plMovSp * 0.95f * Time.deltaTime); }
-        }
-     //////////////////////////////////////////////////////////        
-    
     }
-
     IEnumerator plCollision(GameObject plA, GameObject plB, GameObject plC)
     {
-        movSw = false;
+        bColEnd = false;
 
         yield return new WaitForSeconds(0.2f);
 
         if (plA.transform.position == plB.transform.position)
-        {            
+        {
+            CancelInvoke("endTurnDelay");
+
             plA.GetComponent<stats>().hitCount++; 
             plB.GetComponent<stats>().hitCount++;            
             if (plB.transform.position == plC.transform.position)
@@ -125,9 +145,8 @@ public class turnEnd : MonoBehaviour, IPunObservable
 
             bWait = true;
 
-            StopAllCoroutines();       
-            //StopCoroutine(hitCountClear(plA, plB, plC));
-            StartCoroutine( hitCountClear(plA, plB, plC) );
+            StopAllCoroutines();                   
+            StartCoroutine( hitCountClear(plA, plB, plC) );  //turn ends if no new collisions
 
             gameObject.GetComponent<goldControl>().goldSwap(plA, plB, plC);
         }
@@ -142,21 +161,17 @@ public class turnEnd : MonoBehaviour, IPunObservable
         
         bWait = false;
 
-        turnNo++;
-        gameObject.GetComponent<goldControl>().movEnd = true;
-        gameObject.GetComponent<itemControl>().movEnd = true;
-
-        GetComponent<PhotonView>().RPC("RPC_pl1start", RpcTarget.All);
+        Invoke("endTurnDelay", 2f);  //time to synch
     }
  
-    public void endTurn()
-    {
-        if (!GetComponent<PhotonView>().IsMine) { return; } //host only
 
+    public void endTurn()  //runs by pl3
+    {        
+        if (!GetComponent<PhotonView>().IsMine) { return; } //host only
 
         if (!pl1.GetComponent<PhotonView>().IsMine) {  pl1.GetComponent<PhotonView>().RequestOwnership();  }
         if (!pl2.GetComponent<PhotonView>().IsMine) {  pl2.GetComponent<PhotonView>().RequestOwnership();  }
-        if (!pl3.GetComponent<PhotonView>().IsMine) {  pl3.GetComponent<PhotonView>().RequestOwnership();  }     
+        if (!pl3.GetComponent<PhotonView>().IsMine) {  pl3.GetComponent<PhotonView>().RequestOwnership();  }
 
         p1Path = pl1.GetComponent<stats>().path;
         p1Path[0] = pl1.transform.position; //can return to start pos
@@ -168,10 +183,26 @@ public class turnEnd : MonoBehaviour, IPunObservable
 
         p3Path = pl3.GetComponent<stats>().path;
         p3Path[0] = pl3.transform.position;
-        bMove3 = true;        
+        bMove3 = true;
 
-        movSw = true;
+        bTurnEnd = true;
     }
+
+    void endTurnDelay()
+    {
+        bColEnd = true;
+    }
+
+    void movEndCheck()
+    {
+        if (bColEnd)
+        {  //run once            
+            gameObject.GetComponent<goldControl>().movEnd = true;
+            gameObject.GetComponent<itemControl>().movEnd = true;
+            bColEnd = false;  bTurnEnd = false;
+        }
+    }
+
 
     void pl1move(int stepNo) 
     {
@@ -303,26 +334,10 @@ public class turnEnd : MonoBehaviour, IPunObservable
         else { bMove3 = false; lastMov3 = mov3StepNo-1; mov3StepNo = 1; bWait = false; } 
     }
 
-    void movEndCheck()
+
+
+    void check()
     {
-        if (movSw) { 
-            turnNo++;
-            gameObject.GetComponent<goldControl>().movEnd = true;
-            gameObject.GetComponent<itemControl>().movEnd = true;
-            movSw = false;
-
-            GetComponent<PhotonView>().RPC("RPC_pl1start", RpcTarget.All);
-        }          
+        print(pl3.transform.position + "  " + pl3.GetComponent<PhotonView>().Owner);
     }
-
-
-    [PunRPC] public void RPC_pl1start()
-    {    
-        pl1.GetComponent<PhotonView>().TransferOwnership(roomPlayers[1]);
-        pl2.GetComponent<PhotonView>().TransferOwnership(roomPlayers[2]);
-        pl3.GetComponent<PhotonView>().TransferOwnership(roomPlayers[3]);
-
-        GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = true;
-    }
-
 }
