@@ -66,11 +66,17 @@ public class turnEnd : MonoBehaviour, IPunObservable
         roomPlayers[3] = pl3.GetComponent<PhotonView>().Controller;
     }
 
+    //private void OnEnable()
+    //{
+    //    print(this + " enabled!");
+    //}
+
 
     void Update()
     {
         if(!GetComponent<PhotonView>().IsMine){ return; } //host only
 
+        //print(pl3.GetComponent<stats>().actSkillTrg[0]); 
 
         pl1dist = pl1.GetComponent<stats>().movDist;
         pl2dist = pl2.GetComponent<stats>().movDist;
@@ -197,9 +203,9 @@ public class turnEnd : MonoBehaviour, IPunObservable
     {
         if (bColEnd)
         {  //run once            
-            gameObject.GetComponent<goldControl>().movEnd = true;
+            gameObject.GetComponent<goldControl>().movEnd = true;            
             gameObject.GetComponent<itemControl>().movEnd = true;
-            bColEnd = false;  bTurnEnd = false;
+            bColEnd = false;  bTurnEnd = false;            
         }
     }
 

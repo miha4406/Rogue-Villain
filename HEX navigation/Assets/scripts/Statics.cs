@@ -77,6 +77,24 @@ public class Statics : MonoBehaviourPun
             && GameObject.FindGameObjectWithTag("player2") != null
             && GameObject.FindGameObjectWithTag("player3") != null) {
 
+            if (PhotonNetwork.IsMasterClient)  //Host adds gold bars
+            {
+                if (GameObject.FindGameObjectWithTag("gBar1")==null) {
+                    map.mapS.gBar1 = PhotonNetwork.Instantiate("goldBar1", new Vector3(0f, 0f, 0f), Quaternion.identity);                    
+                }
+                if (GameObject.FindGameObjectWithTag("gBar2") == null)
+                {
+                    map.mapS.gBar2 = PhotonNetwork.Instantiate("goldBar2", new Vector3(0f, -10f, 0f), Quaternion.identity);
+                    map.mapS.gBar2.SetActive(false);
+                }
+                if (GameObject.FindGameObjectWithTag("gBar3") == null)
+                {
+                    map.mapS.gBar3 = PhotonNetwork.Instantiate("goldBar3", new Vector3(0f, -10f, 0f), Quaternion.identity);
+                    map.mapS.gBar3.SetActive(false);
+                }
+            }
+
+
             if (GameObject.FindGameObjectWithTag("GameLogic") == null)  //only one GL per room
             {
                 if (PhotonNetwork.IsMasterClient) { PhotonNetwork.Instantiate("GameLogic", new Vector3(-10f, -10f, -10f), Quaternion.identity); }

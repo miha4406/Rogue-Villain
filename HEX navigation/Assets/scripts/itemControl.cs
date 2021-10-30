@@ -83,12 +83,9 @@ public class itemControl : MonoBehaviour
             }
 
             item1use(); item2use();
-
-            pl1.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[1]);
-            pl2.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[2]);
-            pl3.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[3]);
-
-            turnEnd.turnEndS.turnNo++;  //next turn
+                       
+            Invoke("GLsynchWait", 1.5f);  //wait for GameLogic synch
+            turnEnd.turnEndS.turnNo++;    //next turn
             Invoke("pl1startDelay", 2f);  //wait for ownership return before run pl1
 
 
@@ -354,6 +351,13 @@ public class itemControl : MonoBehaviour
     [PunRPC] public void RPC_pl1start()
     {
         pl1.GetComponent<plControl>().enabled = true;
+    }
+
+    void GLsynchWait()
+    {
+        pl1.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[1]);
+        pl2.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[2]);
+        pl3.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[3]);
     }
 
     void pl1startDelay()

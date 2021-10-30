@@ -15,7 +15,7 @@ public class stats : MonoBehaviour, IPunObservable
 
     public Vector3 pasSkillHex = Vector3.down; //needs for passive skills
 
-    public Vector3[] actSkillTrg = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };  //active skill target(s)  
+    public Vector3[] actSkillTrg = new Vector3[4];  //active skill target(s)  
 
     public int skillCD = 0;  //active skill cooldown
 
@@ -46,12 +46,12 @@ public class stats : MonoBehaviour, IPunObservable
             stream.SendNext(hitCount);
             stream.SendNext(gold);
             stream.SendNext(pasSkillHex);
-            stream.SendNext(actSkillTrg);
-            stream.SendNext(skillCD);
+            stream.SendNext(actSkillTrg);  
+            stream.SendNext(skillCD); 
             stream.SendNext(item1);
             stream.SendNext(item2);
             stream.SendNext(item1Targets);
-            stream.SendNext(item2Targets);
+            stream.SendNext(item2Targets);            
         }
         else  // receive data
         {
@@ -62,11 +62,15 @@ public class stats : MonoBehaviour, IPunObservable
             this.gold = (int)stream.ReceiveNext();
             this.pasSkillHex = (Vector3)stream.ReceiveNext();
             this.actSkillTrg = (Vector3[])stream.ReceiveNext();
+            //print(name + " new value : " + this.actSkillTrg[0]);
+            var logstring = $"I am object {name} and received values:\n";
+            foreach(var v in this.actSkillTrg) { logstring += v + "\n"; Debug.Log(logstring); }                
+            
             this.skillCD = (int)stream.ReceiveNext();
             this.item1 = (int)stream.ReceiveNext();
             this.item2 = (int)stream.ReceiveNext();
             this.item1Targets = (Vector3[])stream.ReceiveNext();
-            this.item2Targets = (Vector3[])stream.ReceiveNext();
+            this.item2Targets = (Vector3[])stream.ReceiveNext();           
         }
     }
 

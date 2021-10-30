@@ -66,7 +66,7 @@ public class p3control : MonoBehaviour
 
     void OnEnable()
     {
-        //print("pl3 enabled");
+        print("pl3 enabled");
 
         if (GetComponent<PhotonView>().IsMine) { turnNo = turnEnd.turnEndS.turnNo; print("Turn " + turnNo); }
 
@@ -259,7 +259,7 @@ public class p3control : MonoBehaviour
             gameObject.GetComponent<stats>().skillCD = 3;
         }
         bGoldGet = false;
-
+        
 
         if (bItem1a && itemTargets[0]!=Vector3.down)
         {
@@ -318,6 +318,7 @@ public class p3control : MonoBehaviour
         {
             return;
         }
+       
 
         pGold.text = "Gold: " + gameObject.GetComponent<stats>().gold.ToString();
 
@@ -354,12 +355,11 @@ public class p3control : MonoBehaviour
         if (bItem1a || bItem1c) { item1Prep(); }
         if (bItem2a || bItem2c) { item2Prep(); }
 
-        if (Input.GetKeyDown(KeyCode.Return))  //on Enter
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))  //pass turn
         {
-            GetComponent<p3control>().enabled = false;
-
+            GetComponent<p3control>().enabled = false;            
             // GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only
-            Invoke("StopPl3", 1f);
+            Invoke("StopPl3", 2f); //
         }
 
     }
@@ -623,13 +623,14 @@ public class p3control : MonoBehaviour
 
     [PunRPC] public void RPC_pl3stop()
     {
+        print(GameObject.FindGameObjectWithTag("player3").GetComponent<stats>().actSkillTrg[0] + " " + GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
         //GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
-
         turnEnd.turnEndS.endTurn(); //last one!        
     }
 
     void StopPl3()
     {
+        print(GetComponent<stats>().actSkillTrg[0] + " " + GetComponent<PhotonView>().Owner);
         GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only
     }
 }

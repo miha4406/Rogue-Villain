@@ -17,7 +17,7 @@ public class goldControl : MonoBehaviour
 
     public bool movEnd;  //sets "true" from turnEnd.cs
     int turnNo;
-
+    
 
     void Awake()
     {
@@ -40,9 +40,12 @@ public class goldControl : MonoBehaviour
     
     void Update()
     {
-        if (!GetComponent<PhotonView>().IsMine) { return; } //host only
+        //if (!GetComponent<PhotonView>().IsMine) { return; } //host only
 
-
+        if (pl1.GetComponent<PhotonView>().Owner != pl3.GetComponent<PhotonView>().Owner) //all owned by Host
+        {
+            return;
+        }
 
         turnNo = gameObject.GetComponent<turnEnd>().turnNo;        
 
@@ -52,13 +55,14 @@ public class goldControl : MonoBehaviour
         if (turnNo>5) { gHex2(); }
         if (turnNo>10){ gHex3(); }
 
-        p1Challenge();
+        if (movEnd) { CheckPos(); }        
 
-        p2Attack();
-        p2Shoot();
+        if (movEnd) { p1Challenge(); }
 
-        p3GoldGet();
+        if (movEnd) { p2Attack(); }
+        if (movEnd) { p2Shoot(); }
 
+        if (movEnd) { p3GoldGet(); } //
 
         movEnd = false;
         gameObject.GetComponent<itemControl>().goldEnd = true;
@@ -72,6 +76,11 @@ public class goldControl : MonoBehaviour
             && hex.transform.position != gBar2.transform.position && hex.transform.position != gBar3.transform.position))
                 .Except(itemHexes).OrderBy(n => Random.value).FirstOrDefault().transform.position;
             gBar1.SetActive(true);
+        }
+
+        if (pl1.GetComponent<PhotonView>().Owner != pl3.GetComponent<PhotonView>().Owner) //all owned by Host
+        {
+            return;
         }
 
         if (movEnd && gBar1.active) //gBar1 pick up (2turns for pl1, 2bars for pl3)
@@ -102,7 +111,12 @@ public class goldControl : MonoBehaviour
                 .Except(itemHexes).OrderBy(n => Random.value).FirstOrDefault().transform.position;
             gBar2.SetActive(true);
         }
-        
+
+        if (pl1.GetComponent<PhotonView>().Owner != pl3.GetComponent<PhotonView>().Owner) //all owned by Host
+        {
+            return;
+        }
+
         if (movEnd && gBar2.active) //gBar1 pick up (2turns for pl1, 2bars for pl3)
         {
             if (gBar2.transform.position == pl1.transform.position) {
@@ -130,6 +144,11 @@ public class goldControl : MonoBehaviour
             && hex.transform.position != gBar2.transform.position && hex.transform.position != gBar3.transform.position))
                 .Except(itemHexes).OrderBy(n => Random.value).FirstOrDefault().transform.position;
             gBar3.SetActive(true);
+        }
+
+        if (pl1.GetComponent<PhotonView>().Owner != pl3.GetComponent<PhotonView>().Owner) //all owned by Host
+        {
+            return;
         }
 
         if (movEnd && gBar3.active) //gBar1 pick up (2turns for pl1, 2bars for pl3)
@@ -168,8 +187,7 @@ public class goldControl : MonoBehaviour
             GameObject pl1trg = null;  //can't stream GameObjects!
             if (pl1.GetComponent<stats>().actSkillTrg[0] != Vector3.down) {
                 pl1trg = (pl1.GetComponent<stats>().actSkillTrg[0] == new Vector3(2f, 2f, 2f)) ? pl2 : pl3;
-            }
-            
+            }            
 
             if ( b1skill && (plA==pl1 && plB==pl1trg) )
             {
@@ -241,7 +259,7 @@ public class goldControl : MonoBehaviour
 
     public void p1Challenge()
     {
-        if (movEnd && pl1.GetComponent<stats>().skillCD !=0 )
+        if (pl1.GetComponent<stats>().skillCD !=0 )
         {
             if (pl1.GetComponent<stats>().skillCD == 4) { b1skill = true; }
             if (pl1.GetComponent<stats>().skillCD == 3) { 
@@ -254,7 +272,7 @@ public class goldControl : MonoBehaviour
 
     public void p2Attack()
     {
-        if (movEnd && pl2.GetComponent<stats>().pasSkillHex!=Vector3.down)
+        if (pl2.GetComponent<stats>().pasSkillHex!=Vector3.down)
         {
             if (pl2.GetComponent<stats>().pasSkillHex == pl1.transform.position) //attack on pl1
             {
@@ -274,7 +292,7 @@ public class goldControl : MonoBehaviour
     }
     public void p2Shoot() //after shoot prep
     {
-        if (movEnd && pl2.GetComponent<stats>().actSkillTrg[0]!=Vector3.down)
+        if (pl2.GetComponent<stats>().actSkillTrg[0]!=Vector3.down)
         {
             if (pl2.GetComponent<stats>().actSkillTrg[0] == pl1.transform.position 
                 || pl2.GetComponent<stats>().actSkillTrg[0] == pl3.transform.position) {
@@ -313,7 +331,6 @@ public class goldControl : MonoBehaviour
         if (pl3.GetComponent<stats>().actSkillTrg[0] != Vector3.down)
         {
             print("pl3 gets gold!");
-
             pl3.GetComponent<stats>().gold++;
 
             pl3.GetComponent<stats>().actSkillTrg[0] = Vector3.down;
@@ -323,7 +340,37 @@ public class goldControl : MonoBehaviour
     }
 
     public void CheckPos()  //if networking synchronisation problem
-    {
-
+    {     
+            foreach (GameObject hex in hexes) 
+            {
+                if (hex != null)
+                {
+                    if (Vector3.Distance(hex.transform.position, pl1.transform.position) < 0.3f)
+                    {
+                        pl1.transform.position = hex.transform.position;
+                    }
+                }
+            }
+            foreach (GameObject hex in hexes)
+            {
+                if (hex != null)
+                {
+                    if (Vector3.Distance(hex.transform.position, pl2.transform.position) < 0.3f)
+                    {
+                        pl2.transform.position = hex.transform.position;
+                    }
+                }
+            }
+            foreach (GameObject hex in hexes)
+            {
+                if (hex != null)
+                {
+                    if (Vector3.Distance(hex.transform.position, pl3.transform.position) < 0.3f)
+                    {
+                        pl3.transform.position = hex.transform.position;
+                    }
+                }
+            }            
+        
     }
 }

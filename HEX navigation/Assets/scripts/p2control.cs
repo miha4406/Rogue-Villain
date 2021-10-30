@@ -70,15 +70,12 @@ public class p2control : MonoBehaviour
         pNick.text = PhotonNetwork.NickName;
         pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
 
-        //pl1 = GameObject.FindGameObjectWithTag("player1");
-        //pl2 = gameObject;
-        //pl3 = GameObject.FindGameObjectWithTag("player3");
     }
 
 
     void OnEnable()
     {
-        //print("pl2 enabled");
+        print("pl2 enabled");
         if (!GetComponent<PhotonView>().IsMine) { return; }
 
         if (GetComponent<PhotonView>().IsMine) { turnNo = turnEnd.turnEndS.turnNo; print("Turn " + turnNo); }
@@ -348,6 +345,7 @@ public class p2control : MonoBehaviour
             return;
         }
 
+        
         pGold.text = "Gold: " + gameObject.GetComponent<stats>().gold.ToString();
 
         pfCor = pFinder.transform.position + Vector3.down;
@@ -385,7 +383,7 @@ public class p2control : MonoBehaviour
         if (bItem1a || bItem1c) { item1Prep(); }
         if (bItem2a || bItem2c) { item2Prep(); }
 
-        if (Input.GetKeyDown(KeyCode.Return))  //on Enter
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))  //pass turn
         {
             //GetComponent<PhotonView>().RPC("RPC_pl3start", RpcTarget.All);
             GetComponent<PhotonView>().RPC("RPC_pl3start", GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);

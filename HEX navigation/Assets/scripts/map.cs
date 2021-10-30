@@ -6,9 +6,9 @@ public class map : MonoBehaviour
 
     [SerializeField] public GameObject[] hexes = new GameObject[20];
 
-    [SerializeField] public GameObject gBar1;
-    [SerializeField] public GameObject gBar2;
-    [SerializeField] public GameObject gBar3;
+    public GameObject gBar1;
+    public GameObject gBar2;
+    public GameObject gBar3;
 
     [SerializeField] public GameObject hexInfoPanel;
 

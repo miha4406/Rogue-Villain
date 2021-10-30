@@ -13,6 +13,9 @@ TagManager:
   - player3
   - Statics
   - GameLogic
+  - gBar1
+  - gBar2
+  - gBar3
   layers:
   - Default
   - TransparentFX
