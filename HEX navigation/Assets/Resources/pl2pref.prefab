@@ -143,7 +143,7 @@ MonoBehaviour:
   - {x: 0.0000000025787237, y: 0.0000000026515874, z: 0}
   - {x: 0, y: 0, z: 0}
   bPasAtk: 0
-  p2logo: {fileID: 21300000, guid: 203ca1d921485634a8e0035accf464b6, type: 3}
+  p2logo: {fileID: 21300000, guid: f62aaddd3d426f54c8308a4ac8760e9b, type: 3}
   p2a: {fileID: 21300000, guid: c77905c4c6b24064283c34f7eabf2ecb, type: 3}
   p2p: {fileID: 21300000, guid: 4711b5fc19e9af7469aa7c4e9d637093, type: 3}
   bomb: {fileID: 5081492897730353289, guid: a08482c5af5f99549bd3d0ecbbf8ceb1, type: 3}

@@ -136,7 +136,7 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   bChallenge: 0
   skillTarget: {x: 0, y: 0, z: 0}
-  p1logo: {fileID: 21300000, guid: 5357b845fc452fd499f79625d051d32c, type: 3}
+  p1logo: {fileID: 21300000, guid: f50c45ca43887d141b296ad3e1aaf466, type: 3}
   p1a: {fileID: 21300000, guid: 0bc231dfbb26f744ba339e381a868920, type: 3}
   bomb: {fileID: 5081492897730353289, guid: a08482c5af5f99549bd3d0ecbbf8ceb1, type: 3}
   slime: {fileID: 1452241949725463116, guid: fb8168527e427d849bc2712ba0468860, type: 3}
