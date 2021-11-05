@@ -623,7 +623,7 @@ public class p3control : MonoBehaviour
 
     [PunRPC] public void RPC_pl3stop()
     {
-        print(GameObject.FindGameObjectWithTag("player3").GetComponent<stats>().actSkillTrg[0] + " " + GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
+        //print(GameObject.FindGameObjectWithTag("player3").GetComponent<stats>().actSkillTrg[0] + " " + GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
         //GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
         turnEnd.turnEndS.endTurn(); //last one!        
     }

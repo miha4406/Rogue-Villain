@@ -61,11 +61,7 @@ public class stats : MonoBehaviour, IPunObservable
             this.hitCount = (int)stream.ReceiveNext();
             this.gold = (int)stream.ReceiveNext();
             this.pasSkillHex = (Vector3)stream.ReceiveNext();
-            this.actSkillTrg = (Vector3[])stream.ReceiveNext();
-            //print(name + " new value : " + this.actSkillTrg[0]);
-            var logstring = $"I am object {name} and received values:\n";
-            foreach(var v in this.actSkillTrg) { logstring += v + "\n"; Debug.Log(logstring); }                
-            
+            this.actSkillTrg = (Vector3[])stream.ReceiveNext(); 
             this.skillCD = (int)stream.ReceiveNext();
             this.item1 = (int)stream.ReceiveNext();
             this.item2 = (int)stream.ReceiveNext();
