@@ -25,7 +25,11 @@ public class plControl : MonoBehaviour
     //GameObject pl1, pl2, pl3;
     [SerializeField] Sprite p1logo;
     [SerializeField] Sprite p1a;
-    GameObject p1panel;    
+    GameObject p1panel;
+
+    GameObject btnA, btnP;
+    GameObject tiptop;
+    [Multiline] public string[] tiptops;
 
     [SerializeField] GameObject bomb;
     int bombCntr = 0;
@@ -44,13 +48,18 @@ public class plControl : MonoBehaviour
 
     void Awake()
     {
-        pFinder = GameObject.Find("pathFinder");
-
         hexes = map.mapS.hexes;
 
-        clHex = pFinder.transform.position;        
+        plDist = gameObject.GetComponent<stats>().movDist; //?
 
+        pFinder = GameObject.Find("pathFinder");
+        clHex = pFinder.transform.position;  
         pfCor = pFinder.transform.position + Vector3.down;
+
+        btnA = GameObject.Find("ScreenCanvas/butAct");
+        btnP = GameObject.Find("ScreenCanvas/butPas");
+        tiptop = GameObject.Find("ScreenCanvas/tipPanel");
+        tiptop.SetActive(false);
 
         p1panel = GameObject.Find("ScreenCanvas/p1panel");
         GameObject.Find("ScreenCanvas/p1panel/but2").GetComponent<Button>().onClick.AddListener(() => { skillTarget = new Vector3(2f,2f,2f); p1panel.SetActive(false); } );
@@ -61,16 +70,16 @@ public class plControl : MonoBehaviour
 
     void Start() //can't set in Awake
     {
-        pNick = GameObject.Find("ScreenCanvas/Panel2/nicknameText").GetComponent<Text>();
+        pNick = GameObject.Find("ScreenCanvas/infoPanel/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
-        pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
+        pGold = GameObject.Find("ScreenCanvas/infoPanel/goldText").GetComponent<Text>();
         
     }
 
 
     void OnEnable()
     {
-        print("pl1 enabled");
+        //print("pl1 enabled");
         if (GetComponent<PhotonView>().IsMine) { turnNo = turnEnd.turnEndS.turnNo; print("Turn " + turnNo); }       
 
         if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; }  //pl1
@@ -110,22 +119,22 @@ public class plControl : MonoBehaviour
         skillTarget = Vector3.down;
 
         GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p1logo;
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p1a;
-        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = false;
+        btnA.GetComponent<Image>().sprite = p1a;
+        btnP.GetComponent<Button>().interactable = false;
         //GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener(() => {
+        btnA.GetComponent<Button>().onClick.AddListener(() => {
             if (!GetComponent<PhotonView>().IsMine) { return; }
             bChallenge = !bChallenge;
             skillTarget = Vector3.down;
-            p1panel.active = !p1panel.active;
+            p1panel.active = !p1panel.active;           
         } );
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = true;
+        btnA.GetComponent<Button>().interactable = true;
         if (gameObject.GetComponent<stats>().skillCD != 0)
         {
-            GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = false;
-            GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().skillCD.ToString();
+            btnA.GetComponent<Button>().interactable = false;
+            btnA.GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().skillCD.ToString();
         }
-        else { GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = ""; }
+        else { btnA.GetComponentInChildren<Text>().text = ""; }
 
 
         if(gameObject.GetComponent<stats>().item1 != 0) {   //item buttons
@@ -369,6 +378,8 @@ public class plControl : MonoBehaviour
             GetComponent<PhotonView>().RPC("RPC_pl2start", GameObject.FindGameObjectWithTag("player2").GetComponent<PhotonView>().Owner);
             GetComponent<plControl>().enabled = false;
         }
+
+        curBtn();
     }
 
 
@@ -628,12 +639,28 @@ public class plControl : MonoBehaviour
         }
     }
 
+
+    void curBtn()
+    {
+        Vector3 curPos = Input.mousePosition;        
+
+        if (Vector3.Distance(btnA.transform.position, curPos) < 40f)
+        {
+            tiptop.transform.position = btnA.transform.position + new Vector3(25f, 140f, 0f);
+            tiptop.GetComponentInChildren<Text>().text = tiptops[0];
+            tiptop.SetActive(true);
+        }        
+        else { tiptop.SetActive(false); }
+    }
+
+
+
+
+
     [PunRPC] public void RPC_pl2start()
     {
         GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = true;
         //GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = false;
     }
-
-
 
 }

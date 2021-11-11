@@ -26,6 +26,10 @@ public class p3control : MonoBehaviour
     [SerializeField] Sprite p3logo;
     [SerializeField] Sprite p3a;
 
+    GameObject btnA, btnP;
+    GameObject tiptop;
+    [Multiline] public string[] tiptops;
+
     [SerializeField] GameObject bomb;
     int bombCntr = 0;
     [SerializeField] GameObject slime;
@@ -43,23 +47,25 @@ public class p3control : MonoBehaviour
 
     void Awake()
     {
-        pFinder = GameObject.Find("pathFinder");
+        hexes = map.mapS.hexes;       
 
         plDist = gameObject.GetComponent<stats>().movDist;
 
-        hexes = map.mapS.hexes;
-
+        pFinder = GameObject.Find("pathFinder");
         clHex = pFinder.transform.position;
-
         pfCor = pFinder.transform.position + Vector3.down;
+
+        btnA = GameObject.Find("ScreenCanvas/butAct");
+        btnP = GameObject.Find("ScreenCanvas/butPas");
+        tiptop = GameObject.Find("ScreenCanvas/tipPanel");      
 
     }
 
     void Start() //can't set in Awake
     {
-        pNick = GameObject.Find("ScreenCanvas/Panel2/nicknameText").GetComponent<Text>();
+        pNick = GameObject.Find("ScreenCanvas/infoPanel/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
-        pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
+        pGold = GameObject.Find("ScreenCanvas/infoPanel/goldText").GetComponent<Text>();
            
     }
 
@@ -105,20 +111,20 @@ public class p3control : MonoBehaviour
         clHex = transform.position;
 
         GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p3logo;
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Image>().sprite = p3a;
-        GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().interactable = false;
+        btnA.GetComponent<Image>().sprite = p3a;
+        btnP.GetComponent<Button>().interactable = false;
         //GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.AddListener( () => {
+        btnA.GetComponent<Button>().onClick.AddListener( () => {
             if (!GetComponent<PhotonView>().IsMine) { return; }
             bGoldGet = !bGoldGet; 
         } );
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = true;
+        btnA.GetComponent<Button>().interactable = true;
         if (gameObject.GetComponent<stats>().skillCD != 0)
         {
-            GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().interactable = false;
-            GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().skillCD.ToString();
+            btnA.GetComponent<Button>().interactable = false;
+            btnA.GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().skillCD.ToString();
         }
-        else { GameObject.Find("ScreenCanvas/butAct").GetComponentInChildren<Text>().text = ""; }
+        else { btnA.GetComponentInChildren<Text>().text = ""; }
 
 
         if(gameObject.GetComponent<stats>().item1 != 0) {   //item buttons
@@ -361,6 +367,8 @@ public class p3control : MonoBehaviour
             // GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only
             Invoke("StopPl3", 2f); //
         }
+
+        curBtn();
 
     }
 
@@ -620,6 +628,21 @@ public class p3control : MonoBehaviour
 
         }
     }
+
+
+    void curBtn()
+    {
+        Vector3 curPos = Input.mousePosition;
+
+        if (Vector3.Distance(btnA.transform.position, curPos) < 40f)
+        {
+            tiptop.transform.position = btnA.transform.position + new Vector3(25f, 140f, 0f);
+            tiptop.GetComponentInChildren<Text>().text = tiptops[0];
+            tiptop.SetActive(true);
+        }        
+        else { tiptop.SetActive(false); }
+    }
+
 
     [PunRPC] public void RPC_pl3stop()
     {

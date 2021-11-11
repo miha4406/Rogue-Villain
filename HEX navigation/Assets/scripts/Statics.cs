@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Photon.Pun;
+
 
 public class Statics : MonoBehaviourPun
 {
@@ -25,7 +27,7 @@ public class Statics : MonoBehaviourPun
             bScene = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab)) { BotInstantiate(); }
+        if (Input.GetKeyDown(KeyCode.KeypadMinus)) { BotInstantiate(); }
 
         if (bStart == false) { gameStart(); }
     }
@@ -94,6 +96,10 @@ public class Statics : MonoBehaviourPun
                 }
             }
 
+            GameObject.Find("ScreenCanvas/butRank").GetComponent<Button>().interactable = true;
+            map.mapS.pl1 = GameObject.FindGameObjectWithTag("player1");
+            map.mapS.pl2 = GameObject.FindGameObjectWithTag("player2");
+            map.mapS.pl3 = GameObject.FindGameObjectWithTag("player3");
 
             if (GameObject.FindGameObjectWithTag("GameLogic") == null)  //only one GL per room
             {

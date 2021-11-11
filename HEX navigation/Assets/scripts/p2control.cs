@@ -36,6 +36,10 @@ public class p2control : MonoBehaviour
     [SerializeField] Sprite p2a;
     [SerializeField] Sprite p2p;
 
+    GameObject btnA, btnP;
+    GameObject tiptop;
+    [Multiline] public string[] tiptops;
+
     [SerializeField] GameObject bomb;
     int bombCntr = 0;
     [SerializeField] GameObject slime;
@@ -53,22 +57,24 @@ public class p2control : MonoBehaviour
 
     void Awake()
     {
-        pFinder = GameObject.Find("pathFinder");
+        hexes = map.mapS.hexes;        
 
         plDist = gameObject.GetComponent<stats>().movDist;
 
-        hexes = map.mapS.hexes;
-
+        pFinder = GameObject.Find("pathFinder");
         clHex = pFinder.transform.position;
+        pfCor = pFinder.transform.position + Vector3.down;
 
-        pfCor = pFinder.transform.position + Vector3.down;        
+        btnA = GameObject.Find("ScreenCanvas/butAct");
+        btnP = GameObject.Find("ScreenCanvas/butPas");
+        tiptop = GameObject.Find("ScreenCanvas/tipPanel");
     }
 
     void Start() //can't set in Awake
     {
-        pNick = GameObject.Find("ScreenCanvas/Panel2/nicknameText").GetComponent<Text>();
+        pNick = GameObject.Find("ScreenCanvas/infoPanel/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
-        pGold = GameObject.Find("ScreenCanvas/Panel2/goldText").GetComponent<Text>();
+        pGold = GameObject.Find("ScreenCanvas/infoPanel/goldText").GetComponent<Text>();
 
     }
 
@@ -389,6 +395,8 @@ public class p2control : MonoBehaviour
             GetComponent<PhotonView>().RPC("RPC_pl3start", GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
             GetComponent<p2control>().enabled = false;
         }
+
+        curBtn();
     }
 
 
@@ -719,6 +727,26 @@ public class p2control : MonoBehaviour
             }
 
         }
+    }
+
+
+    void curBtn()
+    {
+        Vector3 curPos = Input.mousePosition;
+
+        if (Vector3.Distance(btnA.transform.position, curPos) < 40f)
+        {
+            tiptop.transform.position = btnA.transform.position + new Vector3(25f, 140f, 0f);
+            tiptop.GetComponentInChildren<Text>().text = tiptops[0];
+            tiptop.SetActive(true);
+        }
+        else if (Vector3.Distance(btnP.transform.position, curPos) < 40f)
+        {
+            tiptop.transform.position = btnP.transform.position + new Vector3(25f, 140f, 0f);
+            tiptop.GetComponentInChildren<Text>().text = tiptops[1];
+            tiptop.SetActive(true);
+        }
+        else { tiptop.SetActive(false); }
     }
 
 
