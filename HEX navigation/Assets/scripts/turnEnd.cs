@@ -2,7 +2,7 @@
 using Photon.Realtime;
 using System.Collections;
 using UnityEngine;
-
+using UnityEngine.UI;
 
 public class turnEnd : MonoBehaviour, IPunObservable
 {
@@ -95,6 +95,14 @@ public class turnEnd : MonoBehaviour, IPunObservable
         if (bMove2) { bWait = true; pl2move(mov2StepNo); }
         if (bMove3) { bWait = true; pl3move(mov3StepNo); }
 
+        if (turnNo > 15) {
+            Camera.main.transform.LookAt(Vector3.up*10); //to avoid map clicks
+            map.mapS.resultPanel.SetActive(true);
+            GameObject.Find("ScreenCanvas/resultPanel/text2").GetComponent<Text>().text =
+                "(player1) " + pl1.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl1.GetComponent<stats>().gold.ToString() + "\n"
+                + "(player2) " + pl2.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl2.GetComponent<stats>().gold.ToString() + "\n"
+                + "(player3) " + pl3.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl3.GetComponent<stats>().gold.ToString();
+        }
 
         /////////////////////collisions//////////////////////////
         if (bTurnEnd)
@@ -119,7 +127,8 @@ public class turnEnd : MonoBehaviour, IPunObservable
                 // print("pl1 hits"); 
                 if (lastMov1 - pl1.GetComponent<stats>().hitCount >= 0)
                 {
-                    pl1.transform.position = Vector3.MoveTowards(pl1.transform.position, p1Path[lastMov1 - pl1.GetComponent<stats>().hitCount], plMovSp * 1.05f * Time.deltaTime);
+                    pl1.transform.LookAt(p1Path[lastMov1 -pl1.GetComponent<stats>().hitCount +1]);       
+                    pl1.transform.position = Vector3.MoveTowards(pl1.transform.position, p1Path[lastMov1 -pl1.GetComponent<stats>().hitCount], plMovSp * 1.05f * Time.deltaTime);
                     pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-bump");
                 }
             }
@@ -128,7 +137,8 @@ public class turnEnd : MonoBehaviour, IPunObservable
                 // print("pl2 hits"); 
                 if (lastMov2 - pl2.GetComponent<stats>().hitCount >= 0)
                 {
-                    pl2.transform.position = Vector3.MoveTowards(pl2.transform.position, p2Path[lastMov2 - pl2.GetComponent<stats>().hitCount], plMovSp * Time.deltaTime);
+                    pl2.transform.LookAt(p2Path[lastMov2 -pl2.GetComponent<stats>().hitCount +1]);
+                    pl2.transform.position = Vector3.MoveTowards(pl2.transform.position, p2Path[lastMov2 -pl2.GetComponent<stats>().hitCount], plMovSp * Time.deltaTime);
                     pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-bump");
                 }
             }
@@ -137,7 +147,9 @@ public class turnEnd : MonoBehaviour, IPunObservable
                 // print("pl3 hits"); 
                 if (lastMov3 - pl3.GetComponent<stats>().hitCount >= 0)
                 {
+                    pl3.transform.LookAt(p2Path[lastMov3 -pl3.GetComponent<stats>().hitCount +1]);
                     pl3.transform.position = Vector3.MoveTowards(pl3.transform.position, p3Path[lastMov3 - pl3.GetComponent<stats>().hitCount], plMovSp * 0.95f * Time.deltaTime);
+                    //pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-bump");
                 }
             }
         }

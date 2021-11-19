@@ -103,7 +103,7 @@ namespace m4netgame2
             progessLabel.SetActive(true);
             controlPanel.SetActive(false);
 
-            if (PhotonNetwork.IsConnected) { PhotonNetwork.JoinRandomRoom(); }
+            if (PhotonNetwork.IsConnected) { PhotonNetwork.JoinRandomRoom(); }            
             else
             {
                 isConnecting = PhotonNetwork.ConnectUsingSettings();

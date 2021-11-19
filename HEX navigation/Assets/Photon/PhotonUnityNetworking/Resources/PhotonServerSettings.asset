@@ -42,6 +42,9 @@ MonoBehaviour:
   - RPC_pl3stop
   - pl1AC
   - pl2AC
+  - pl1ACstart
+  - RPC_pl1ACst
+  - RPC_itemSynh
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -12,12 +12,12 @@ public class goldControl : MonoBehaviour
     bool b1skill = false;
 
     GameObject[] hexes = new GameObject[20];
-    public GameObject[] itemHexes = new GameObject[3]; // item hexes from itemControl
-    GameObject hexPanel;
+    public GameObject[] itemHexes = new GameObject[3]; // item hexes from itemControl    
 
     public bool movEnd;  //sets "true" from turnEnd.cs
     int turnNo;
-    
+
+    PhotonView pv;
 
     void Awake()
     {
@@ -27,14 +27,15 @@ public class goldControl : MonoBehaviour
         pl2 = GameObject.FindGameObjectWithTag("player2");
         pl3 = GameObject.FindGameObjectWithTag("player3");
 
-        hexes = map.mapS.hexes;
-        hexPanel = map.mapS.hexInfoPanel;
+        hexes = map.mapS.hexes;        
 
         gBar1 = map.mapS.gBar1;
         gBar2 = map.mapS.gBar2;
         gBar3 = map.mapS.gBar3;
 
-        gBar1.transform.position = hexes[10].transform.position;       
+        gBar1.transform.position = hexes[10].transform.position;
+
+        pv = GetComponent<PhotonView>();
     }  
 
     
@@ -86,6 +87,9 @@ public class goldControl : MonoBehaviour
         if (movEnd && gBar1.active) //gBar1 pick up (2turns for pl1, 2bars for pl3)
         {
             if (gBar1.transform.position == pl1.transform.position) {
+
+                pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-mine");  //anim
+
                 if ( pl1.GetComponent<stats>().pasSkillHex == Vector3.down ) {
                     pl1.GetComponent<stats>().pasSkillHex = pl1.transform.position;
                 }
@@ -97,7 +101,10 @@ public class goldControl : MonoBehaviour
             } else if (pl1.GetComponent<stats>().pasSkillHex != Vector3.down && pl1.GetComponent<stats>().pasSkillHex != pl1.transform.position) 
             { pl1.GetComponent<stats>().pasSkillHex = Vector3.down; }
 
-            if (gBar1.transform.position == pl2.transform.position) { pl2.GetComponent<stats>().gold++; gBar1.SetActive(false); }
+            if (gBar1.transform.position == pl2.transform.position) {
+                pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-mine");  //anim
+                pl2.GetComponent<stats>().gold++; gBar1.SetActive(false); 
+            }
             if (gBar1.transform.position == pl3.transform.position) { pl3.GetComponent<stats>().gold+=2; gBar1.SetActive(false); }           
         }
      
@@ -120,6 +127,9 @@ public class goldControl : MonoBehaviour
         if (movEnd && gBar2.active) //gBar1 pick up (2turns for pl1, 2bars for pl3)
         {
             if (gBar2.transform.position == pl1.transform.position) {
+
+                pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-mine");  //anim
+
                 if (pl1.GetComponent<stats>().pasSkillHex == Vector3.down)
                 {
                     pl1.GetComponent<stats>().pasSkillHex = pl1.transform.position;
@@ -132,7 +142,10 @@ public class goldControl : MonoBehaviour
             } else if(pl1.GetComponent<stats>().pasSkillHex != Vector3.down && pl1.GetComponent<stats>().pasSkillHex != pl1.transform.position) 
             { pl1.GetComponent<stats>().pasSkillHex = Vector3.down; }
 
-            if (gBar2.transform.position == pl2.transform.position) { pl2.GetComponent<stats>().gold++; gBar2.SetActive(false); }
+            if (gBar2.transform.position == pl2.transform.position) {
+                pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-mine");  //anim
+                pl2.GetComponent<stats>().gold++; gBar2.SetActive(false); 
+            }
             if (gBar2.transform.position == pl3.transform.position) { pl3.GetComponent<stats>().gold+=2; gBar2.SetActive(false); }            
         }
     }
@@ -154,6 +167,9 @@ public class goldControl : MonoBehaviour
         if (movEnd && gBar3.active) //gBar1 pick up (2turns for pl1, 2bars for pl3)
         {
             if (gBar3.transform.position == pl1.transform.position) {
+
+                pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-mine");  //anim
+
                 if (pl1.GetComponent<stats>().pasSkillHex == Vector3.down)
                 {
                     pl1.GetComponent<stats>().pasSkillHex = pl1.transform.position;
@@ -167,7 +183,10 @@ public class goldControl : MonoBehaviour
             else if(pl1.GetComponent<stats>().pasSkillHex != Vector3.down && pl1.GetComponent<stats>().pasSkillHex != pl1.transform.position)  
             { pl1.GetComponent<stats>().pasSkillHex = Vector3.down; }
 
-            if (gBar3.transform.position == pl2.transform.position) { pl2.GetComponent<stats>().gold++; gBar3.SetActive(false); }
+            if (gBar3.transform.position == pl2.transform.position) {
+                pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-mine");  //anim
+                pl2.GetComponent<stats>().gold++; gBar3.SetActive(false); 
+            }
             if (gBar3.transform.position == pl3.transform.position) { pl3.GetComponent<stats>().gold+=2; gBar3.SetActive(false); }
         }
     }
@@ -212,48 +231,7 @@ public class goldControl : MonoBehaviour
                 plB.GetComponent<stats>().gold = t;
             }
         }
-    }
-
-    public void hexInfo(Vector3 clHex, Vector3 plHex)
-    {
-        Text[] newText = hexPanel.GetComponentsInChildren<Text>();
-
-        if (clHex == pl1.transform.position)
-        {
-            newText[0].text = "Phantom thief (player 1)";
-            newText[1].text = "About player 1";
-            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();            
-        }
-        else if (clHex == pl2.transform.position)
-        {
-            newText[0].text = "Pirate (player 2)";
-            newText[1].text = "About player 2";
-            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();
-        }
-        else if (clHex == pl3.transform.position)
-        {
-            newText[0].text = "Explorer (player 3)";
-            newText[1].text = "About player 3";
-            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();
-        }
-        else if (clHex==gBar1?.transform.position || clHex==gBar2?.transform.position || clHex==gBar3?.transform.position)
-        {
-            newText[0].text = "Gold bar HEX";
-            newText[1].text = "Can pick up gold bar";
-            newText[2].text = "Distance: " + Mathf.FloorToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();            
-        }        
-        else if (clHex==itemHexes[0].transform.position || clHex==itemHexes[1].transform.position || clHex==itemHexes[2].transform.position) 
-        {
-            newText[0].text = "Item HEX";
-            newText[1].text = "Can pick up item";
-            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();            
-        }
-        else {
-            newText[0].text = "Plain HEX";
-            newText[1].text = "No effect";
-            newText[2].text = "Distance: " + Mathf.RoundToInt(Vector3.Distance(clHex, plHex)+0.3f).ToString();            
-        }
-    }
+    }    
 
     ////////////////////////// SKILLS /////////////////////////
 
@@ -370,7 +348,10 @@ public class goldControl : MonoBehaviour
                         pl3.transform.position = hex.transform.position;
                     }
                 }
-            }            
-        
+            }           
     }
+
+
+    //[PunRPC] void 
+
 }

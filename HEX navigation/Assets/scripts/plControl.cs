@@ -21,13 +21,12 @@ public class plControl : MonoBehaviour
     Vector3 pfCor; //pathfinder Y-height correction
     int pfStepNo = 0;
 
-    Text pNick, pGold;
-    //GameObject pl1, pl2, pl3;
+    Text pNick, pGold;    
     [SerializeField] Sprite p1logo;
     [SerializeField] Sprite p1a;
     GameObject p1panel;
 
-    GameObject btnA, btnP;
+    GameObject btnA, btnP, btnNT;
     GameObject tiptop;
     [Multiline] public string[] tiptops;
 
@@ -59,7 +58,8 @@ public class plControl : MonoBehaviour
         btnA = GameObject.Find("ScreenCanvas/butAct");
         btnP = GameObject.Find("ScreenCanvas/butPas");
         tiptop = GameObject.Find("ScreenCanvas/tipPanel");
-        tiptop.SetActive(false);
+        //tiptop.SetActive(false);
+        btnNT = GameObject.Find("ScreenCanvas/butTurn");
 
         p1panel = GameObject.Find("ScreenCanvas/p1panel");
         GameObject.Find("ScreenCanvas/p1panel/but2").GetComponent<Button>().onClick.AddListener(() => { skillTarget = new Vector3(2f,2f,2f); p1panel.SetActive(false); } );
@@ -80,10 +80,14 @@ public class plControl : MonoBehaviour
     void OnEnable()
     {
         //print("pl1 enabled");
-        if (GetComponent<PhotonView>().IsMine) { turnNo = turnEnd.turnEndS.turnNo; print("Turn " + turnNo); }       
+        if (GetComponent<PhotonView>().IsMine) { 
+            turnNo = turnEnd.turnEndS.turnNo; 
+            GameObject.Find("ScreenCanvas/HexInfoPanel/turnText").GetComponent<Text>().text = "TURN " + turnNo.ToString();
+        }       
 
         if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; }  //pl1
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
+
 
         foreach(GameObject hex in hexes) //fix synch inaccuracy
         {
@@ -117,11 +121,13 @@ public class plControl : MonoBehaviour
         clHex = transform.position;
 
         skillTarget = Vector3.down;
-
+                
+        //logo & skill buttons
         GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p1logo;
         btnA.GetComponent<Image>().sprite = p1a;
         btnP.GetComponent<Button>().interactable = false;
-        //GameObject.Find("ScreenCanvas/butPas").GetComponent<Button>().onClick.RemoveAllListeners();
+
+        btnA.GetComponent<Button>().onClick.RemoveAllListeners();
         btnA.GetComponent<Button>().onClick.AddListener(() => {
             if (!GetComponent<PhotonView>().IsMine) { return; }
             bChallenge = !bChallenge;
@@ -136,8 +142,17 @@ public class plControl : MonoBehaviour
         }
         else { btnA.GetComponentInChildren<Text>().text = ""; }
 
+        btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
+        btnNT.GetComponent<Button>().onClick.AddListener(() => {            
+            GetComponent<PhotonView>().RPC("RPC_pl2start", GameObject.FindGameObjectWithTag("player2").GetComponent<PhotonView>().Owner);
+            GetComponent<plControl>().enabled = false;
+        });
 
-        if(gameObject.GetComponent<stats>().item1 != 0) {   //item buttons
+        //item buttons
+        GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+
+        if (gameObject.GetComponent<stats>().item1 != 0) {   
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().interactable = true;
             GameObject.Find("ScreenCanvas/butItem1").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().item1.ToString();
         }
@@ -263,6 +278,8 @@ public class plControl : MonoBehaviour
             GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners(); //do nothing
         }
 
+
+        GetComponent<PhotonView>().RPC("RPC_pl1ACst", RpcTarget.AllBuffered);
     }
 
     void OnDisable()
@@ -320,10 +337,9 @@ public class plControl : MonoBehaviour
             }
         }
         bSlimePlaced = false;
+                       
 
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+        map.mapS.rankPanel.SetActive(false);
     }
 
 
@@ -364,7 +380,7 @@ public class plControl : MonoBehaviour
                 Instantiate(pathPref, path[i], transform.rotation);
             }
 
-            //GameObject.Find("GameLogic").GetComponent<goldControl>().hexInfo(clHex,transform.position);
+            map.mapS.hexInfo(clHex,transform.position); //hex info
 
             clHex = new Vector3(-10,-10,-10);
         }
@@ -654,7 +670,10 @@ public class plControl : MonoBehaviour
     }
 
 
-
+    [PunRPC] void RPC_pl1ACst()
+    {
+        GetComponentInChildren<Animator>().Play("pl1-stand"); //?
+    }
 
 
     [PunRPC] public void RPC_pl2start()

@@ -1,7 +1,8 @@
-using System.Collections;
 using UnityEngine;
 using System.Linq;
 using Photon.Pun;
+using System.Collections;
+
 
 public class itemControl : MonoBehaviour
 {
@@ -9,9 +10,10 @@ public class itemControl : MonoBehaviour
 
     GameObject[] hexes;
     public GameObject[] itemHexes = new GameObject[3];   //public!
+    ExitGames.Client.Photon.Hashtable rProp = new ExitGames.Client.Photon.Hashtable();
     [SerializeField] Material itemMat;
     [SerializeField] Material groundMat;
-
+        
     GameObject gBar1, gBar2, gBar3;
 
     public bool movEnd;  //sets "true" from turnEnd.cs
@@ -38,12 +40,16 @@ public class itemControl : MonoBehaviour
         gBar1 = map.mapS.gBar1;
         gBar2 = map.mapS.gBar2;
         gBar3 = map.mapS.gBar3;
+                
     }
 
 
     void Start()
     {
         itemHexes = new GameObject[3] { map.mapS.hexes[1], map.mapS.hexes[12], map.mapS.hexes[17] };
+
+        rProp["iHex0"] = itemHexes[0].transform.position; rProp["iHex1"] = itemHexes[1].transform.position; rProp["iHex2"] = itemHexes[2].transform.position;
+        PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
     }
 
     
@@ -85,13 +91,12 @@ public class itemControl : MonoBehaviour
             item1use(); item2use();
                        
             Invoke("GLsynchWait", 1.5f);  //wait for GameLogic synch
-            turnEnd.turnEndS.turnNo++;    //next turn
+            turnEnd.turnEndS.turnNo++;    //next turn            
             Invoke("pl1startDelay", 2f);  //wait for ownership return before run pl1
 
 
             movEnd = false; goldEnd = false;
         }        
-        
     }
 
 
@@ -108,11 +113,16 @@ public class itemControl : MonoBehaviour
                 itemHexes[i] = hexes.Except(oldItemHexes).Where(hex => hex != null && (hex.transform.position!=gBar1.transform.position && hex.transform.position!=gBar2.transform.position && hex.transform.position!=gBar3.transform.position)
                 && (Vector3.Distance(hex.transform.position, itemHexes[0].transform.position)>1.3f && Vector3.Distance(hex.transform.position, itemHexes[1].transform.position)>1.3f && Vector3.Distance(hex.transform.position, itemHexes[2].transform.position)>1.3f))
                     .OrderBy(n => Random.value).FirstOrDefault();  //dist!
-            }
+            }            
+            foreach (GameObject itemHex in itemHexes) { itemHex.GetComponent<Renderer>().material = itemMat; }
+
+            rProp["iHex0"] = itemHexes[0].transform.position; rProp["iHex1"] = itemHexes[1].transform.position; rProp["iHex2"] = itemHexes[2].transform.position;
+            PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
+
+            GetComponent<PhotonView>().RPC("RPC_itemSynh", RpcTarget.OthersBuffered);          
+
             bSw1 = false;
-        }
-        
-        foreach(GameObject itemHex in itemHexes) { itemHex.GetComponent<Renderer>().material = itemMat; }
+        }        
     }
 
     ///////////////////////////ITEMS///////////////////////////
@@ -363,6 +373,13 @@ public class itemControl : MonoBehaviour
     void pl1startDelay()
     {        
         GetComponent<PhotonView>().RPC("RPC_pl1start", pl1.GetComponent<PhotonView>().Owner);
+    }
+
+    [PunRPC] IEnumerator RPC_itemSynh()
+    {
+        yield return new WaitForSeconds(1f);
+
+        map.mapS.bNewItem = true;       
     }
 
 }

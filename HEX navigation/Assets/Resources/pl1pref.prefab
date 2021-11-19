@@ -9,13 +9,19 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 619833858658137898}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 8d6f902b6f9516b49b80c54a37e881c1, type: 3}
+  m_Avatar: {fileID: 9000000, guid: 0c0ec15fde8035e4086b62217744548b, type: 3}
   m_Controller: {fileID: 9100000, guid: 29cd1f2ad5ea46d4da28b3f346600b0a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'kaitou16:R_Hand 1'\n\tTransform 'kaitou16:Neck'\n\tTransform
+    'kaitou16:L_thumb1'\n\tTransform 'kaitou16:L_thumb5'\n\tTransform 'kaitou16:L_Leg'\n\tTransform
+    'kaitou16:Hips'\n\tTransform 'kaitou16:L_Hand'\n\tTransform 'kaitou16:R_Hand'\n\tTransform
+    'kaitou16:R_Toe'\n\tTransform 'kaitou16:R_thumb 1'\n\tand more ...\n\tFrom animation
+    clip 'Take 001'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
@@ -203,7 +209,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 1
+  Synchronization: 3
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:

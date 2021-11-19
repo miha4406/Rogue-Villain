@@ -26,7 +26,7 @@ public class p3control : MonoBehaviour
     [SerializeField] Sprite p3logo;
     [SerializeField] Sprite p3a;
 
-    GameObject btnA, btnP;
+    GameObject btnA, btnP, btnNT;
     GameObject tiptop;
     [Multiline] public string[] tiptops;
 
@@ -57,8 +57,8 @@ public class p3control : MonoBehaviour
 
         btnA = GameObject.Find("ScreenCanvas/butAct");
         btnP = GameObject.Find("ScreenCanvas/butPas");
-        tiptop = GameObject.Find("ScreenCanvas/tipPanel");      
-
+        tiptop = GameObject.Find("ScreenCanvas/tipPanel");
+        btnNT = GameObject.Find("ScreenCanvas/butTurn");
     }
 
     void Start() //can't set in Awake
@@ -72,9 +72,12 @@ public class p3control : MonoBehaviour
 
     void OnEnable()
     {
-        print("pl3 enabled");
-
-        if (GetComponent<PhotonView>().IsMine) { turnNo = turnEnd.turnEndS.turnNo; print("Turn " + turnNo); }
+        //print("pl3 enabled");
+        if (GetComponent<PhotonView>().IsMine)
+        {
+            turnNo = turnEnd.turnEndS.turnNo;
+            GameObject.Find("ScreenCanvas/HexInfoPanel/turnText").GetComponent<Text>().text = "TURN " + turnNo.ToString();
+        }
 
         if (gameObject.GetComponent<stats>().movDist != 1) { gameObject.GetComponent<stats>().movDist = 1; }
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
@@ -110,10 +113,12 @@ public class p3control : MonoBehaviour
         pFinder.transform.position = transform.position + Vector3.up;
         clHex = transform.position;
 
+        //logo & skill buttons
         GameObject.Find("ScreenCanvas/logoImage").GetComponent<Image>().sprite = p3logo;
         btnA.GetComponent<Image>().sprite = p3a;
-        btnP.GetComponent<Button>().interactable = false;
-        //GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
+        btnP.GetComponent<Button>().interactable = false;               
+        
+        btnA.GetComponent<Button>().onClick.RemoveAllListeners();
         btnA.GetComponent<Button>().onClick.AddListener( () => {
             if (!GetComponent<PhotonView>().IsMine) { return; }
             bGoldGet = !bGoldGet; 
@@ -126,8 +131,17 @@ public class p3control : MonoBehaviour
         }
         else { btnA.GetComponentInChildren<Text>().text = ""; }
 
+        btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
+        btnNT.GetComponent<Button>().onClick.AddListener(() => {
+            GetComponent<p3control>().enabled = false;            
+            Invoke("StopPl3", 2f); //
+        });
 
-        if(gameObject.GetComponent<stats>().item1 != 0) {   //item buttons
+        //item buttons
+        GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
+        GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+
+        if (gameObject.GetComponent<stats>().item1 != 0) {   
             GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().interactable = true;
             GameObject.Find("ScreenCanvas/butItem1").GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().item1.ToString();
         }
@@ -312,9 +326,8 @@ public class p3control : MonoBehaviour
         }
         bSlimePlaced = false;
 
-        GameObject.Find("ScreenCanvas/butAct").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ScreenCanvas/butItem1").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.Find("ScreenCanvas/butItem2").GetComponent<Button>().onClick.RemoveAllListeners();
+        
+        map.mapS.rankPanel.SetActive(false);
     }
 
 
@@ -354,6 +367,8 @@ public class p3control : MonoBehaviour
             {
                 Instantiate(pathPref, path[i], transform.rotation);
             }
+
+            map.mapS.hexInfo(clHex, transform.position); //hex info
 
             clHex = new Vector3(-10, -10, -10);
         }
@@ -645,15 +660,14 @@ public class p3control : MonoBehaviour
 
 
     [PunRPC] public void RPC_pl3stop()
-    {
-        //print(GameObject.FindGameObjectWithTag("player3").GetComponent<stats>().actSkillTrg[0] + " " + GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
+    {        
         //GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
         turnEnd.turnEndS.endTurn(); //last one!        
     }
 
     void StopPl3()
     {
-        print(GetComponent<stats>().actSkillTrg[0] + " " + GetComponent<PhotonView>().Owner);
+        //print(GetComponent<stats>().actSkillTrg[0] + " " + GetComponent<PhotonView>().Owner);
         GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only
     }
 }

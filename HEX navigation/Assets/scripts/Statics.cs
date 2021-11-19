@@ -12,11 +12,13 @@ public class Statics : MonoBehaviourPun
 
     bool bScene = false;
     bool bStart = false;
+    
 
     private void Awake()
     {
-        DontDestroyOnLoad(transform.gameObject);
+        DontDestroyOnLoad(transform.gameObject);       
     }
+
 
     private void Update()
     {
