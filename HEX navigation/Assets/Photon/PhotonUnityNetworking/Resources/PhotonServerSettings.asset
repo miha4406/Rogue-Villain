@@ -45,6 +45,8 @@ MonoBehaviour:
   - pl1ACstart
   - RPC_pl1ACst
   - RPC_itemSynh
+  - RPC_newSlime
+  - RPC_newSlimes
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -98,7 +98,7 @@ public class Statics : MonoBehaviourPun
                 }
             }
 
-            GameObject.Find("ScreenCanvas/butRank").GetComponent<Button>().interactable = true;
+            //GameObject.Find("ScreenCanvas/butRank").GetComponent<Button>().interactable = true;
             map.mapS.pl1 = GameObject.FindGameObjectWithTag("player1");
             map.mapS.pl2 = GameObject.FindGameObjectWithTag("player2");
             map.mapS.pl3 = GameObject.FindGameObjectWithTag("player3");

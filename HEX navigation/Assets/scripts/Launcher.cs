@@ -17,10 +17,11 @@ namespace m4netgame2
         [SerializeField] GameObject pl1descr;
         [SerializeField] GameObject pl2descr;
         [SerializeField] GameObject pl3descr;
+        [SerializeField] GameObject btn1, btn2, btn3; //new buttons
 
         string gameVersion = "1";
-        bool isConnecting;       
-
+        bool isConnecting;
+                
 
         //CALLBACKS
         public override void OnConnectedToMaster()
@@ -72,6 +73,16 @@ namespace m4netgame2
             controlPanel.SetActive(true);
 
             NameInputIni();
+
+            btn1.GetComponent<Button>().onClick.AddListener( () => {
+                slider.GetComponent<Slider>().value = 1;
+            } );
+            btn2.GetComponent<Button>().onClick.AddListener(() => {
+                slider.GetComponent<Slider>().value = 2;
+            });
+            btn3.GetComponent<Button>().onClick.AddListener(() => {
+                slider.GetComponent<Slider>().value = 3;
+            });
         }
 
         
@@ -151,6 +162,7 @@ namespace m4netgame2
                 GameObject.FindGameObjectWithTag("Statics").GetComponent<Statics>().pref3owner = PhotonNetwork.NickName;
             }
         }
+             
 
     }
 

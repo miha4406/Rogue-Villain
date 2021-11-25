@@ -48,6 +48,7 @@ public class itemControl : MonoBehaviour
     {
         itemHexes = new GameObject[3] { map.mapS.hexes[1], map.mapS.hexes[12], map.mapS.hexes[17] };
 
+        rProp["tNo"] = 1; 
         rProp["iHex0"] = itemHexes[0].transform.position; rProp["iHex1"] = itemHexes[1].transform.position; rProp["iHex2"] = itemHexes[2].transform.position;
         PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
     }
@@ -91,7 +92,8 @@ public class itemControl : MonoBehaviour
             item1use(); item2use();
                        
             Invoke("GLsynchWait", 1.5f);  //wait for GameLogic synch
-            turnEnd.turnEndS.turnNo++;    //next turn            
+            turnEnd.turnEndS.turnNo++;    //next turn      
+            rProp["tNo"] = turnNo+1; PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
             Invoke("pl1startDelay", 2f);  //wait for ownership return before run pl1
 
 
@@ -225,7 +227,7 @@ public class itemControl : MonoBehaviour
                     }
                 }
                 pl1.GetComponent<stats>().item1 = 0;
-                bombClear();
+                map.mapS.bombClear();
             }            
         }       
         if (pl2.GetComponent<stats>().item1==1 || pl2.GetComponent<stats>().item1==2 || pl2.GetComponent<stats>().item1==3)  //bombs use (pl2)
@@ -246,7 +248,7 @@ public class itemControl : MonoBehaviour
                     }
                 }
                 pl2.GetComponent<stats>().item1 = 0;
-                bombClear();
+                map.mapS.bombClear();
             }            
         }     
         if (pl3.GetComponent<stats>().item1==1 || pl3.GetComponent<stats>().item1==2 || pl3.GetComponent<stats>().item1==3)  //bombs use (pl3)
@@ -267,7 +269,7 @@ public class itemControl : MonoBehaviour
                     }
                 }
                 pl3.GetComponent<stats>().item1 = 0;
-                bombClear();
+                map.mapS.bombClear();
             }            
         }     
     }
@@ -291,7 +293,7 @@ public class itemControl : MonoBehaviour
                     }
                 }
                 pl1.GetComponent<stats>().item2 = 0;
-                bombClear();
+                map.mapS.bombClear();
             }            
         }     
         if (pl2.GetComponent<stats>().item2==1 || pl2.GetComponent<stats>().item2==2 || pl2.GetComponent<stats>().item2==3)  //bombs use (pl2)
@@ -312,7 +314,7 @@ public class itemControl : MonoBehaviour
                     }
                 }
                 pl2.GetComponent<stats>().item2 = 0;
-                bombClear();
+                map.mapS.bombClear();
             }            
         }     
         if (pl3.GetComponent<stats>().item2==1 || pl3.GetComponent<stats>().item2==2 || pl3.GetComponent<stats>().item2==3)  //bombs use (pl3)
@@ -333,18 +335,12 @@ public class itemControl : MonoBehaviour
                     }
                 }
                 pl3.GetComponent<stats>().item2 = 0;
-                bombClear();
+                map.mapS.bombClear();
             }            
         }     
     }
 
-    public void bombClear()
-    {
-        foreach (GameObject bomb in GameObject.FindGameObjectsWithTag("bombPref"))
-        {
-            Destroy(bomb);  
-        }        
-    }
+
 
     public bool slimeObstacle(Vector3 pos)
     {

@@ -118,7 +118,7 @@ MonoBehaviour:
   bGoldGet: 0
   p3logo: {fileID: 21300000, guid: 60a95a146ccec7f42b7116b944d0e953, type: 3}
   p3a: {fileID: 21300000, guid: f28ae560f84a84e45ab771b94e7bc8a7, type: 3}
-  tiptops:
+  tips:
   - "\u30BB\u30AA\u30EA\u30C6\u30A3\u30AB\u30EA\u30C6\u30A3\u30FC\u30FB\u30A2\u30FC\u30DE\u30E1\u30F3\u30C8\r\nCT
     = 3\r\n\u91D1\u584A\u30921\u3064\u5165\u624B\u3059\u308B\u3053\u3068\u304C\u3067\u304D\u308B\u3002\r\n\u3053\u306E\u30B9\u30AD\u30EB\u3092\u4F7F\u7528\u3057\u305F\u30BF\u30FC\u30F3\u306F\u79FB\u52D5\u304C\u3067\u304D\u306A\u3044\u3002"
   bomb: {fileID: 5081492897730353289, guid: a08482c5af5f99549bd3d0ecbbf8ceb1, type: 3}

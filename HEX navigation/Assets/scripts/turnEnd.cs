@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class turnEnd : MonoBehaviour, IPunObservable
+public class turnEnd : MonoBehaviour 
 {
     public static turnEnd turnEndS;  //turnEnd class singleton
     PhotonView pv;
@@ -36,18 +36,6 @@ public class turnEnd : MonoBehaviour, IPunObservable
     public Player[] roomPlayers = new Player[4];
 
     Animator pl1anim, pl2anim, pl3anim;
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting) // send the others our data
-        {
-            stream.SendNext(turnNo);
-        }
-        else  // receive data
-        {
-            this.turnNo = (int)stream.ReceiveNext();
-        }
-    }
 
 
     void Awake()
