@@ -271,11 +271,36 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8200536638744201950, guid: 759a959005013f04cb5286c39dc3b54a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c50325ba836bfd4449f56cce4deb56ee, type: 2}
+    - target: {fileID: -7632121885683038121, guid: 759a959005013f04cb5286c39dc3b54a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5b0785d027dfe3b49ab412448a8eace5, type: 2}
+    - target: {fileID: -5546644918813486885, guid: 759a959005013f04cb5286c39dc3b54a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 61d2d2e8679fb6b4aa7547d164767ef6, type: 2}
+    - target: {fileID: -2166681200975081718, guid: 759a959005013f04cb5286c39dc3b54a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: e03d168f3390e3649bbb43bc1d5b8e29, type: 2}
     - target: {fileID: 919132149155446097, guid: 759a959005013f04cb5286c39dc3b54a,
         type: 3}
       propertyPath: m_Name
       value: tankenka_model
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 759a959005013f04cb5286c39dc3b54a,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: a7c8ae9a7704cc44382101b2428afc35, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 759a959005013f04cb5286c39dc3b54a, type: 3}
 --- !u!4 &5207657742333554171 stripped

@@ -75,14 +75,7 @@ public class plControl : MonoBehaviour
         pNick = GameObject.Find("ScreenCanvas/infoPanel/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
         pGold = GameObject.Find("ScreenCanvas/infoPanel/goldText").GetComponent<Text>();
-
-        GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P1";
-        map.mapS.enemyLogo1.sprite = map.mapS.pl2logo;  map.mapS.enemyLogo2.sprite = map.mapS.pl3logo;
-        map.mapS.px1.text = "P2";  map.mapS.px2.text = "P3";
-        map.mapS.nick1.text = map.mapS.pl2.GetComponent<PhotonView>().Owner.NickName.ToString();
-        map.mapS.nick2.text = map.mapS.pl3.GetComponent<PhotonView>().Owner.NickName.ToString();
-        map.mapS.gold1.text = "金塊：" + map.mapS.pl2.GetComponent<stats>().gold.ToString() + "個";
-        map.mapS.gold2.text = "金塊：" + map.mapS.pl3.GetComponent<stats>().gold.ToString() + "個";
+        
     }
 
 
@@ -99,7 +92,16 @@ public class plControl : MonoBehaviour
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
 
 
-        foreach(GameObject hex in hexes) //fix synch inaccuracy
+        GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P1";
+        map.mapS.enemyLogo1.sprite = map.mapS.pl2logo; map.mapS.enemyLogo2.sprite = map.mapS.pl3logo;
+        map.mapS.px1.text = "P2"; map.mapS.px2.text = "P3";
+        map.mapS.nick1.text = map.mapS.pl2.GetComponent<PhotonView>().Owner.NickName.ToString();
+        map.mapS.nick2.text = map.mapS.pl3.GetComponent<PhotonView>().Owner.NickName.ToString();
+        map.mapS.gold1.text = "金塊：" + map.mapS.pl2.GetComponent<stats>().gold.ToString() + "個";
+        map.mapS.gold2.text = "金塊：" + map.mapS.pl3.GetComponent<stats>().gold.ToString() + "個";
+
+
+        foreach (GameObject hex in hexes) //fix synch inaccuracy
         {
             if(hex != null)
             {
@@ -407,6 +409,8 @@ public class plControl : MonoBehaviour
         }
 
         curBtn();
+
+        blockBtn();
     }
 
 
@@ -679,6 +683,34 @@ public class plControl : MonoBehaviour
         }        
         else { toolTip.SetActive(false); }
     }
+
+    void blockBtn()
+    {
+        if (bChallenge)
+        {            
+            btnI1.GetComponent<Button>().interactable = false;
+            btnI2.GetComponent<Button>().interactable = false;
+        }        
+        else if (bItem1a || bItem1b || bItem1c)
+        {
+            btnA.GetComponent<Button>().interactable = false;
+            btnP.GetComponent<Button>().interactable = false;
+            btnI2.GetComponent<Button>().interactable = false;
+        }
+        else if (bItem2a || bItem2b || bItem2c)
+        {
+            btnA.GetComponent<Button>().interactable = false;
+            btnP.GetComponent<Button>().interactable = false;
+            btnI1.GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            btnA.GetComponent<Button>().interactable = true;           
+            btnI1.GetComponent<Button>().interactable = true;
+            btnI2.GetComponent<Button>().interactable = true;
+        }
+    }
+
 
 
     [PunRPC] void RPC_pl1ACst()

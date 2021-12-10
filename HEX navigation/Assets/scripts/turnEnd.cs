@@ -59,7 +59,7 @@ public class turnEnd : MonoBehaviour
 
         pl1anim = pl1.GetComponentInChildren<Animator>();
         pl2anim = pl2.GetComponentInChildren<Animator>();
-        //pl3anim = GetComponentInChildren<Animator>();
+        pl3anim = pl3.GetComponentInChildren<Animator>();
     }
 
     //private void OnEnable()
@@ -92,7 +92,7 @@ public class turnEnd : MonoBehaviour
                 + "(player3) " + pl3.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl3.GetComponent<stats>().gold.ToString();
         }
 
-        /////////////////////collisions//////////////////////////
+        //COLLISIONS
         if (bTurnEnd)
         {
             if (!bMove1 && !bMove2 && !bMove3)
@@ -348,18 +348,23 @@ public class turnEnd : MonoBehaviour
             pl3.transform.LookAt(p3Path[stepNo]);
 
             if (pl3.transform.position == p3Path[stepNo]) { mov3StepNo++; }
+
+            pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-walk");
         }
-        else { bMove3 = false; lastMov3 = mov3StepNo - 1; mov3StepNo = 1; bWait = false; }
+        else { bMove3 = false; lastMov3 = mov3StepNo - 1; mov3StepNo = 1; bWait = false; pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-stand"); }
     }
 
     [PunRPC] void pl1AC(string newState)
     {
         pl1anim.Play(newState);
     }
-
     [PunRPC] void pl2AC(string newState)
     {
         pl2anim.Play(newState);
+    }
+    [PunRPC] void pl3AC(string newState)
+    {
+        pl3anim.Play(newState);
     }
 
 }

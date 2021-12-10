@@ -33,6 +33,7 @@ public class p3control : MonoBehaviour
     [SerializeField] GameObject slime;
     GameObject s0 = null; GameObject s1 = null; GameObject s2 = null; GameObject s3 = null; GameObject s4 = null;
     bool bSlimePlaced = false;
+    Vector3[] slimePos = new Vector3[10]; //for synch
 
     public bool bItem1a = false; public bool bItem2a = false;  //bombs
     public bool bItem1b = false; public bool bItem2b = false;  //boots
@@ -66,14 +67,7 @@ public class p3control : MonoBehaviour
         pNick = GameObject.Find("ScreenCanvas/infoPanel/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
         pGold = GameObject.Find("ScreenCanvas/infoPanel/goldText").GetComponent<Text>();
-
-        GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P3";
-        map.mapS.enemyLogo1.sprite = map.mapS.pl2logo;  map.mapS.enemyLogo2.sprite = map.mapS.pl1logo;
-        map.mapS.px1.text = "P2";  map.mapS.px2.text = "P1";
-        map.mapS.nick1.text = map.mapS.pl2.GetComponent<PhotonView>().Owner.NickName.ToString();
-        map.mapS.nick2.text = map.mapS.pl1.GetComponent<PhotonView>().Owner.NickName.ToString();
-        map.mapS.gold1.text = "金塊：" + map.mapS.pl2.GetComponent<stats>().gold.ToString() + "個";
-        map.mapS.gold2.text = "金塊：" + map.mapS.pl1.GetComponent<stats>().gold.ToString() + "個";
+                
     }
 
 
@@ -89,6 +83,16 @@ public class p3control : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().movDist != 1) { gameObject.GetComponent<stats>().movDist = 1; }
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
+
+
+        GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P3";
+        map.mapS.enemyLogo1.sprite = map.mapS.pl2logo; map.mapS.enemyLogo2.sprite = map.mapS.pl1logo;
+        map.mapS.px1.text = "P2"; map.mapS.px2.text = "P1";
+        map.mapS.nick1.text = map.mapS.pl2.GetComponent<PhotonView>().Owner.NickName.ToString();
+        map.mapS.nick2.text = map.mapS.pl1.GetComponent<PhotonView>().Owner.NickName.ToString();
+        map.mapS.gold1.text = "金塊：" + map.mapS.pl2.GetComponent<stats>().gold.ToString() + "個";
+        map.mapS.gold2.text = "金塊：" + map.mapS.pl1.GetComponent<stats>().gold.ToString() + "個";
+
 
         foreach (GameObject hex in hexes) //fix synch inaccuracy
         {
@@ -326,7 +330,19 @@ public class p3control : MonoBehaviour
             }
         }
         bSlimePlaced = false;
-                
+
+        for (int k = 0; k < slimePos.Length; k++) { slimePos[k] = Vector3.down; }
+        int i = 0;
+        foreach (GameObject slime in GameObject.FindGameObjectsWithTag("slimePref"))
+        {
+            if (slime.GetComponent<slimeScript>().user == gameObject && slime.GetComponent<slimeScript>().crTurn == turnNo)
+            {
+                slimePos[i] = slime.transform.position; i++;
+            }
+        }
+        //print(slimePos[0]);
+        GetComponent<PhotonView>().RPC("RPC_newSlimes", RpcTarget.OthersBuffered, slimePos);
+
     }
 
 
@@ -383,6 +399,7 @@ public class p3control : MonoBehaviour
 
         curBtn();
 
+        blockBtn();
     }
 
 
@@ -654,6 +671,52 @@ public class p3control : MonoBehaviour
             toolTip.SetActive(true);
         }        
         else { toolTip.SetActive(false); }
+    }
+
+    void blockBtn()
+    {
+        if (bGoldGet)
+        {
+            btnI1.GetComponent<Button>().interactable = false;
+            btnI2.GetComponent<Button>().interactable = false;
+        }
+        else if (bItem1a || bItem1b || bItem1c)
+        {
+            btnA.GetComponent<Button>().interactable = false;
+            btnP.GetComponent<Button>().interactable = false;
+            btnI2.GetComponent<Button>().interactable = false;
+        }
+        else if (bItem2a || bItem2b || bItem2c)
+        {
+            btnA.GetComponent<Button>().interactable = false;
+            btnP.GetComponent<Button>().interactable = false;
+            btnI1.GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            btnA.GetComponent<Button>().interactable = true;
+            btnI1.GetComponent<Button>().interactable = true;
+            btnI2.GetComponent<Button>().interactable = true;
+        }
+    }
+
+
+    [PunRPC] void RPC_newSlimes(Vector3[] newSlimes)
+    {
+        foreach (GameObject hex in hexes)
+        {
+            foreach (Vector3 sl in newSlimes)
+            {
+                if (sl != Vector3.down && hex != null)
+                {
+                    if (Vector3.Distance(hex.transform.position, sl) < 0.5f)
+                    {
+                        //print(hex.name);
+                        Instantiate(this.slime, hex.transform.position, Quaternion.identity);  //sl?
+                    }
+                }
+            }
+        }
     }
 
 
