@@ -116,12 +116,12 @@ public class itemControl : MonoBehaviour
                 && (Vector3.Distance(hex.transform.position, itemHexes[0].transform.position)>1.3f && Vector3.Distance(hex.transform.position, itemHexes[1].transform.position)>1.3f && Vector3.Distance(hex.transform.position, itemHexes[2].transform.position)>1.3f))
                     .OrderBy(n => Random.value).FirstOrDefault();  //dist!
             }            
-            foreach (GameObject itemHex in itemHexes) { itemHex.GetComponent<Renderer>().material = itemMat; }
+            //foreach (GameObject itemHex in itemHexes) { itemHex.GetComponent<Renderer>().material = itemMat; }
 
             rProp["iHex0"] = itemHexes[0].transform.position; rProp["iHex1"] = itemHexes[1].transform.position; rProp["iHex2"] = itemHexes[2].transform.position;
             PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
 
-            GetComponent<PhotonView>().RPC("RPC_itemSynh", RpcTarget.OthersBuffered);          
+            GetComponent<PhotonView>().RPC("RPC_itemSynh", RpcTarget.AllBuffered);  //takes moment to refresh  
 
             bSw1 = false;
         }        

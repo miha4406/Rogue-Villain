@@ -76,7 +76,7 @@ public class goldControl : MonoBehaviour
             gBar1.transform.position = hexes.Where(hex => hex != null && (hex.transform.position != gBar1.transform.position
             && hex.transform.position != gBar2.transform.position && hex.transform.position != gBar3.transform.position))
                 .Except(itemHexes).OrderBy(n => Random.value).FirstOrDefault().transform.position;
-            gBar1.SetActive(true);
+            gBar1.SetActive(true); 
         }
 
         if (pl1.GetComponent<PhotonView>().Owner != pl3.GetComponent<PhotonView>().Owner) //all owned by Host

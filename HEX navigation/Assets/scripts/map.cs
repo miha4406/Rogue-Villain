@@ -11,7 +11,10 @@ public class map : MonoBehaviour
 
     [SerializeField] public Sprite pl1logo, pl2logo, pl3logo;
     public GameObject pl1, pl2, pl3;
-    public GameObject gBar1, gBar2, gBar3;    
+    public GameObject gBar1, gBar2, gBar3;
+    public GameObject item1, item2, item3;
+    public Sprite[] itemIcons;
+    [Multiline] public string[] itemTips;
 
     [SerializeField] public GameObject hexInfoPanel;    
     [SerializeField] public GameObject resultPanel;
@@ -51,27 +54,11 @@ public class map : MonoBehaviour
 
     private void Update()
     {
-        if (!PhotonNetwork.IsMasterClient && bNewItem) {  //Host is controlled by itemControl
-           
-            foreach (GameObject hex in hexes)
-            {
-                if (hex != null) { hex.GetComponent<Renderer>().material = groundMat; }
-            }
-
-            print(PhotonNetwork.CurrentRoom.CustomProperties["iHex1"]); //takes moment to refresh
-
-            foreach (GameObject hex in hexes)
-            {
-                if (hex != null)
-                {
-                    if (hex.transform.position == (Vector3)PhotonNetwork.CurrentRoom.CustomProperties["iHex0"] 
-                        || hex.transform.position == (Vector3)PhotonNetwork.CurrentRoom.CustomProperties["iHex1"] 
-                        || hex.transform.position == (Vector3)PhotonNetwork.CurrentRoom.CustomProperties["iHex2"])
-                    {
-                        hex.GetComponent<Renderer>().material = itemMat;
-                    }
-                }
-            }
+        if (bNewItem) //item hexes update
+        {     
+            item1.transform.position = (Vector3)PhotonNetwork.CurrentRoom.CustomProperties["iHex0"];
+            item2.transform.position = (Vector3)PhotonNetwork.CurrentRoom.CustomProperties["iHex1"];
+            item3.transform.position = (Vector3)PhotonNetwork.CurrentRoom.CustomProperties["iHex2"];
 
             bNewItem = false;            
         }        

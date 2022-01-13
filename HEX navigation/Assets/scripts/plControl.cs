@@ -29,6 +29,7 @@ public class plControl : MonoBehaviour
     GameObject btnA, btnP, btnI1, btnI2, btnNT;
     GameObject toolTip;
     [Multiline] public string[] tips;
+    GameObject itemTip;
 
     [SerializeField] GameObject bomb;
     int bombCntr = 0;
@@ -60,7 +61,8 @@ public class plControl : MonoBehaviour
         btnP = GameObject.Find("ScreenCanvas/skillPanel/butPas");
         btnI1 = GameObject.Find("ScreenCanvas/itemPanel/butItem1");
         btnI2 = GameObject.Find("ScreenCanvas/itemPanel/butItem2");
-        toolTip = GameObject.Find("ScreenCanvas/tipPanel");        
+        toolTip = GameObject.Find("ScreenCanvas/tipPanel");
+        itemTip = GameObject.Find("ScreenCanvas/itemTipPanel");
         btnNT = GameObject.Find("ScreenCanvas/butTurn");
 
         p1panel = GameObject.Find("ScreenCanvas/p1panel");
@@ -118,12 +120,14 @@ public class plControl : MonoBehaviour
             {
                 if (Vector3.Distance(x.transform.position, transform.position) < plDist+0.5f)
                 {
-                    x.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
-                    x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.blue);
+                    //x.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
+                    //x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.blue);
+                    x.transform.Find("hex").GetComponent<Renderer>().material.color = Color.blue;
                 }
                 else
                 {
-                    x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.black);
+                    //x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.black);
+                    x.transform.Find("hex").GetComponent<Renderer>().material.color = Color.gray;
                 }
             }
         }
@@ -166,12 +170,14 @@ public class plControl : MonoBehaviour
 
         if (gameObject.GetComponent<stats>().item1 != 0) {
             btnI1.GetComponent<Button>().interactable = true;
-            btnI1.GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().item1.ToString();
+            //btnI1.GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().item1.ToString();
+            btnI1.GetComponent<Image>().sprite = map.mapS.itemIcons[GetComponent<stats>().item1];
         }else { btnI1.GetComponent<Button>().interactable = false; }
         if (gameObject.GetComponent<stats>().item2 != 0)
         {
             btnI2.GetComponent<Button>().interactable = true;
-            btnI2.GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().item2.ToString();
+            //btnI2.GetComponentInChildren<Text>().text = gameObject.GetComponent<stats>().item2.ToString();
+            btnI2.GetComponent<Image>().sprite = map.mapS.itemIcons[GetComponent<stats>().item2];
         }else { btnI2.GetComponent<Button>().interactable = false; }
 
 
@@ -535,30 +541,30 @@ public class plControl : MonoBehaviour
             {
                 if (Input.GetAxis("Mouse ScrollWheel") < 0f)
                 {
-                    s1.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
-                    s2.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
+                    s1?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
+                    s2?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
                 }
                 if (Input.GetAxis("Mouse ScrollWheel") > 0f)
                 {
-                    s1.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
-                    s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
+                    s1?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
+                    s2?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
                 }
             }
             if (itemID==9 && !bSlimePlaced)
             {
                 if (Input.GetAxis("Mouse ScrollWheel") < 0f)
                 {
-                    s1.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
-                    s2.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
-                    s3.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
-                    s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s1?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s2?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s3?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s4?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
                 }
                 if (Input.GetAxis("Mouse ScrollWheel") > 0f)
                 {
-                    s1.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
-                    s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
-                    s3.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
-                    s4.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s1?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s2?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s3?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s4?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
                 }
             }
 
@@ -640,30 +646,30 @@ public class plControl : MonoBehaviour
             {
                 if (Input.GetAxis("Mouse ScrollWheel") < 0f)
                 {
-                    s1.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
-                    s2.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
+                    s1?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
+                    s2?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);                    
                 }
                 if (Input.GetAxis("Mouse ScrollWheel") > 0f)
                 {
-                    s1.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
-                    s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
+                    s1?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
+                    s2?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                    
                 }
             }
             if (itemID==9 && !bSlimePlaced)
             {
                 if (Input.GetAxis("Mouse ScrollWheel") < 0f)
                 {
-                    s1.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
-                    s2.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
-                    s3.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
-                    s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s1?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s2?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s3?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                    s4?.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
                 }
                 if (Input.GetAxis("Mouse ScrollWheel") > 0f)
                 {
-                    s1.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
-                    s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
-                    s3.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
-                    s4.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s1?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s2?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s3?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                    s4?.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
                 }
             }
 
@@ -682,6 +688,19 @@ public class plControl : MonoBehaviour
             toolTip.SetActive(true);
         }        
         else { toolTip.SetActive(false); }
+
+        if (Vector3.Distance(btnI1.transform.position, curPos) < 30f) {
+            itemTip.transform.position = btnI1.transform.position + new Vector3(50f, 100f, 0f);
+            itemTip.GetComponentInChildren<Text>().text = map.mapS.itemTips[GetComponent<stats>().item1];
+            itemTip.SetActive(true);
+        }
+        else if (Vector3.Distance(btnI2.transform.position, curPos) < 30f)
+        {
+            itemTip.transform.position = btnI2.transform.position + new Vector3(50f, 100f, 0f);
+            itemTip.GetComponentInChildren<Text>().text = map.mapS.itemTips[GetComponent<stats>().item2];
+            itemTip.SetActive(true);
+        }
+        else { itemTip.SetActive(false); }
     }
 
     void blockBtn()
