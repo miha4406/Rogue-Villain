@@ -72,6 +72,7 @@ public class itemControl : MonoBehaviour
 
                     if (pl1.GetComponent<stats>().item1 == 0) { item1Generator(pl1); }                    
                     else if (pl1.GetComponent<stats>().item2 == 0) { item2Generator(pl1); }
+                    GetComponent<PhotonView>().RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-item");  //anim
                 }
                 if (x.transform.position == pl2.transform.position)
                 {
@@ -79,6 +80,7 @@ public class itemControl : MonoBehaviour
 
                     if (pl2.GetComponent<stats>().item1 == 0) { item1Generator(pl2); }
                     else if (pl2.GetComponent<stats>().item2 == 0) { item2Generator(pl2); }
+                    GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-item");  //anim
                 }
                 if (x.transform.position == pl3.transform.position)
                 {
@@ -86,6 +88,7 @@ public class itemControl : MonoBehaviour
 
                     if (pl3.GetComponent<stats>().item1 == 0) { item1Generator(pl3); }
                     else if (pl3.GetComponent<stats>().item2 == 0) { item2Generator(pl3); }
+                    GetComponent<PhotonView>().RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-item");  //anim
                 }
             }
 

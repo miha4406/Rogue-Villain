@@ -292,6 +292,7 @@ public class p2control : MonoBehaviour
             btnI2.GetComponent<Button>().onClick.RemoveAllListeners(); //do nothing
         }
 
+        GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl2-stand"); //anim
     }
 
     void OnDisable()
@@ -299,11 +300,15 @@ public class p2control : MonoBehaviour
         gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         gameObject.GetComponent<stats>().path = path;
                 
-        if (bPasAtk) { gameObject.GetComponent<stats>().pasSkillHex = path[1];  bPasAtk = false; }
+        if (bPasAtk) { 
+            gameObject.GetComponent<stats>().pasSkillHex = path[1];  bPasAtk = false;
+            //GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
+        }
 
         if (bShootPrep && shootHexes[0]!=Vector3.down) { 
             gameObject.GetComponent<stats>().actSkillTrg = shootHexes;
             gameObject.GetComponent<stats>().skillCD = 4;
+            //GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
         }
         bShootPrep = false;       
 
@@ -823,6 +828,14 @@ public class p2control : MonoBehaviour
             btnI2.GetComponent<Button>().interactable = true;
         }
     }
+
+
+    [PunRPC] void RPC_AC(string newState)
+    {
+        GameObject.FindGameObjectWithTag("player2").GetComponentInChildren<Animator>().Play(newState);
+    }
+
+
 
     [PunRPC] void RPC_newSlimes(Vector3[] newSlimes)
     {

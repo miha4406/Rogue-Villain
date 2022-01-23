@@ -289,7 +289,7 @@ public class plControl : MonoBehaviour
         }
 
 
-        GetComponent<PhotonView>().RPC("RPC_pl1ACst", RpcTarget.AllBuffered);
+        GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl1-stand"); //anim
     }
 
     void OnDisable()
@@ -300,6 +300,7 @@ public class plControl : MonoBehaviour
         if (bChallenge && skillTarget!=Vector3.down) {
             gameObject.GetComponent<stats>().actSkillTrg[0] = skillTarget;
             gameObject.GetComponent<stats>().skillCD = 4;
+            GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl1-skill"); //anim
         }
         bChallenge = false;
 
@@ -732,9 +733,9 @@ public class plControl : MonoBehaviour
 
 
 
-    [PunRPC] void RPC_pl1ACst()
+    [PunRPC] void RPC_AC(string newState)
     {
-        GetComponentInChildren<Animator>().Play("pl1-stand"); //?
+        GameObject.FindGameObjectWithTag("player1").GetComponentInChildren<Animator>().Play(newState);
     }
 
 

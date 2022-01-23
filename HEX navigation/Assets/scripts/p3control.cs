@@ -272,6 +272,8 @@ public class p3control : MonoBehaviour
             btnI2.GetComponent<Button>().onClick.RemoveAllListeners(); //do nothing
         }
 
+
+        GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl3-stand");  //anim
     }
 
     void OnDisable()
@@ -282,6 +284,7 @@ public class p3control : MonoBehaviour
         if (bGoldGet) { 
             gameObject.GetComponent<stats>().actSkillTrg[0] = new Vector3(3f,3f,3f);  //3rd player himself
             gameObject.GetComponent<stats>().skillCD = 3;
+            GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl3-skill");  //anim
         }
         bGoldGet = false;
         
@@ -712,6 +715,12 @@ public class p3control : MonoBehaviour
             btnI1.GetComponent<Button>().interactable = true;
             btnI2.GetComponent<Button>().interactable = true;
         }
+    }
+
+
+    [PunRPC] void RPC_AC(string newState)
+    {
+        GameObject.FindGameObjectWithTag("player3").GetComponentInChildren<Animator>().Play(newState);
     }
 
 
