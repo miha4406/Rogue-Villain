@@ -12,7 +12,8 @@ public class Statics : MonoBehaviourPun
 
     bool bScene = false;
     bool bStart = false;
-    
+
+    [SerializeField] GameObject GameLogicPref;
 
     private void Awake()
     {
@@ -103,14 +104,15 @@ public class Statics : MonoBehaviourPun
             map.mapS.pl2 = GameObject.FindGameObjectWithTag("player2");
             map.mapS.pl3 = GameObject.FindGameObjectWithTag("player3");
 
-            if (GameObject.FindGameObjectWithTag("GameLogic") == null)  //only one GL per room
+            if (GameObject.FindGameObjectWithTag("GameLogic") == null)  //only one actve GL per room
             {
-                if (PhotonNetwork.IsMasterClient) { PhotonNetwork.Instantiate("GameLogic", new Vector3(-10f, -10f, -10f), Quaternion.identity); }
+                if (PhotonNetwork.IsMasterClient) { 
+                    PhotonNetwork.Instantiate("GameLogic", new Vector3(-10f,-10f,-10f), Quaternion.identity);                    
+                }
             }
 
-            if (PhotonNetwork.IsMasterClient) {
-                GameObject.FindGameObjectWithTag("GameLogic").GetComponent<PhotonView>().RPC("RPC_pl1start",
-                    GameObject.FindGameObjectWithTag("player1").GetComponent<PhotonView>().Owner);
+            if (PhotonNetwork.IsMasterClient) {    //we own pl1 and start it
+                map.mapS.pl1.GetComponent<plControl>().enabled = true;
             }                
             
             bStart = true;

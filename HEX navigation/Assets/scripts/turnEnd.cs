@@ -178,6 +178,7 @@ public class turnEnd : MonoBehaviour
         bWait = false;
         pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-stand");
         pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-stand");
+        pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-stand");
 
         Invoke("endTurnDelay", 2f);  //time to synch
     }
@@ -185,8 +186,8 @@ public class turnEnd : MonoBehaviour
 
     public void endTurn()  //runs by pl3
     {
-        if (!GetComponent<PhotonView>().IsMine) { return; } //host only
-
+        //if (!GetComponent<PhotonView>().IsMine) { return; } //host only
+        print("STARTED");
         if (!pl1.GetComponent<PhotonView>().IsMine) { pl1.GetComponent<PhotonView>().RequestOwnership(); }
         if (!pl2.GetComponent<PhotonView>().IsMine) { pl2.GetComponent<PhotonView>().RequestOwnership(); }
         if (!pl3.GetComponent<PhotonView>().IsMine) { pl3.GetComponent<PhotonView>().RequestOwnership(); }

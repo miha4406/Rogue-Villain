@@ -11,13 +11,12 @@ namespace m4netgame2
         [SerializeField] InputField nameInput;
         const string playerNamePrefKey = "PlayerName";
 
-        [SerializeField] private GameObject controlPanel;
+        [SerializeField] private GameObject controlPanel; //title screen
         [SerializeField] private GameObject progessLabel;
         [SerializeField] GameObject slider;
-        [SerializeField] GameObject pl1descr;
-        [SerializeField] GameObject pl2descr;
-        [SerializeField] GameObject pl3descr;
-        [SerializeField] GameObject btn1, btn2, btn3; //new buttons
+        [SerializeField] GameObject p1, p2, p3;
+        [SerializeField] GameObject pl1descr, pl2descr, pl3descr;
+        [SerializeField] GameObject btnTest, btnPlay;
 
         string gameVersion = "1";
         bool isConnecting;
@@ -48,15 +47,17 @@ namespace m4netgame2
         }
         public override void OnJoinedRoom()
         {
-            Debug.Log("PUN: client joined room.");
+            Debug.Log("PUN: client joined room. ActorNumber is " + PhotonNetwork.LocalPlayer.ActorNumber);
 
             // #Critical: We only load if we are the first player, else we rely on `PhotonNetwork.AutomaticallySyncScene` to sync our instance scene.
-            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
-            {
-                Debug.Log("Loading scene. NickName: " +PhotonNetwork.NickName);
+            //if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            //{
+            //    Debug.Log("Loading scene. NickName: " +PhotonNetwork.NickName);
 
-                PhotonNetwork.LoadLevel("s1");
-            }
+            //    PhotonNetwork.LoadLevel("s1");
+            //}
+
+            p1.GetComponent<plChoose>().startRefrChars();
         }
 
 
@@ -74,38 +75,56 @@ namespace m4netgame2
 
             NameInputIni();
 
-            btn1.GetComponent<Button>().onClick.AddListener( () => {
-                slider.GetComponent<Slider>().value = 1;
-            } );
-            btn2.GetComponent<Button>().onClick.AddListener(() => {
-                slider.GetComponent<Slider>().value = 2;
+            //test connect
+            btnTest.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                if (slider.GetComponent<Slider>().value == 1) {
+                    PhotonNetwork.LoadLevel("s1");
+                };
             });
-            btn3.GetComponent<Button>().onClick.AddListener(() => {
-                slider.GetComponent<Slider>().value = 3;
+
+            //multiplayer connect
+            btnPlay.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                if (slider.GetComponent<Slider>().value == 1)
+                {
+                    PhotonNetwork.SetMasterClient(PhotonNetwork.LocalPlayer);  //char1 owner will host
+                    if (PhotonNetwork.IsMasterClient)
+                    {
+                        PhotonNetwork.LoadLevel("s1");
+                    }
+
+                }
+                else {
+                    p1.GetComponent<BoxCollider2D>().enabled = false;
+                    p2.GetComponent<BoxCollider2D>().enabled = false;
+                    p3.GetComponent<BoxCollider2D>().enabled = false;
+                };
             });
+
         }
 
         
         void Update()
         {
-            if (slider.GetComponent<Slider>().value == 1)
-            {
-                pl1descr.active = true;
-                pl2descr.active = false;
-                pl3descr.active = false;
-            }
-            else if (slider.GetComponent<Slider>().value == 2)
-            {
-                pl2descr.active = true;
-                pl1descr.active = false;
-                pl3descr.active = false;
-            }
-            else if (slider.GetComponent<Slider>().value == 3)
-            {
-                pl3descr.active = true;
-                pl2descr.active = false;
-                pl1descr.active = false;
-            }
+            //if (slider.GetComponent<Slider>().value == 1)
+            //{
+            //    pl1descr.active = true;
+            //    pl2descr.active = false;
+            //    pl3descr.active = false;
+            //}
+            //else if (slider.GetComponent<Slider>().value == 2)
+            //{
+            //    pl2descr.active = true;
+            //    pl1descr.active = false;
+            //    pl3descr.active = false;
+            //}
+            //else if (slider.GetComponent<Slider>().value == 3)
+            //{
+            //    pl3descr.active = true;
+            //    pl2descr.active = false;
+            //    pl1descr.active = false;
+            //}
         }
 
 
@@ -120,6 +139,10 @@ namespace m4netgame2
                 isConnecting = PhotonNetwork.ConnectUsingSettings();
                 PhotonNetwork.GameVersion = gameVersion;
             }
+
+            p1.GetComponent<BoxCollider2D>().enabled = true;
+            p2.GetComponent<BoxCollider2D>().enabled = true;
+            p3.GetComponent<BoxCollider2D>().enabled = true;
         }
 
         void NameInputIni()

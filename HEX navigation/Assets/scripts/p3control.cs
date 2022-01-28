@@ -68,8 +68,11 @@ public class p3control : MonoBehaviour
     {
         pNick = GameObject.Find("ScreenCanvas/infoPanel/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
+
         pGold = GameObject.Find("ScreenCanvas/infoPanel/goldText").GetComponent<Text>();
-                
+        map.mapS.gBar1 = GameObject.FindGameObjectWithTag("gBar1");
+        map.mapS.gBar2 = GameObject.FindGameObjectWithTag("gBar2");
+        map.mapS.gBar3 = GameObject.FindGameObjectWithTag("gBar3");
     }
 
 
@@ -146,8 +149,8 @@ public class p3control : MonoBehaviour
 
         btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
         btnNT.GetComponent<Button>().onClick.AddListener(() => {
-            GetComponent<p3control>().enabled = false;            
-            Invoke("StopPl3", 2f); //
+            Invoke("StopPl3", 3f);  //so pl3 has time to synch
+            GetComponent<p3control>().enabled = false;
         });
 
         //item buttons
@@ -393,11 +396,11 @@ public class p3control : MonoBehaviour
         if (bItem1a || bItem1c) { item1Prep(); }
         if (bItem2a || bItem2c) { item2Prep(); }
 
-        if (Input.GetKeyDown(KeyCode.KeypadPlus))  //pass turn
-        {
-            GetComponent<p3control>().enabled = false;            
-            // GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only
-            Invoke("StopPl3", 2f); //
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))  //pass turn (CHECK BUTTON TOO)
+        {            
+            // GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only            
+            Invoke("StopPl3", 3f);  //so pl3 has time to synch
+            GetComponent<p3control>().enabled = false;
         }
 
         curBtn();
@@ -746,13 +749,15 @@ public class p3control : MonoBehaviour
     [PunRPC] public void RPC_pl3stop()
     {        
         //GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
-        turnEnd.turnEndS.endTurn(); //last one!        
+        turnEnd.turnEndS.endTurn(); //last one!           
+       
     }
 
     void StopPl3()
     {
         //print(GetComponent<stats>().actSkillTrg[0] + " " + GetComponent<PhotonView>().Owner);
-        GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only
+        GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only      
+       
     }
 }
 

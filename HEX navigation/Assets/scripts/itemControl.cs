@@ -357,10 +357,6 @@ public class itemControl : MonoBehaviour
     }
 
 
-    [PunRPC] public void RPC_pl1start()
-    {
-        pl1.GetComponent<plControl>().enabled = true;
-    }
 
     void GLsynchWait()
     {
@@ -370,8 +366,8 @@ public class itemControl : MonoBehaviour
     }
 
     void pl1startDelay()
-    {        
-        GetComponent<PhotonView>().RPC("RPC_pl1start", pl1.GetComponent<PhotonView>().Owner);
+    {
+        pl1.GetComponent<plControl>().enabled = true;
     }
 
     [PunRPC] IEnumerator RPC_itemSynh()

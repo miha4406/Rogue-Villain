@@ -408,7 +408,7 @@ public class plControl : MonoBehaviour
         if (bItem1a || bItem1c) { item1Prep(); }
         if (bItem2a || bItem2c) { item2Prep(); }
 
-        if (Input.GetKeyDown(KeyCode.KeypadPlus))  //pass turn
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))  //pass turn (CHECK BUTTON TOO)
         {
             //GetComponent<PhotonView>().RPC("RPC_pl2start", RpcTarget.All);
             GetComponent<PhotonView>().RPC("RPC_pl2start", GameObject.FindGameObjectWithTag("player2").GetComponent<PhotonView>().Owner);

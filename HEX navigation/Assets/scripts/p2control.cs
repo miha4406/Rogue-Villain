@@ -78,8 +78,11 @@ public class p2control : MonoBehaviour
     {
         pNick = GameObject.Find("ScreenCanvas/infoPanel/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
+
         pGold = GameObject.Find("ScreenCanvas/infoPanel/goldText").GetComponent<Text>();
-       
+        map.mapS.gBar1 = GameObject.FindGameObjectWithTag("gBar1");
+        map.mapS.gBar2 = GameObject.FindGameObjectWithTag("gBar2");
+        map.mapS.gBar3 = GameObject.FindGameObjectWithTag("gBar3");
     }
 
 
@@ -418,7 +421,7 @@ public class p2control : MonoBehaviour
         if (bItem1a || bItem1c) { item1Prep(); }
         if (bItem2a || bItem2c) { item2Prep(); }
 
-        if (Input.GetKeyDown(KeyCode.KeypadPlus))  //pass turn
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))  //pass turn (CHECK BUTTON TOO)
         {
             //GetComponent<PhotonView>().RPC("RPC_pl3start", RpcTarget.All);
             GetComponent<PhotonView>().RPC("RPC_pl3start", GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);

@@ -759,9 +759,9 @@ MonoBehaviour:
   - {fileID: 1526414940}
   - {fileID: 318013076}
   - {fileID: 351735891}
-  pl1logo: {fileID: 21300000, guid: f50c45ca43887d141b296ad3e1aaf466, type: 3}
-  pl2logo: {fileID: 21300000, guid: f62aaddd3d426f54c8308a4ac8760e9b, type: 3}
-  pl3logo: {fileID: 21300000, guid: 2fba95d2fcfc41e47b2235ba50de1fa9, type: 3}
+  pl1logo: {fileID: 21300000, guid: 690cd3707a0679e478f93ac971cdbd9a, type: 3}
+  pl2logo: {fileID: 21300000, guid: 0a131f68d1d59d944830bd0f1e3b76af, type: 3}
+  pl3logo: {fileID: 21300000, guid: dd939e20be8e40749a77fbda9b24a08c, type: 3}
   pl1: {fileID: 0}
   pl2: {fileID: 0}
   pl3: {fileID: 0}
