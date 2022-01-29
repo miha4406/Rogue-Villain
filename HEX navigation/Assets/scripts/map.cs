@@ -21,12 +21,15 @@ public class map : MonoBehaviour
     [SerializeField] public Image enemyLogo1, enemyLogo2;
     [SerializeField] public Text px1, px2, nick1, nick2, gold1, gold2;
 
-
+    //item
     public Vector3[] itemPos = new Vector3[3];
     public bool bNewItem = false;
     [SerializeField] Material itemMat;
     [SerializeField] Material groundMat;
 
+    //sound
+    public AudioClip[] skillClips;
+    public AudioClip[] itemClips;
 
     private void Awake()
     {

@@ -11,22 +11,42 @@ public class slimeScript : MonoBehaviour
 
     void Start()
     {
-        crTurn = (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"]; 
+        crTurn = (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"];
 
-        pl1 = GameObject.FindGameObjectWithTag("player1");
-        pl2 = GameObject.FindGameObjectWithTag("player2");
-        pl3 = GameObject.FindGameObjectWithTag("player3");        
+        pl1 = map.mapS.pl1;  pl2 = map.mapS.pl2;  pl3 = map.mapS.pl3;
 
         if (pl1.GetComponent<plControl>().enabled) { user = pl1; }
         else if (pl2.GetComponent<p2control>().enabled) { user = pl2; }
-        else if (pl3.GetComponent<p3control>().enabled) { user = pl3; }
-
-        //print("crTurn=" +crTurn);
+        else if (pl3.GetComponent<p3control>().enabled) { user = pl3; }              
+        
     }
 
     
     void Update()
-    {   
+    {
+        if (crTurn == (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"])
+        {
+            if (gameObject.transform.Find("itemCanvas/Image").gameObject.active == true)
+            {
+                if (user.GetComponent<PhotonView>().Owner != PhotonNetwork.LocalPlayer)
+                {
+                    gameObject.transform.Find("itemCanvas/Image").gameObject.SetActive(false);
+                }
+            }
+            
+        }
+
+        if (crTurn+1 == (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"]) 
+        {
+            if (gameObject.transform.Find("slime").gameObject.active == false)  //once
+            {
+                gameObject.transform.Find("itemCanvas/Image").gameObject.SetActive(false);
+                gameObject.transform.Find("slime").gameObject.SetActive(true);
+
+                map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.itemClips[2]);
+            }            
+        }
+
         if (crTurn+2 == (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"])
         {
             Destroy(gameObject);

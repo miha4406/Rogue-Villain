@@ -15,6 +15,8 @@ public class Statics : MonoBehaviourPun
 
     [SerializeField] GameObject GameLogicPref;
 
+    public AudioClip[] bgmClips;
+
     private void Awake()
     {
         DontDestroyOnLoad(transform.gameObject);       
@@ -52,6 +54,8 @@ public class Statics : MonoBehaviourPun
             {
                 PhotonNetwork.Instantiate("pl3pref", new Vector3(1f, 0, 0), Quaternion.identity).transform.Rotate(0, -90f, 0);
             }
+
+            GetComponent<AudioSource>().clip = bgmClips[1]; GetComponent<AudioSource>().Play();
         }
     }
 

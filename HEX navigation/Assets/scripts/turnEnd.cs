@@ -358,14 +358,21 @@ public class turnEnd : MonoBehaviour
     [PunRPC] void pl1AC(string newState)
     {
         pl1anim.Play(newState);
+
+        if (newState.Contains("skill")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[0]); }        
     }
     [PunRPC] void pl2AC(string newState)
     {
         pl2anim.Play(newState);
+
+        if (newState.Contains("skill1")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[1]); }
+        else if (newState.Contains("skill2")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[2]); }
     }
     [PunRPC] void pl3AC(string newState)
     {
         pl3anim.Play(newState);
+
+        if (newState.Contains("skill")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[3]); }
     }
 
 }

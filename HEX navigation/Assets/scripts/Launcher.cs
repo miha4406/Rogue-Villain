@@ -107,24 +107,24 @@ namespace m4netgame2
         
         void Update()
         {
-            //if (slider.GetComponent<Slider>().value == 1)
-            //{
-            //    pl1descr.active = true;
-            //    pl2descr.active = false;
-            //    pl3descr.active = false;
-            //}
-            //else if (slider.GetComponent<Slider>().value == 2)
-            //{
-            //    pl2descr.active = true;
-            //    pl1descr.active = false;
-            //    pl3descr.active = false;
-            //}
-            //else if (slider.GetComponent<Slider>().value == 3)
-            //{
-            //    pl3descr.active = true;
-            //    pl2descr.active = false;
-            //    pl1descr.active = false;
-            //}
+            if (slider.GetComponent<Slider>().value == 1)
+            {
+                pl1descr.active = true;
+                pl2descr.active = false;
+                pl3descr.active = false;
+            }
+            else if (slider.GetComponent<Slider>().value == 2)
+            {
+                pl2descr.active = true;
+                pl1descr.active = false;
+                pl3descr.active = false;
+            }
+            else if (slider.GetComponent<Slider>().value == 3)
+            {
+                pl3descr.active = true;
+                pl2descr.active = false;
+                pl1descr.active = false;
+            }
         }
 
 

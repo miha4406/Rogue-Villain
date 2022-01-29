@@ -49,6 +49,7 @@ MonoBehaviour:
   - RPC_newSlimes
   - pl3AC
   - RPC_AC
+  - RPC_itemSound
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

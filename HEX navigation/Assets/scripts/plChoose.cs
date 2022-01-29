@@ -36,6 +36,8 @@ public class plChoose : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (rProp["char3"] == null) { return; }
+
         GetComponent<SpriteRenderer>().sprite = plSpr[2];
 
         if (name == "1")
@@ -77,7 +79,7 @@ public class plChoose : MonoBehaviour
         PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
         currChoice[0] = 0; currChoice[1] = 0; currChoice[2] = 0;
 
-        InvokeRepeating("refrChars", 2f, 1f);
+        InvokeRepeating("refrChars", 2f, 0.5f);
     }
     void refrChars()
     {

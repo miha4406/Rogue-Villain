@@ -180,6 +180,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: slime
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 571db65a184270c409500e438491d71d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 571db65a184270c409500e438491d71d, type: 3}
 --- !u!4 &5217820974434675598 stripped
@@ -214,7 +219,7 @@ PrefabInstance:
     - target: {fileID: 1295267196183748122, guid: be12846e66177d14da1ba42e44c7ceda,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5428758539423429858, guid: be12846e66177d14da1ba42e44c7ceda,
         type: 3}
@@ -330,6 +335,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7935691505987344605, guid: be12846e66177d14da1ba42e44c7ceda,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: be12846e66177d14da1ba42e44c7ceda, type: 3}

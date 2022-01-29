@@ -197,6 +197,8 @@ public class itemControl : MonoBehaviour
                 player.GetComponent<stats>().gold += player.GetComponent<stats>().item1 - 9;
                 player.GetComponent<stats>().item1 = 0;
                 player.GetComponent<stats>().item1Targets[0] = Vector3.down;
+
+                GetComponent<PhotonView>().RPC("RPC_itemSound", (RpcTarget)player.GetComponent<PhotonView>().CreatorActorNr, 3);                
             }
         }
         if (player.GetComponent<stats>().item2==10 || player.GetComponent<stats>().item2==11 || player.GetComponent<stats>().item2==12) { //jewel item2
@@ -205,6 +207,8 @@ public class itemControl : MonoBehaviour
                 player.GetComponent<stats>().gold += player.GetComponent<stats>().item2 - 9;
                 player.GetComponent<stats>().item2 = 0;
                 player.GetComponent<stats>().item2Targets[0] = Vector3.down;
+
+                GetComponent<PhotonView>().RPC("RPC_itemSound", (RpcTarget)player.GetComponent<PhotonView>().CreatorActorNr, 3);
             }
         }
     }
@@ -220,12 +224,12 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl2.transform.position == hex)
                     {
-                        print("pl2 was bombed!");
+                        print("pl2 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl2.GetComponent<stats>().gold > 0) { pl2.GetComponent<stats>().gold--; pl1.GetComponent<stats>().gold++; }
                     }
                     if (pl3.transform.position == hex)
                     {
-                        print("pl3 was bombed!");
+                        print("pl3 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl3.GetComponent<stats>().gold > 0) { pl3.GetComponent<stats>().gold--; pl1.GetComponent<stats>().gold++; }
                     }
                 }
@@ -241,12 +245,12 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl1.transform.position == hex)
                     {
-                        print("pl1 was bombed!");
+                        print("pl1 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl1.GetComponent<stats>().gold > 0) { pl1.GetComponent<stats>().gold--; pl2.GetComponent<stats>().gold++; }
                     }
                     if (pl3.transform.position == hex)
                     {
-                        print("pl3 was bombed!");
+                        print("pl3 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl3.GetComponent<stats>().gold > 0) { pl3.GetComponent<stats>().gold--; pl2.GetComponent<stats>().gold++; }
                     }
                 }
@@ -262,19 +266,19 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl1.transform.position == hex)
                     {
-                        print("pl1 was bombed!");
+                        print("pl1 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl1.GetComponent<stats>().gold > 0) { pl1.GetComponent<stats>().gold--; pl3.GetComponent<stats>().gold++; }
                     }
                     if (pl2.transform.position == hex)
                     {
-                        print("pl2 was bombed!");
+                        print("pl2 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl2.GetComponent<stats>().gold > 0) { pl2.GetComponent<stats>().gold--; pl3.GetComponent<stats>().gold++; }
                     }
                 }
                 pl3.GetComponent<stats>().item1 = 0;
                 map.mapS.bombClear();
             }            
-        }     
+        }        
     }
     void item2use()
     {
@@ -286,12 +290,12 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl2.transform.position == hex)
                     {
-                        print("pl2 was bombed!");
+                        print("pl2 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl2.GetComponent<stats>().gold > 0) { pl2.GetComponent<stats>().gold--; pl1.GetComponent<stats>().gold++; }
                     }
                     if (pl3.transform.position == hex)
                     {
-                        print("pl3 was bombed!");
+                        print("pl3 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl3.GetComponent<stats>().gold > 0) { pl3.GetComponent<stats>().gold--; pl1.GetComponent<stats>().gold++; }
                     }
                 }
@@ -307,12 +311,12 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl1.transform.position == hex)
                     {
-                        print("pl1 was bombed!");
+                        print("pl1 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl1.GetComponent<stats>().gold > 0) { pl1.GetComponent<stats>().gold--; pl2.GetComponent<stats>().gold++; }
                     }
                     if (pl3.transform.position == hex)
                     {
-                        print("pl3 was bombed!");
+                        print("pl3 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl3.GetComponent<stats>().gold > 0) { pl3.GetComponent<stats>().gold--; pl2.GetComponent<stats>().gold++; }
                     }
                 }
@@ -328,19 +332,19 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl1.transform.position == hex)
                     {
-                        print("pl1 was bombed!");
+                        print("pl1 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl1.GetComponent<stats>().gold > 0) { pl1.GetComponent<stats>().gold--; pl3.GetComponent<stats>().gold++; }
                     }
                     if (pl2.transform.position == hex)
                     {
-                        print("pl2 was bombed!");
+                        print("pl2 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
                         if (pl2.GetComponent<stats>().gold > 0) { pl2.GetComponent<stats>().gold--; pl3.GetComponent<stats>().gold++; }
                     }
                 }
                 pl3.GetComponent<stats>().item2 = 0;
                 map.mapS.bombClear();
             }            
-        }     
+        }        
     }
 
 
@@ -377,4 +381,8 @@ public class itemControl : MonoBehaviour
         map.mapS.bNewItem = true;       
     }
 
+    [PunRPC] void RPC_itemSound(int seID)
+    {
+         map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.itemClips[seID]); 
+    }
 }

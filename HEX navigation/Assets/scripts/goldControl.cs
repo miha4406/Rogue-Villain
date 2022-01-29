@@ -266,13 +266,13 @@ public class goldControl : MonoBehaviour
         {
             if (pl2.GetComponent<stats>().pasSkillHex == pl1.transform.position) 
             {
-                print("Attack on pl1!");  GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
+                print("Attack on pl1!");  GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
                 if (pl1.GetComponent<stats>().gold >= 2) { pl1.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                 else if (pl1.GetComponent<stats>().gold == 1) { pl1.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
             }
             if (pl2.GetComponent<stats>().pasSkillHex == pl3.transform.position) 
             {
-                print("Attack on pl3!");  GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
+                print("Attack on pl3!");  GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
                 if (pl3.GetComponent<stats>().gold >= 2) { pl3.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                 else if (pl3.GetComponent<stats>().gold == 1) { pl3.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
             }
@@ -296,13 +296,13 @@ public class goldControl : MonoBehaviour
                     {
                         if (pl2.GetComponent<stats>().actSkillTrg[j] == pl1.transform.position)
                         {
-                            print("Shoot in pl1!");  GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
+                            print("Shoot in pl1!");  GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
                             if (pl1.GetComponent<stats>().gold >= 2) { pl1.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                             else if (pl1.GetComponent<stats>().gold == 1) { pl1.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
                         }
                         if (pl2.GetComponent<stats>().actSkillTrg[j] == pl3.transform.position)
                         {
-                            print("Shoot in pl3!");  GetComponent<PhotonView>().RPC("RPC_AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
+                            print("Shoot in pl3!");  GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
                             if (pl3.GetComponent<stats>().gold >= 2) { pl3.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                             else if (pl3.GetComponent<stats>().gold == 1) { pl3.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
                         }

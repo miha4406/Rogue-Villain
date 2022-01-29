@@ -160,12 +160,11 @@ public class p3control : MonoBehaviour
         if (gameObject.GetComponent<stats>().item1 != 0) {
             btnI1.GetComponent<Button>().interactable = true;
             btnI1.GetComponent<Image>().sprite = map.mapS.itemIcons[GetComponent<stats>().item1];
-        }else { btnI1.GetComponent<Button>().interactable = false; }
-        if (gameObject.GetComponent<stats>().item2 != 0)
-        {
+        }else { btnI1.GetComponent<Button>().interactable = false; btnI1.GetComponent<Image>().sprite = null; }
+        if (gameObject.GetComponent<stats>().item2 != 0) {
             btnI2.GetComponent<Button>().interactable = true;
             btnI2.GetComponent<Image>().sprite = map.mapS.itemIcons[GetComponent<stats>().item2];
-        }else { btnI2.GetComponent<Button>().interactable = false; }
+        }else { btnI2.GetComponent<Button>().interactable = false; btnI2.GetComponent<Image>().sprite = null; }
 
 
         if (gameObject.GetComponent<stats>().item1==1 || gameObject.GetComponent<stats>().item1==2 || gameObject.GetComponent<stats>().item1==3)  //bomb buttons
@@ -193,23 +192,25 @@ public class p3control : MonoBehaviour
             btnI1.GetComponent<Button>().onClick.AddListener(() => {
                 bItem1b = !bItem1b;
                 if (gameObject.GetComponent<stats>().movDist == 1) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item1-3); }
-                else { gameObject.GetComponent<stats>().movDist = 1; } 
+                else { gameObject.GetComponent<stats>().movDist = 1; }
 
+                plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
                 foreach (GameObject x in hexes)
                 {
                     if (x != null)
                     {
-                        if (Vector3.Distance(x.transform.position, transform.position) < gameObject.GetComponent<stats>().movDist+0.5f)
+                        if (Vector3.Distance(x.transform.position, transform.position) < plDist + 0.5f)
                         {
-                            x.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
-                            x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.green);
+                            x.transform.Find("hex").GetComponent<Renderer>().material.color = Color.green;
                         }
                         else
                         {
-                            x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.black);
+                            x.transform.Find("hex").GetComponent<Renderer>().material.color = Color.gray;
                         }
                     }
                 }
+
+                if (bItem1b) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.itemClips[1]); }  //se
             });
         }
         if (gameObject.GetComponent<stats>().item2==4 || gameObject.GetComponent<stats>().item2==5 || gameObject.GetComponent<stats>().item2==6)  
@@ -217,23 +218,25 @@ public class p3control : MonoBehaviour
             btnI2.GetComponent<Button>().onClick.AddListener(() => {
                 bItem2b = !bItem2b;
                 if (gameObject.GetComponent<stats>().movDist == 1) { gameObject.GetComponent<stats>().movDist += (gameObject.GetComponent<stats>().item2-3); }
-                else { gameObject.GetComponent<stats>().movDist = 1; } 
+                else { gameObject.GetComponent<stats>().movDist = 1; }
 
+                plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
                 foreach (GameObject x in hexes)
                 {
                     if (x != null)
                     {
-                        if (Vector3.Distance(x.transform.position, transform.position) < gameObject.GetComponent<stats>().movDist + 0.5f)
+                        if (Vector3.Distance(x.transform.position, transform.position) < plDist + 0.5f)
                         {
-                            x.GetComponent<MeshRenderer>().material.EnableKeyword("_EMISSION");
-                            x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.green);
+                            x.transform.Find("hex").GetComponent<Renderer>().material.color = Color.green;
                         }
                         else
                         {
-                            x.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", Color.black);
+                            x.transform.Find("hex").GetComponent<Renderer>().material.color = Color.gray;
                         }
                     }
                 }
+
+                if (bItem2b) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.itemClips[1]); }  //se
             });
         }
 
@@ -724,6 +727,8 @@ public class p3control : MonoBehaviour
     [PunRPC] void RPC_AC(string newState)
     {
         GameObject.FindGameObjectWithTag("player3").GetComponentInChildren<Animator>().Play(newState);
+
+        if (newState.Contains("skill")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[3]); }
     }
 
 
