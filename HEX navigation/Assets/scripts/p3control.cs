@@ -21,7 +21,7 @@ public class p3control : MonoBehaviour
     int pfStepNo = 0;
 
     Text pNick, pGold;
-    [SerializeField] Sprite p3logo;
+    [SerializeField] Sprite[] p3logo;
     [SerializeField] Sprite p3a;
 
     GameObject btnA, btnP, btnI1, btnI2, btnNT;
@@ -83,20 +83,21 @@ public class p3control : MonoBehaviour
         {
             //turnNo = turnEnd.turnEndS.turnNo; 
             if (PhotonNetwork.CurrentRoom.CustomProperties["tNo"] != null) { turnNo = (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"]; }
-            GameObject.Find("ScreenCanvas/turnText").GetComponent<Text>().text = "ターン " + turnNo.ToString();
+            GameObject.Find("ScreenCanvas/turnText").GetComponent<Text>().text = turnNo.ToString();
+
+            GetComponent<stats>().bMyTurn = true;
         }
 
         if (gameObject.GetComponent<stats>().movDist != 1) { gameObject.GetComponent<stats>().movDist = 1; }
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
 
 
-        GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P3";
-        map.mapS.enemyLogo1.sprite = map.mapS.pl2logo; map.mapS.enemyLogo2.sprite = map.mapS.pl1logo;
-        map.mapS.px1.text = "P2"; map.mapS.px2.text = "P1";
+        //GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P3";
+        map.mapS.enemyLogo1.sprite = map.mapS.pl2logo[0]; map.mapS.enemyLogo2.sprite = map.mapS.pl1logo[0];       
         map.mapS.nick1.text = map.mapS.pl2.GetComponent<PhotonView>().Owner.NickName.ToString();
         map.mapS.nick2.text = map.mapS.pl1.GetComponent<PhotonView>().Owner.NickName.ToString();
-        map.mapS.gold1.text = "金塊：" + map.mapS.pl2.GetComponent<stats>().gold.ToString() + "個";
-        map.mapS.gold2.text = "金塊：" + map.mapS.pl1.GetComponent<stats>().gold.ToString() + "個";
+        map.mapS.gold1.text = map.mapS.pl2.GetComponent<stats>().gold.ToString();
+        map.mapS.gold2.text = map.mapS.pl1.GetComponent<stats>().gold.ToString();
 
 
         foreach (GameObject hex in hexes) //fix synch inaccuracy
@@ -130,9 +131,9 @@ public class p3control : MonoBehaviour
         clHex = transform.position;
 
         //logo & skill buttons
-        GameObject.Find("ScreenCanvas/charPanel/logoImage").GetComponent<Image>().sprite = p3logo;
+        GameObject.Find("ScreenCanvas/charPanel").GetComponent<Image>().sprite = p3logo[1];
         btnA.GetComponent<Image>().sprite = p3a;
-        btnP.GetComponent<Button>().interactable = false;               
+        btnP.SetActive(false);               
         
         btnA.GetComponent<Button>().onClick.RemoveAllListeners();
         btnA.GetComponent<Button>().onClick.AddListener( () => {
@@ -147,9 +148,12 @@ public class p3control : MonoBehaviour
         }
         else { btnA.GetComponentInChildren<Text>().text = ""; }
 
+        btnNT.GetComponent<Button>().interactable = true;
         btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
         btnNT.GetComponent<Button>().onClick.AddListener(() => {
+            btnNT.GetComponent<Button>().interactable = false;
             Invoke("StopPl3", 3f);  //so pl3 has time to synch
+            GetComponent<stats>().bMyTurn = false;
             GetComponent<p3control>().enabled = false;
         });
 
@@ -284,6 +288,8 @@ public class p3control : MonoBehaviour
 
     void OnDisable()
     {
+        GameObject.Find("ScreenCanvas/charPanel").GetComponent<Image>().sprite = p3logo[0];        
+
         gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         gameObject.GetComponent<stats>().path = path;
 
@@ -362,7 +368,7 @@ public class p3control : MonoBehaviour
             return;
         }
        
-        pGold.text = "金塊：" + gameObject.GetComponent<stats>().gold.ToString() + "個";
+        pGold.text = gameObject.GetComponent<stats>().gold.ToString();
 
         pfCor = pFinder.transform.position + Vector3.down;
 
@@ -380,6 +386,8 @@ public class p3control : MonoBehaviour
 
                 destroy = GameObject.FindGameObjectsWithTag("pathPref");
                 for (int i = 0; i < destroy.Length; i++) { Destroy(destroy[i]); }
+
+                map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.otherClips[0]);  //se
             }
         }
         if (clHex == pfCor)
@@ -705,21 +713,19 @@ public class p3control : MonoBehaviour
         }
         else if (bItem1a || bItem1b || bItem1c)
         {
-            btnA.GetComponent<Button>().interactable = false;
-            btnP.GetComponent<Button>().interactable = false;
+            btnA.GetComponent<Button>().interactable = false;            
             btnI2.GetComponent<Button>().interactable = false;
         }
         else if (bItem2a || bItem2b || bItem2c)
         {
-            btnA.GetComponent<Button>().interactable = false;
-            btnP.GetComponent<Button>().interactable = false;
+            btnA.GetComponent<Button>().interactable = false;            
             btnI1.GetComponent<Button>().interactable = false;
         }
         else
         {
-            btnA.GetComponent<Button>().interactable = true;
-            btnI1.GetComponent<Button>().interactable = true;
-            btnI2.GetComponent<Button>().interactable = true;
+            if (GetComponent<stats>().skillCD == 0) { btnA.GetComponent<Button>().interactable = true; }
+            if (GetComponent<stats>().item1 != 0)   { btnI1.GetComponent<Button>().interactable = true; }
+            if (GetComponent<stats>().item1 != 0)   { btnI2.GetComponent<Button>().interactable = true; }      
         }
     }
 

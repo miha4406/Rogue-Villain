@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Linq;
 using Photon.Pun;
 using System.Collections;
@@ -10,11 +10,9 @@ public class itemControl : MonoBehaviour
 
     GameObject[] hexes;
     public GameObject[] itemHexes = new GameObject[3];   //public!
-    ExitGames.Client.Photon.Hashtable rProp = new ExitGames.Client.Photon.Hashtable();
-    [SerializeField] Material itemMat;
-    [SerializeField] Material groundMat;
+    ExitGames.Client.Photon.Hashtable rProp = new ExitGames.Client.Photon.Hashtable();    
         
-    GameObject gBar1, gBar2, gBar3;
+    GameObject gBar1, gBar2, gBar3;    
 
     public bool movEnd;  //sets "true" from turnEnd.cs
     public bool goldEnd; //sets "true" from goldControl.cs
@@ -111,7 +109,7 @@ public class itemControl : MonoBehaviour
         {
             GameObject[] oldItemHexes = new GameObject[3];
             oldItemHexes = itemHexes;
-            foreach(GameObject hex in oldItemHexes) { hex.GetComponent<Renderer>().material = groundMat; }
+            //foreach(GameObject hex in oldItemHexes) { hex.GetComponent<Renderer>().material = groundMat; }
 
             for (int i = 0; i <=2; i++)
             {
@@ -224,12 +222,14 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl2.transform.position == hex)
                     {
-                        print("pl2 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 2, 1);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 2);
                         if (pl2.GetComponent<stats>().gold > 0) { pl2.GetComponent<stats>().gold--; pl1.GetComponent<stats>().gold++; }
                     }
                     if (pl3.transform.position == hex)
                     {
-                        print("pl3 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 3, 1); 
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 3);
                         if (pl3.GetComponent<stats>().gold > 0) { pl3.GetComponent<stats>().gold--; pl1.GetComponent<stats>().gold++; }
                     }
                 }
@@ -245,12 +245,14 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl1.transform.position == hex)
                     {
-                        print("pl1 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 1, 2);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 1);
                         if (pl1.GetComponent<stats>().gold > 0) { pl1.GetComponent<stats>().gold--; pl2.GetComponent<stats>().gold++; }
                     }
                     if (pl3.transform.position == hex)
                     {
-                        print("pl3 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 3, 2);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 3);
                         if (pl3.GetComponent<stats>().gold > 0) { pl3.GetComponent<stats>().gold--; pl2.GetComponent<stats>().gold++; }
                     }
                 }
@@ -265,13 +267,15 @@ public class itemControl : MonoBehaviour
                 foreach (Vector3 hex in pl3.GetComponent<stats>().item1Targets)
                 {
                     if (pl1.transform.position == hex)
-                    {
-                        print("pl1 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                    {                        
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 1, 3);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 1);
                         if (pl1.GetComponent<stats>().gold > 0) { pl1.GetComponent<stats>().gold--; pl3.GetComponent<stats>().gold++; }
                     }
                     if (pl2.transform.position == hex)
-                    {
-                        print("pl2 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                    {                        
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 2, 3);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 2);
                         if (pl2.GetComponent<stats>().gold > 0) { pl2.GetComponent<stats>().gold--; pl3.GetComponent<stats>().gold++; }
                     }
                 }
@@ -290,12 +294,14 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl2.transform.position == hex)
                     {
-                        print("pl2 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 2, 1);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 2);
                         if (pl2.GetComponent<stats>().gold > 0) { pl2.GetComponent<stats>().gold--; pl1.GetComponent<stats>().gold++; }
                     }
                     if (pl3.transform.position == hex)
                     {
-                        print("pl3 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 3, 1);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 3);
                         if (pl3.GetComponent<stats>().gold > 0) { pl3.GetComponent<stats>().gold--; pl1.GetComponent<stats>().gold++; }
                     }
                 }
@@ -311,12 +317,14 @@ public class itemControl : MonoBehaviour
                 {
                     if (pl1.transform.position == hex)
                     {
-                        print("pl1 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 1, 2);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 1);
                         if (pl1.GetComponent<stats>().gold > 0) { pl1.GetComponent<stats>().gold--; pl2.GetComponent<stats>().gold++; }
                     }
                     if (pl3.transform.position == hex)
                     {
-                        print("pl3 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 3, 2);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 3);
                         if (pl3.GetComponent<stats>().gold > 0) { pl3.GetComponent<stats>().gold--; pl2.GetComponent<stats>().gold++; }
                     }
                 }
@@ -331,13 +339,15 @@ public class itemControl : MonoBehaviour
                 foreach (Vector3 hex in pl3.GetComponent<stats>().item2Targets)
                 {
                     if (pl1.transform.position == hex)
-                    {
-                        print("pl1 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                    {                        
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 1, 3);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 1);
                         if (pl1.GetComponent<stats>().gold > 0) { pl1.GetComponent<stats>().gold--; pl3.GetComponent<stats>().gold++; }
                     }
                     if (pl2.transform.position == hex)
                     {
-                        print("pl2 was bombed!"); GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0);
+                        GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "item-bomb", 2, 3);
+                        GetComponent<PhotonView>().RPC("RPC_itemSound", RpcTarget.AllBuffered, 0, 2);
                         if (pl2.GetComponent<stats>().gold > 0) { pl2.GetComponent<stats>().gold--; pl3.GetComponent<stats>().gold++; }
                     }
                 }
@@ -383,6 +393,19 @@ public class itemControl : MonoBehaviour
 
     [PunRPC] void RPC_itemSound(int seID)
     {
-         map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.itemClips[seID]); 
+        map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.itemClips[seID]);
+
+        if (seID==3) { print("メダルは金塊に交換されました。"); }
+    }    
+    [PunRPC] void RPC_itemSound(int seID, int plID)
+    {
+        map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.itemClips[seID]);
+
+        if (seID == 0)
+        {
+            if (plID == 1) { Instantiate(map.mapS.sparksEffect, pl1.transform.position+Vector3.up*0.5f,Quaternion.identity); }
+            if (plID == 2) { Instantiate(map.mapS.sparksEffect, pl2.transform.position+Vector3.up*0.5f,Quaternion.identity); }
+            if (plID == 3) { Instantiate(map.mapS.sparksEffect, pl3.transform.position+Vector3.up*0.5f,Quaternion.identity); }
+        }
     }
 }

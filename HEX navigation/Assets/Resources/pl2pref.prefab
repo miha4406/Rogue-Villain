@@ -123,7 +123,9 @@ MonoBehaviour:
   - {x: 0.0000000025787237, y: 0.0000000026515874, z: 0}
   - {x: 0, y: 0, z: 0}
   bPasAtk: 0
-  p2logo: {fileID: 21300000, guid: 0a131f68d1d59d944830bd0f1e3b76af, type: 3}
+  p2logo:
+  - {fileID: 21300000, guid: 6fc875339c8b45c4f97bebe7f291f913, type: 3}
+  - {fileID: 21300000, guid: 03736f9069f7cc842a9bae37c877a18f, type: 3}
   p2a: {fileID: 21300000, guid: 4fedfcb472006aa4aa31a7216fc834a9, type: 3}
   p2p: {fileID: 21300000, guid: 106bdc176490e174784aed2dc82d1b2b, type: 3}
   tips:
@@ -177,6 +179,7 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
+  bMyTurn: 0
 --- !u!114 &-8089816901023906744
 MonoBehaviour:
   m_ObjectHideFlags: 0

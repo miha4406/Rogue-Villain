@@ -115,7 +115,9 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   bGoldGet: 0
-  p3logo: {fileID: 21300000, guid: dd939e20be8e40749a77fbda9b24a08c, type: 3}
+  p3logo:
+  - {fileID: 21300000, guid: 4207fe7e588e26645b354d8c74855208, type: 3}
+  - {fileID: 21300000, guid: a674528d9b1e4234a870c7c7d76da763, type: 3}
   p3a: {fileID: 21300000, guid: 15bc7335d876d884da7be4ed6bfe0824, type: 3}
   tips:
   - "\u30BB\u30AA\u30EA\u30C6\u30A3\u30AB\u30EA\u30C6\u30A3\u30FC\u30FB\u30A2\u30FC\u30DE\u30E1\u30F3\u30C8\r\nCT
@@ -168,6 +170,7 @@ MonoBehaviour:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
+  bMyTurn: 0
 --- !u!114 &2200823232861063278
 MonoBehaviour:
   m_ObjectHideFlags: 0

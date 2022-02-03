@@ -18,9 +18,11 @@ namespace m4netgame2
         [SerializeField] GameObject pl1descr, pl2descr, pl3descr;
         [SerializeField] GameObject btnTest, btnPlay;
 
-        string gameVersion = "1";
+        string gameVersion = "2";
         bool isConnecting;
-                
+
+        ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
+
 
         //CALLBACKS
         public override void OnConnectedToMaster()
@@ -86,20 +88,18 @@ namespace m4netgame2
             //multiplayer connect
             btnPlay.GetComponent<Button>().onClick.AddListener(() =>
             {
+                hash["ready"] = true;  PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+
                 if (slider.GetComponent<Slider>().value == 1)
                 {
                     PhotonNetwork.SetMasterClient(PhotonNetwork.LocalPlayer);  //char1 owner will host
-                    if (PhotonNetwork.IsMasterClient)
-                    {
-                        PhotonNetwork.LoadLevel("s1");
-                    }
-
+                    
+                    InvokeRepeating("checkOthers", 2f, 2f);
                 }
-                else {
-                    p1.GetComponent<BoxCollider2D>().enabled = false;
-                    p2.GetComponent<BoxCollider2D>().enabled = false;
-                    p3.GetComponent<BoxCollider2D>().enabled = false;
-                };
+                
+                p1.GetComponent<BoxCollider2D>().enabled = false;
+                p2.GetComponent<BoxCollider2D>().enabled = false;
+                p3.GetComponent<BoxCollider2D>().enabled = false;                
             });
 
         }
@@ -143,6 +143,8 @@ namespace m4netgame2
             p1.GetComponent<BoxCollider2D>().enabled = true;
             p2.GetComponent<BoxCollider2D>().enabled = true;
             p3.GetComponent<BoxCollider2D>().enabled = true;
+
+            hash["ready"] = false; PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
         }
 
         void NameInputIni()
@@ -186,6 +188,19 @@ namespace m4netgame2
             }
         }
              
+
+        public void checkOthers()
+        {
+            if (PhotonNetwork.IsMasterClient)
+            {
+                foreach(var gamer in PhotonNetwork.PlayerList)
+                {
+                    if ( (bool)gamer.CustomProperties["ready"] != true ) { return; }
+                }
+
+                PhotonNetwork.LoadLevel("s1");                
+            }
+        }
 
     }
 

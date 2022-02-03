@@ -187,7 +187,7 @@ public class turnEnd : MonoBehaviour
     public void endTurn()  //runs by pl3
     {
         //if (!GetComponent<PhotonView>().IsMine) { return; } //host only
-        print("STARTED");
+        
         if (!pl1.GetComponent<PhotonView>().IsMine) { pl1.GetComponent<PhotonView>().RequestOwnership(); }
         if (!pl2.GetComponent<PhotonView>().IsMine) { pl2.GetComponent<PhotonView>().RequestOwnership(); }
         if (!pl3.GetComponent<PhotonView>().IsMine) { pl3.GetComponent<PhotonView>().RequestOwnership(); }
@@ -364,7 +364,7 @@ public class turnEnd : MonoBehaviour
     [PunRPC] void pl2AC(string newState)
     {
         pl2anim.Play(newState);
-
+                
         if (newState.Contains("skill1")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[1]); }
         else if (newState.Contains("skill2")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[2]); }
     }
@@ -375,4 +375,40 @@ public class turnEnd : MonoBehaviour
         if (newState.Contains("skill")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[3]); }
     }
 
+    [PunRPC] void RPC_messageSystem(string evnt, int t1, int t2)
+    {
+        if (evnt == "p1-chlg")
+        {
+            //print("怪盗はプレイヤー" + t1 +"に挑戦を送りました。");
+        }
+        if (evnt == "p1-chlg-win")
+        {
+            print("怪盗の挑戦は成功しました。");
+        }
+
+        if (evnt == "p2-hit")
+        {
+            print("プレイヤー" + t1 + "は海賊に殴られました。");
+        }
+
+        if (evnt == "p2-shoot")
+        {
+            print("プレイヤー"+ t1 + "は海賊に撃たれました。");
+        }
+        if (evnt == "p2-shoot-fail")
+        {
+            print("海賊は撃てない！ 後ろに妨げのプレイヤーがいます。");
+        }
+
+        if (evnt == "p3-gold")
+        {
+            print("探検家は金塊を採掘しました。");            
+        }
+
+        if (evnt == "item-bomb")
+        {
+            print("プレイヤー" + t1 +"はプレイヤー"+ t2+"によって爆破されました。");
+        }
+
+    }
 }

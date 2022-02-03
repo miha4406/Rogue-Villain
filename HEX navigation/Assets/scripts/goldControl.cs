@@ -222,7 +222,8 @@ public class goldControl : MonoBehaviour
 
             if ( b1skill && (plA==pl1 && plB==pl1trg) )
             {
-                print("pl1 challenge succeed!"); b1skill = false;  //only once!
+                GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "p1-chlg-win", 0, 0);
+                b1skill = false;  //only once!
 
                 if (plB.GetComponent<stats>().gold >= 3) { plB.GetComponent<stats>().gold -=3; plA.GetComponent<stats>().gold +=3; }
                 if (plB.GetComponent<stats>().gold == 2) { plB.GetComponent<stats>().gold -=2; plA.GetComponent<stats>().gold +=2; }
@@ -230,7 +231,8 @@ public class goldControl : MonoBehaviour
             }
             else if ( b1skill && (plB==pl1 && plA==pl1trg) )
             {
-                print("pl1 challenge succeed!"); b1skill = false;  //only once!
+                GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "p1-chlg-win", 0, 0); 
+                b1skill = false;  //only once!
 
                 if (plA.GetComponent<stats>().gold >= 3) { plA.GetComponent<stats>().gold -=3; plB.GetComponent<stats>().gold +=3; }
                 if (plA.GetComponent<stats>().gold == 2) { plA.GetComponent<stats>().gold -=2; plB.GetComponent<stats>().gold +=2; }
@@ -266,13 +268,17 @@ public class goldControl : MonoBehaviour
         {
             if (pl2.GetComponent<stats>().pasSkillHex == pl1.transform.position) 
             {
-                print("Attack on pl1!");  GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
+                pl2.transform.LookAt(pl1.transform);                
+                GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "p2-hit", 1, 0);
+                GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
                 if (pl1.GetComponent<stats>().gold >= 2) { pl1.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                 else if (pl1.GetComponent<stats>().gold == 1) { pl1.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
             }
             if (pl2.GetComponent<stats>().pasSkillHex == pl3.transform.position) 
             {
-                print("Attack on pl3!");  GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
+                pl2.transform.LookAt(pl3.transform);
+                GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "p2-hit", 3, 0); 
+                GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill1"); //anim
                 if (pl3.GetComponent<stats>().gold >= 2) { pl3.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                 else if (pl3.GetComponent<stats>().gold == 1) { pl3.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
             }
@@ -285,8 +291,8 @@ public class goldControl : MonoBehaviour
         if (pl2.GetComponent<stats>().actSkillTrg[0]!=Vector3.down)
         {
             if (pl2.GetComponent<stats>().actSkillTrg[0] == pl1.transform.position 
-                || pl2.GetComponent<stats>().actSkillTrg[0] == pl3.transform.position) {
-                print("Can't shoot! Obstacle player behind.");
+                || pl2.GetComponent<stats>().actSkillTrg[0] == pl3.transform.position) {                
+                GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "p2-shoot-fail", 0, 0);
             }
             else
             {
@@ -296,13 +302,17 @@ public class goldControl : MonoBehaviour
                     {
                         if (pl2.GetComponent<stats>().actSkillTrg[j] == pl1.transform.position)
                         {
-                            print("Shoot in pl1!");  GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
+                            pl2.transform.LookAt(pl1.transform);                            
+                            GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "p2-shoot", 1, 0);
+                            GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
                             if (pl1.GetComponent<stats>().gold >= 2) { pl1.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
-                            else if (pl1.GetComponent<stats>().gold == 1) { pl1.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
+                            else if (pl1.GetComponent<stats>().gold == 1) { pl1.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }                            
                         }
                         if (pl2.GetComponent<stats>().actSkillTrg[j] == pl3.transform.position)
                         {
-                            print("Shoot in pl3!");  GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
+                            pl2.transform.LookAt(pl3.transform);
+                            GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "p2-shoot", 3, 0);
+                            GetComponent<PhotonView>().RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-skill2"); //anim
                             if (pl3.GetComponent<stats>().gold >= 2) { pl3.GetComponent<stats>().gold -= 2; pl2.GetComponent<stats>().gold += 2; }
                             else if (pl3.GetComponent<stats>().gold == 1) { pl3.GetComponent<stats>().gold -= 1; pl2.GetComponent<stats>().gold += 1; }
                         }
@@ -320,7 +330,8 @@ public class goldControl : MonoBehaviour
     {
         if (pl3.GetComponent<stats>().actSkillTrg[0] != Vector3.down)
         {
-            print("pl3 gets gold!");
+            GetComponent<PhotonView>().RPC("RPC_messageSystem", RpcTarget.AllBuffered, "p3-gold", 0, 0);
+
             pl3.GetComponent<stats>().gold++;
 
             pl3.GetComponent<stats>().actSkillTrg[0] = Vector3.down;

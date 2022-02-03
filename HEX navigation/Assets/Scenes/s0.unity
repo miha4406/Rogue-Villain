@@ -366,6 +366,7 @@ MonoBehaviour:
   - {fileID: 311681897}
   - {fileID: 306123422}
   - {fileID: 94290260}
+  statics: {fileID: 493855252}
 --- !u!61 &94290263
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -951,6 +952,7 @@ MonoBehaviour:
   - {fileID: 311681897}
   - {fileID: 306123422}
   - {fileID: 94290260}
+  statics: {fileID: 493855252}
 --- !u!61 &306123425
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1084,6 +1086,7 @@ MonoBehaviour:
   - {fileID: 311681897}
   - {fileID: 306123422}
   - {fileID: 94290260}
+  statics: {fileID: 493855252}
 --- !u!61 &311681900
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1250,7 +1253,6 @@ GameObject:
   m_Component:
   - component: {fileID: 493855254}
   - component: {fileID: 493855253}
-  - component: {fileID: 493855255}
   - component: {fileID: 493855256}
   m_Layer: 0
   m_Name: STATICS
@@ -1279,6 +1281,7 @@ MonoBehaviour:
   bgmClips:
   - {fileID: 8300000, guid: f007c68377748da449568267fdd6e8b0, type: 3}
   - {fileID: 8300000, guid: 8407c9246d83f504297e2caee924c227, type: 3}
+  - {fileID: 8300000, guid: 4bc0492a6f0a5ed48bc4ef0f3f09ab46, type: 3}
 --- !u!4 &493855254
 Transform:
   m_ObjectHideFlags: 0
@@ -1293,18 +1296,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &493855255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 493855252}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d306d9b8995890845aad71ae1d545220, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!82 &493855256
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1317,7 +1308,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: f007c68377748da449568267fdd6e8b0, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0.35
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 1
   Mute: 0

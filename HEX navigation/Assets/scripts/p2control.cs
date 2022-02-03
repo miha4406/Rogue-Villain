@@ -30,7 +30,7 @@ public class p2control : MonoBehaviour
     int pfStepNo = 0;
 
     Text pNick, pGold;
-    [SerializeField] Sprite p2logo;
+    [SerializeField] Sprite[] p2logo;
     [SerializeField] Sprite p2a;
     [SerializeField] Sprite p2p;
 
@@ -93,20 +93,21 @@ public class p2control : MonoBehaviour
         {
             //turnNo = turnEnd.turnEndS.turnNo; 
             if (PhotonNetwork.CurrentRoom.CustomProperties["tNo"] != null) { turnNo = (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"]; }
-            GameObject.Find("ScreenCanvas/turnText").GetComponent<Text>().text = "ターン " + turnNo.ToString();
+            GameObject.Find("ScreenCanvas/turnText").GetComponent<Text>().text = turnNo.ToString();
+
+            GetComponent<stats>().bMyTurn = true;
         }
 
         if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; } //1
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
 
 
-        GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P2";
-        map.mapS.enemyLogo1.sprite = map.mapS.pl1logo; map.mapS.enemyLogo2.sprite = map.mapS.pl3logo;
-        map.mapS.px1.text = "P1"; map.mapS.px2.text = "P3";
+        //GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P2";
+        map.mapS.enemyLogo1.sprite = map.mapS.pl1logo[0]; map.mapS.enemyLogo2.sprite = map.mapS.pl3logo[0];        
         map.mapS.nick1.text = map.mapS.pl1.GetComponent<PhotonView>().Owner.NickName.ToString();
         map.mapS.nick2.text = map.mapS.pl3.GetComponent<PhotonView>().Owner.NickName.ToString();
-        map.mapS.gold1.text = "金塊：" + map.mapS.pl1.GetComponent<stats>().gold.ToString() + "個";
-        map.mapS.gold2.text = "金塊：" + map.mapS.pl3.GetComponent<stats>().gold.ToString() + "個";
+        map.mapS.gold1.text = map.mapS.pl1.GetComponent<stats>().gold.ToString();
+        map.mapS.gold2.text = map.mapS.pl3.GetComponent<stats>().gold.ToString();
 
 
         foreach (GameObject hex in hexes) //fix synch inaccuracy
@@ -143,9 +144,10 @@ public class p2control : MonoBehaviour
         bPasAtk = false;
 
         //logo & skill buttons
-        GameObject.Find("ScreenCanvas/charPanel/logoImage").GetComponent<Image>().sprite = p2logo;
+        GameObject.Find("ScreenCanvas/charPanel").GetComponent<Image>().sprite = p2logo[1];
         btnA.GetComponent<Image>().sprite = p2a;
         btnP.GetComponent<Image>().sprite = p2p;
+        btnP.SetActive(true);   //testing
         btnP.GetComponent<Button>().interactable = true;
 
         btnA.GetComponent<Button>().onClick.RemoveAllListeners();
@@ -156,8 +158,7 @@ public class p2control : MonoBehaviour
         btnP.GetComponent<Button>().onClick.RemoveAllListeners();
         btnP.GetComponent<Button>().onClick.AddListener(() => {
             if (!GetComponent<PhotonView>().IsMine) { return; }  
-            bPasAtk = !bPasAtk;
-            print(bPasAtk);
+            bPasAtk = !bPasAtk;            
         });
         btnA.GetComponent<Button>().interactable = true;
         if (gameObject.GetComponent<stats>().skillCD != 0)
@@ -167,10 +168,11 @@ public class p2control : MonoBehaviour
         }
         else { btnA.GetComponentInChildren<Text>().text = ""; }
 
+        btnNT.GetComponent<Button>().interactable = true;
         btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
-        btnNT.GetComponent<Button>().onClick.AddListener(() => {            
-            GetComponent<PhotonView>().RPC("RPC_pl3start", GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
-            GetComponent<p2control>().enabled = false;
+        btnNT.GetComponent<Button>().onClick.AddListener(() => {
+            btnNT.GetComponent<Button>().interactable = false;
+            Invoke("nextTurnDelay", 2f);  //synch
         });
 
         //item buttons
@@ -302,7 +304,9 @@ public class p2control : MonoBehaviour
     }
 
     void OnDisable()
-    {    
+    {
+        GameObject.Find("ScreenCanvas/charPanel").GetComponent<Image>().sprite = p2logo[0];        
+
         gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         gameObject.GetComponent<stats>().path = path;
                 
@@ -385,7 +389,7 @@ public class p2control : MonoBehaviour
             return;
         }
 
-        pGold.text = "金塊：" + gameObject.GetComponent<stats>().gold.ToString() + "個";
+        pGold.text = gameObject.GetComponent<stats>().gold.ToString();
 
         pfCor = pFinder.transform.position + Vector3.down;
 
@@ -403,6 +407,8 @@ public class p2control : MonoBehaviour
 
                 destroy = GameObject.FindGameObjectsWithTag("pathPref");
                 for (int i = 0; i < destroy.Length; i++) { Destroy(destroy[i]); }
+
+                map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.otherClips[0]);  //se
             }
         }
         if (clHex == pfCor)
@@ -517,7 +523,7 @@ public class p2control : MonoBehaviour
             if(shootProbeB.gameObject.transform.position.z>5 || shootProbeB.gameObject.transform.position.z<-5 
                 || shootProbeB.gameObject.transform.position.x>5 || shootProbeB.gameObject.transform.position.z<-5)
             {                
-                if (shootHexes[0] == Vector3.down) { print("Can't shoot! No space behind."); }                
+                if (shootHexes[0] == Vector3.down) { print("撃てない！ 後ろにマスがありません。"); }                
 
                 Destroy(shootProbeB);
                 shootProbeF = Instantiate(shootProbePref, gameObject.transform.position + Vector3.up, Quaternion.identity);
@@ -828,10 +834,10 @@ public class p2control : MonoBehaviour
         }
         else
         {
-            btnA.GetComponent<Button>().interactable = true;
             btnP.GetComponent<Button>().interactable = true;
-            btnI1.GetComponent<Button>().interactable = true;
-            btnI2.GetComponent<Button>().interactable = true;
+            if (GetComponent<stats>().skillCD == 0) { btnA.GetComponent<Button>().interactable = true; }
+            if (GetComponent<stats>().item1 != 0)   { btnI1.GetComponent<Button>().interactable = true; }
+            if (GetComponent<stats>().item1 != 0)   { btnI2.GetComponent<Button>().interactable = true; }      
         }
     }
 
@@ -864,12 +870,17 @@ public class p2control : MonoBehaviour
     }
 
 
-
     [PunRPC] public void RPC_pl3start()
     {
         GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = true;
         //GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = false;
     }
 
+    private void nextTurnDelay()
+    {        
+        GetComponent<stats>().bMyTurn = false;
+        GetComponent<p2control>().enabled = false;
+        GetComponent<PhotonView>().RPC("RPC_pl3start", GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
+    }
 }
 

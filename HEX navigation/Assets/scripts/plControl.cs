@@ -22,7 +22,7 @@ public class plControl : MonoBehaviour
     int pfStepNo = 0;
 
     Text pNick, pGold;    
-    [SerializeField] Sprite p1logo;
+    [SerializeField] Sprite[] p1logo;
     [SerializeField] Sprite p1a;
     GameObject p1panel;
 
@@ -84,23 +84,26 @@ public class plControl : MonoBehaviour
     void OnEnable()
     {
         //print("pl1 enabled");
-        if (GetComponent<PhotonView>().IsMine) {
-            //turnNo = turnEnd.turnEndS.turnNo; 
-            if (PhotonNetwork.CurrentRoom.CustomProperties["tNo"] != null) { turnNo = (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"]; }            
-            GameObject.Find("ScreenCanvas/turnText").GetComponent<Text>().text = "ターン " + turnNo.ToString();
+        if (GetComponent<PhotonView>().IsMine) {            
+            if (PhotonNetwork.CurrentRoom.CustomProperties["tNo"] != null) { 
+                turnNo = (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"];
+                if (turnNo>15) { return; }  //game over
+            }            
+            GameObject.Find("ScreenCanvas/turnText").GetComponent<Text>().text = turnNo.ToString();
+
+            GetComponent<stats>().bMyTurn = true;
         }       
 
         if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; }  //pl1
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
 
 
-        GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P1";
-        map.mapS.enemyLogo1.sprite = map.mapS.pl2logo; map.mapS.enemyLogo2.sprite = map.mapS.pl3logo;
-        map.mapS.px1.text = "P2"; map.mapS.px2.text = "P3";
+        //GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P1";
+        map.mapS.enemyLogo1.sprite = map.mapS.pl2logo[0]; map.mapS.enemyLogo2.sprite = map.mapS.pl3logo[0];        
         map.mapS.nick1.text = map.mapS.pl2.GetComponent<PhotonView>().Owner.NickName.ToString();
         map.mapS.nick2.text = map.mapS.pl3.GetComponent<PhotonView>().Owner.NickName.ToString();
-        map.mapS.gold1.text = "金塊：" + map.mapS.pl2.GetComponent<stats>().gold.ToString() + "個";
-        map.mapS.gold2.text = "金塊：" + map.mapS.pl3.GetComponent<stats>().gold.ToString() + "個";
+        map.mapS.gold1.text = map.mapS.pl2.GetComponent<stats>().gold.ToString();
+        map.mapS.gold2.text = map.mapS.pl3.GetComponent<stats>().gold.ToString();
 
 
         foreach (GameObject hex in hexes) //fix synch inaccuracy
@@ -139,9 +142,9 @@ public class plControl : MonoBehaviour
         skillTarget = Vector3.down;
                 
         //logo & skill buttons
-        GameObject.Find("ScreenCanvas/charPanel/logoImage").GetComponent<Image>().sprite = p1logo;
+        GameObject.Find("ScreenCanvas/charPanel").GetComponent<Image>().sprite = p1logo[1];
         btnA.GetComponent<Image>().sprite = p1a;
-        btnP.GetComponent<Button>().interactable = false;
+        btnP.SetActive(false);
 
         btnA.GetComponent<Button>().onClick.RemoveAllListeners();
         btnA.GetComponent<Button>().onClick.AddListener(() => {
@@ -158,10 +161,11 @@ public class plControl : MonoBehaviour
         }
         else { btnA.GetComponentInChildren<Text>().text = ""; }
 
+        btnNT.GetComponent<Button>().interactable = true;
         btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
-        btnNT.GetComponent<Button>().onClick.AddListener(() => {            
-            GetComponent<PhotonView>().RPC("RPC_pl2start", GameObject.FindGameObjectWithTag("player2").GetComponent<PhotonView>().Owner);
-            GetComponent<plControl>().enabled = false;
+        btnNT.GetComponent<Button>().onClick.AddListener(() => {
+            btnNT.GetComponent<Button>().interactable = false;
+            Invoke("nextTurnDelay", 2f);  //synch
         });
 
         //item buttons
@@ -298,6 +302,9 @@ public class plControl : MonoBehaviour
 
     void OnDisable()
     {
+        GameObject.Find("ScreenCanvas/charPanel").GetComponent<Image>().sprite = p1logo[0];
+        //btnNT.GetComponent<Button>().interactable = false;
+
         gameObject.GetComponent<stats>().path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         gameObject.GetComponent<stats>().path = path;
 
@@ -308,6 +315,7 @@ public class plControl : MonoBehaviour
             //map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[0]); 
         }
         bChallenge = false;
+        if (p1panel.active) { p1panel.SetActive(false); }
 
         if (bItem1a && itemTargets[0]!=Vector3.down)
         {
@@ -376,7 +384,7 @@ public class plControl : MonoBehaviour
             return;
         }
 
-        pGold.text = "金塊：" + gameObject.GetComponent<stats>().gold.ToString() + "個";
+        pGold.text = gameObject.GetComponent<stats>().gold.ToString();
 
         pfCor = pFinder.transform.position + Vector3.down;
 
@@ -394,6 +402,10 @@ public class plControl : MonoBehaviour
 
                 destroy = GameObject.FindGameObjectsWithTag("pathPref");
                 for(int i=0; i<destroy.Length; i++) { Destroy(destroy[i]); }
+
+                map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.otherClips[0]);  //se
+
+                map.mapS.hexInfoPanel.transform.position = Camera.main.WorldToScreenPoint(clHex) + new Vector3(180f, -80f, 0);
             }
         }
         if (clHex == pfCor) 
@@ -718,21 +730,19 @@ public class plControl : MonoBehaviour
         }        
         else if (bItem1a || bItem1b || bItem1c)
         {
-            btnA.GetComponent<Button>().interactable = false;
-            btnP.GetComponent<Button>().interactable = false;
+            btnA.GetComponent<Button>().interactable = false;            
             btnI2.GetComponent<Button>().interactable = false;
         }
         else if (bItem2a || bItem2b || bItem2c)
         {
-            btnA.GetComponent<Button>().interactable = false;
-            btnP.GetComponent<Button>().interactable = false;
+            btnA.GetComponent<Button>().interactable = false;           
             btnI1.GetComponent<Button>().interactable = false;
         }
         else
         {
-            btnA.GetComponent<Button>().interactable = true;           
-            btnI1.GetComponent<Button>().interactable = true;
-            btnI2.GetComponent<Button>().interactable = true;
+            if (GetComponent<stats>().skillCD == 0) { btnA.GetComponent<Button>().interactable = true; }
+            if (GetComponent<stats>().item1 != 0)   { btnI1.GetComponent<Button>().interactable = true; }
+            if (GetComponent<stats>().item1 != 0)   { btnI2.GetComponent<Button>().interactable = true; }                
         }
     }
 
@@ -742,7 +752,18 @@ public class plControl : MonoBehaviour
     {
         GameObject.FindGameObjectWithTag("player1").GetComponentInChildren<Animator>().Play(newState);
 
-        if (newState.Contains("skill")) { map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[0]); }
+        if (newState.Contains("skill")) { 
+            map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.skillClips[0]);
+
+            if (GetComponent<stats>().actSkillTrg[0] == new Vector3(2f,2f,2f))
+            {
+                print("怪盗は海賊に挑戦を送りました。");
+            }
+            else
+            {
+                print("怪盗は探検家に挑戦を送りました。");
+            }            
+        }
     }
 
 
@@ -771,4 +792,11 @@ public class plControl : MonoBehaviour
         //GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = false;
     }
 
+
+    private void nextTurnDelay()
+    {        
+        GetComponent<stats>().bMyTurn = false;
+        GetComponent<plControl>().enabled = false;
+        GetComponent<PhotonView>().RPC("RPC_pl2start", GameObject.FindGameObjectWithTag("player2").GetComponent<PhotonView>().Owner);
+    }
 }

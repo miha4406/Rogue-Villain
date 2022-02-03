@@ -50,6 +50,7 @@ MonoBehaviour:
   - pl3AC
   - RPC_AC
   - RPC_itemSound
+  - RPC_messageSystem
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

@@ -25,6 +25,8 @@ public class stats : MonoBehaviour, IPunObservable
     public Vector3[] item1Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
     public Vector3[] item2Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
 
+    public bool bMyTurn;
+
     
     void Awake()
     {
@@ -33,6 +35,8 @@ public class stats : MonoBehaviour, IPunObservable
 
         item1Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
         item2Targets = new Vector3[3] { Vector3.down, Vector3.down, Vector3.down };
+
+        bMyTurn = false;
     }
 
 
@@ -51,7 +55,8 @@ public class stats : MonoBehaviour, IPunObservable
             stream.SendNext(item1);
             stream.SendNext(item2);
             stream.SendNext(item1Targets);
-            stream.SendNext(item2Targets);            
+            stream.SendNext(item2Targets);
+            stream.SendNext(bMyTurn);
         }
         else  // receive data
         {
@@ -66,7 +71,8 @@ public class stats : MonoBehaviour, IPunObservable
             this.item1 = (int)stream.ReceiveNext();
             this.item2 = (int)stream.ReceiveNext();
             this.item1Targets = (Vector3[])stream.ReceiveNext();
-            this.item2Targets = (Vector3[])stream.ReceiveNext();           
+            this.item2Targets = (Vector3[])stream.ReceiveNext();         
+            this.bMyTurn = (bool)stream.ReceiveNext();
         }
     }
 
