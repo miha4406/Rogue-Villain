@@ -38,7 +38,7 @@ public class map : MonoBehaviour
 
         menuBtn.onClick.AddListener(() =>
         {
-            resultPanel.SetActive(true); resultPanel.GetComponent<result>().enabled = true;
+            resultPanel.SetActive(true); resultPanel.GetComponent<resultScript>().enabled = true;
             //rankPanel.active = !rankPanel.active;
             //rankPanel.GetComponentInChildren<Text>().text =
             //    "(player1) " + pl1.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl1.GetComponent<stats>().gold.ToString() + "\n"
@@ -125,7 +125,7 @@ public class map : MonoBehaviour
         //result panel view
         if (PhotonNetwork.CurrentRoom.CustomProperties["tNo"] != null) 
         {
-            if ((int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"]>15 &&  //game over
+            if ((int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"]>10 &&  //game over
                 GameObject.Find("ScreenCanvas/consolePanel").GetComponent<DebugStuff.ConsoleToGUI>().enabled)
             {
                 Invoke("showResults", 5f);

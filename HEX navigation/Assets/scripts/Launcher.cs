@@ -18,7 +18,7 @@ namespace m4netgame2
         [SerializeField] GameObject pl1descr, pl2descr, pl3descr;
         [SerializeField] GameObject btnTest, btnPlay;
 
-        string gameVersion = "2";
+        string gameVersion = "3";
         bool isConnecting;
 
         ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();

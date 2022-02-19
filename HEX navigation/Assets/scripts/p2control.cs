@@ -88,7 +88,7 @@ public class p2control : MonoBehaviour
 
     void OnEnable()
     {
-        //print("pl2 enabled");        
+        //print(gameObject.GetComponent<PhotonView>().OwnerActorNr);        
         if (GetComponent<PhotonView>().IsMine)
         {
             //turnNo = turnEnd.turnEndS.turnNo; 
@@ -98,7 +98,7 @@ public class p2control : MonoBehaviour
             GetComponent<stats>().bMyTurn = true;
         }
 
-        if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; } //1
+        if (gameObject.GetComponent<stats>().movDist!=1) { gameObject.GetComponent<stats>().movDist = 1; } 
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
 
 
@@ -136,6 +136,8 @@ public class p2control : MonoBehaviour
             }
         }
 
+        map.mapS.hexInfoPanel.transform.position = Vector3.down*100f;
+
         path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         pFinder.transform.position = transform.position + Vector3.up;
         clHex = transform.position;
@@ -153,13 +155,20 @@ public class p2control : MonoBehaviour
         btnA.GetComponent<Button>().onClick.RemoveAllListeners();
         btnA.GetComponent<Button>().onClick.AddListener(() => {
             if (!GetComponent<PhotonView>().IsMine) { return; }
-            bShootPrep = !bShootPrep;            
+            bShootPrep = !bShootPrep;
+            Destroy(GameObject.FindGameObjectWithTag("probe")); 
+            if (bShootPrep) { btnA.GetComponent<Image>().color = Color.yellow; }
+            else { btnA.GetComponent<Image>().color = Color.white; }
         });
+        btnA.GetComponent<Image>().color = Color.white;
         btnP.GetComponent<Button>().onClick.RemoveAllListeners();
         btnP.GetComponent<Button>().onClick.AddListener(() => {
             if (!GetComponent<PhotonView>().IsMine) { return; }  
-            bPasAtk = !bPasAtk;            
+            bPasAtk = !bPasAtk;
+            if (bPasAtk) { btnP.GetComponent<Image>().color = Color.yellow; }
+            else { btnP.GetComponent<Image>().color = Color.white; }
         });
+        btnP.GetComponent<Image>().color = Color.white;
         btnA.GetComponent<Button>().interactable = true;
         if (gameObject.GetComponent<stats>().skillCD != 0)
         {
@@ -409,6 +418,8 @@ public class p2control : MonoBehaviour
                 for (int i = 0; i < destroy.Length; i++) { Destroy(destroy[i]); }
 
                 map.mapS.GetComponent<AudioSource>().PlayOneShot(map.mapS.otherClips[0]);  //se
+
+                map.mapS.hexInfoPanel.transform.position = Camera.main.WorldToScreenPoint(clHex) + new Vector3(180f, -80f, 0);
             }
         }
         if (clHex == pfCor)
@@ -469,12 +480,15 @@ public class p2control : MonoBehaviour
 
         for (int i = 1; i <= nearHex.Length-1; i++)
         {
-            if (Vector3.Distance(nearHex[i].transform.position, clHex) < nearest
-            && Vector3.Distance(nearHex[i].transform.position, pfCor) < 1.5f) //hex size!
+            if (nearHex[i] != null)
             {
-                path[pfStepNo] = nearHex[i].transform.position;
-                nearest = Vector3.Distance(nearHex[i].transform.position, clHex);
-                s = i; //nearest hex number in nearHex[]
+                if (Vector3.Distance(nearHex[i].transform.position, clHex) < nearest
+                    && Vector3.Distance(nearHex[i].transform.position, pfCor) < 1.5f) //hex size!
+                {
+                    path[pfStepNo] = nearHex[i].transform.position;
+                    nearest = Vector3.Distance(nearHex[i].transform.position, clHex);
+                    s = i; //nearest hex number in nearHex[]
+                }
             }
         }
 
@@ -488,7 +502,7 @@ public class p2control : MonoBehaviour
     }
 
     void pl2shootPrep() //if bShoot //if path[1] //only once!
-    {     
+    {  
         if (Input.GetMouseButtonUp(0) && (path[1] != Vector3.down))  //on mouse click
         {
             shootHexes = new Vector3[4] { Vector3.down, Vector3.down, Vector3.down, Vector3.down };
@@ -603,25 +617,32 @@ public class p2control : MonoBehaviour
 
                         itemTargets[0] = clHex;
                         s0 = Instantiate(slime, itemTargets[0], Quaternion.identity);
+                        s0.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                         if (itemID==8 && itemTargets[0]!=Vector3.down)  //slime 2 (3 hexes)
                         {
-                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);                           
+                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s1.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
-                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                                             
+                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                            s2.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
                         }
                         else if (itemID==9 && itemTargets[0]!=Vector3.down)  //slime 3 (5 hexes)
                         {
                             s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s1.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
                             s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                            s2.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s3 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
+                            s3.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s4 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
                             s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                            s4.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
                         }
                     }
                 }
@@ -707,26 +728,33 @@ public class p2control : MonoBehaviour
                         clHex = hit.collider.transform.position;
 
                         itemTargets[0] = clHex;
-                        s0 = Instantiate(slime, itemTargets[0], Quaternion.identity);
+                        s0 = Instantiate(slime, itemTargets[0], Quaternion.identity); 
+                        s0.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                         if (itemID==8 && itemTargets[0]!=Vector3.down)  //slime 2 (3 hexes)
                         {
-                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);                           
+                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);            
+                            s1.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
-                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                                             
+                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);    
+                            s2.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
                         }
                         else if (itemID==9 && itemTargets[0]!=Vector3.down)  //slime 3 (5 hexes)
                         {
                             s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s1.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
                             s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                            s2.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s3 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
+                            s3.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s4 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
                             s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                            s4.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
                         }
                     }
                 }
@@ -861,8 +889,9 @@ public class p2control : MonoBehaviour
                 if (sl != Vector3.down && hex != null)
                 {
                     if (Vector3.Distance(hex.transform.position, sl) < 0.5f)
-                    {                        
-                        Instantiate(this.slime, hex.transform.position, Quaternion.identity);  //sl?
+                    {
+                       Instantiate(this.slime, hex.transform.position, Quaternion.identity)
+                            .GetComponent<slimeScript>().userID = map.mapS.pl2.GetComponent<PhotonView>().OwnerActorNr;                            
                     }
                 }
             }

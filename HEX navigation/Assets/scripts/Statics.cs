@@ -44,15 +44,18 @@ public class Statics : MonoBehaviourPun
         {      
             if (GameObject.FindGameObjectWithTag("Statics").GetComponent<Statics>().pref1owner == PhotonNetwork.NickName)
             {
-                PhotonNetwork.Instantiate("pl1pref", new Vector3(-0.5f, 0, -0.9f), Quaternion.identity);               
+                //PhotonNetwork.Instantiate("pl1pref", new Vector3(-0.5f, 0, -0.9f), Quaternion.identity);        
+                PhotonNetwork.Instantiate("pl1pref", map.mapS.hexes[19].transform.position, Quaternion.identity);
             }
             else if (GameObject.FindGameObjectWithTag("Statics").GetComponent<Statics>().pref2owner == PhotonNetwork.NickName)
             {
-                PhotonNetwork.Instantiate("pl2pref", new Vector3(-0.5f, 0, 0.9f), Quaternion.identity).transform.Rotate(0,180f,0);                
+                //PhotonNetwork.Instantiate("pl2pref", new Vector3(-1f, 0, 1.8f), Quaternion.identity).transform.Rotate(0,180f,0);       
+                PhotonNetwork.Instantiate("pl2pref", map.mapS.hexes[8].transform.position, Quaternion.identity).transform.Rotate(0,180f,0); ;
             }
             else if (GameObject.FindGameObjectWithTag("Statics").GetComponent<Statics>().pref3owner == PhotonNetwork.NickName)
             {
-                PhotonNetwork.Instantiate("pl3pref", new Vector3(1f, 0, 0), Quaternion.identity).transform.Rotate(0, -90f, 0);
+                //PhotonNetwork.Instantiate("pl3pref", new Vector3(2f, 0, 0), Quaternion.identity).transform.Rotate(0,-90f,0);
+                PhotonNetwork.Instantiate("pl3pref", map.mapS.hexes[3].transform.position, Quaternion.identity).transform.Rotate(0,-90f,0);
             }
 
             GetComponent<AudioSource>().clip = bgmClips[1]; GetComponent<AudioSource>().Play();

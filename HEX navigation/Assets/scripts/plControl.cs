@@ -87,7 +87,7 @@ public class plControl : MonoBehaviour
         if (GetComponent<PhotonView>().IsMine) {            
             if (PhotonNetwork.CurrentRoom.CustomProperties["tNo"] != null) { 
                 turnNo = (int)PhotonNetwork.CurrentRoom.CustomProperties["tNo"];
-                if (turnNo>15) { return; }  //game over
+                if (turnNo>10) { return; }  //game over
             }            
             GameObject.Find("ScreenCanvas/turnText").GetComponent<Text>().text = turnNo.ToString();
 
@@ -135,6 +135,9 @@ public class plControl : MonoBehaviour
             }
         }
 
+        map.mapS.hexInfoPanel.transform.position = Vector3.down*100f;
+
+
         path = new Vector3[6] { Vector3.zero, Vector3.down, Vector3.down, Vector3.down, Vector3.down, Vector3.down };
         pFinder.transform.position = transform.position +Vector3.up;
         clHex = transform.position;
@@ -151,8 +154,11 @@ public class plControl : MonoBehaviour
             if (!GetComponent<PhotonView>().IsMine) { return; }
             bChallenge = !bChallenge;
             skillTarget = Vector3.down;
-            p1panel.active = !p1panel.active;           
+            p1panel.active = !p1panel.active;
+            if (bChallenge) { btnA.GetComponent<Image>().color = Color.yellow; }
+            else { btnA.GetComponent<Image>().color = Color.white; }
         } );
+        btnA.GetComponent<Image>().color = Color.white;
         btnA.GetComponent<Button>().interactable = true;
         if (gameObject.GetComponent<stats>().skillCD != 0)
         {
@@ -461,16 +467,18 @@ public class plControl : MonoBehaviour
         path[pfStepNo] = nearHex[1].transform.position;
         float nearest = Vector3.Distance(nearHex[1].transform.position, clHex);
        
-            for (int i = 1; i <= nearHex.Length-1; i++)
-            {
-                if (Vector3.Distance(nearHex[i].transform.position, clHex) < nearest 
-                && Vector3.Distance(nearHex[i].transform.position, pfCor) < 1.5f) //hex size!
-            {
+        for (int i = 1; i <= nearHex.Length-1; i++){
+            if (nearHex[i] != null) {
+
+                if (Vector3.Distance(nearHex[i].transform.position, clHex) < nearest
+                    && Vector3.Distance(nearHex[i].transform.position, pfCor) < 1.5f) //hex size!
+                {
                     path[pfStepNo] = nearHex[i].transform.position;
                     nearest = Vector3.Distance(nearHex[i].transform.position, clHex);
                     s = i; //nearest hex number in nearHex[]
                 }
-            }            
+            }                
+        }            
 
         pFinder.transform.position = nearHex[s].transform.position + Vector3.up;   
     }
@@ -525,25 +533,32 @@ public class plControl : MonoBehaviour
 
                         itemTargets[0] = clHex;
                         s0 = Instantiate(slime, itemTargets[0], Quaternion.identity);
+                        s0.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
-                        if (itemID==8 && itemTargets[0]!=Vector3.down)  //slime 2 (3 hexes)
-                        {
-                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);                           
-
-                            s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
-                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                                             
-                        }
-                        else if (itemID==9 && itemTargets[0]!=Vector3.down)  //slime 3 (5 hexes)
+                        if (itemID == 8 && itemTargets[0] != Vector3.down)  //slime 2 (3 hexes)
                         {
                             s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s1.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
                             s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                            s2.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
+                        }
+                        else if (itemID == 9 && itemTargets[0] != Vector3.down)  //slime 3 (5 hexes)
+                        {
+                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s1.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
+
+                            s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                            s2.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s3 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
+                            s3.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s4 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
                             s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                            s4.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
                         }
                     }
                 }
@@ -630,25 +645,32 @@ public class plControl : MonoBehaviour
 
                         itemTargets[0] = clHex;
                         s0 = Instantiate(slime, itemTargets[0], Quaternion.identity);
+                        s0.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
-                        if (itemID==8 && itemTargets[0]!=Vector3.down)  //slime 2 (3 hexes)
-                        {
-                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);                           
-
-                            s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
-                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);                                             
-                        }
-                        else if (itemID==9 && itemTargets[0]!=Vector3.down)  //slime 3 (5 hexes)
+                        if (itemID == 8 && itemTargets[0] != Vector3.down)  //slime 2 (3 hexes)
                         {
                             s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s1.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
                             s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                            s2.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
+                        }
+                        else if (itemID == 9 && itemTargets[0] != Vector3.down)  //slime 3 (5 hexes)
+                        {
+                            s1 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s1.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
+
+                            s2 = Instantiate(slime, itemTargets[0] + Vector3.right, Quaternion.identity);
+                            s2.transform.RotateAround(s0.transform.position, Vector3.up, -60f);
+                            s2.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s3 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
+                            s3.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
 
                             s4 = Instantiate(slime, itemTargets[0] + Vector3.left, Quaternion.identity);
                             s4.transform.RotateAround(s0.transform.position, Vector3.up, 60f);
+                            s4.GetComponent<slimeScript>().userID = GetComponent<PhotonView>().OwnerActorNr;
                         }
                     }
                 }
@@ -778,7 +800,8 @@ public class plControl : MonoBehaviour
                     if (Vector3.Distance(hex.transform.position, sl) < 0.5f)
                     {
                         //print(hex.name);
-                        Instantiate(this.slime, hex.transform.position, Quaternion.identity);  //sl?
+                        Instantiate(this.slime, hex.transform.position, Quaternion.identity)
+                           .GetComponent<slimeScript>().userID = map.mapS.pl1.GetComponent<PhotonView>().OwnerActorNr;
                     }
                 }
             }

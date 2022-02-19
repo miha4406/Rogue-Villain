@@ -16,6 +16,7 @@ TagManager:
   - gBar1
   - gBar2
   - gBar3
+  - probe
   layers:
   - Default
   - TransparentFX

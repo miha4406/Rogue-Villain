@@ -84,12 +84,12 @@ public class turnEnd : MonoBehaviour
         if (bMove3) { bWait = true; pl3move(mov3StepNo); }
 
         if (turnNo > 15) {
-            Camera.main.transform.LookAt(Vector3.up*10); //to avoid map clicks
-            map.mapS.resultPanel.SetActive(true);
-            GameObject.Find("ScreenCanvas/resultPanel/text2").GetComponent<Text>().text =
-                "(player1) " + pl1.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl1.GetComponent<stats>().gold.ToString() + "\n"
-                + "(player2) " + pl2.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl2.GetComponent<stats>().gold.ToString() + "\n"
-                + "(player3) " + pl3.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl3.GetComponent<stats>().gold.ToString();
+        //    Camera.main.transform.LookAt(Vector3.up*10); //to avoid map clicks
+        //    map.mapS.resultPanel.SetActive(true);
+        //    GameObject.Find("ScreenCanvas/resultPanel/text2").GetComponent<Text>().text =
+        //        "(player1) " + pl1.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl1.GetComponent<stats>().gold.ToString() + "\n"
+        //        + "(player2) " + pl2.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl2.GetComponent<stats>().gold.ToString() + "\n"
+        //        + "(player3) " + pl3.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl3.GetComponent<stats>().gold.ToString();
         }
 
         //COLLISIONS
