@@ -21,7 +21,7 @@ namespace m4netgame2
         string gameVersion = "3";
         bool isConnecting;
 
-        ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
+        ExitGames.Client.Photon.Hashtable plProp = new ExitGames.Client.Photon.Hashtable();
 
 
         //CALLBACKS
@@ -55,11 +55,10 @@ namespace m4netgame2
             //if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
             //{
             //    Debug.Log("Loading scene. NickName: " +PhotonNetwork.NickName);
-
             //    PhotonNetwork.LoadLevel("s1");
             //}
 
-            p1.GetComponent<plChoose>().startRefrChars();
+            plProp["myChar"] = 0; PhotonNetwork.LocalPlayer.SetCustomProperties(plProp);  //ini
         }
 
 
@@ -77,6 +76,7 @@ namespace m4netgame2
 
             NameInputIni();
 
+
             //test connect
             btnTest.GetComponent<Button>().onClick.AddListener(() =>
             {
@@ -85,21 +85,46 @@ namespace m4netgame2
                 };
             });
 
+
             //multiplayer connect
             btnPlay.GetComponent<Button>().onClick.AddListener(() =>
             {
-                hash["ready"] = true;  PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
-
-                if (slider.GetComponent<Slider>().value == 1)
+                if (isUsed() == true)  //set gray
                 {
-                    PhotonNetwork.SetMasterClient(PhotonNetwork.LocalPlayer);  //char1 owner will host
-                    
-                    InvokeRepeating("checkOthers", 2f, 2f);
+                    if ((int)slider.GetComponent<Slider>().value == 1)
+                    {
+                        p1.GetComponent<BoxCollider2D>().enabled = false;
+                        p1.GetComponent<SpriteRenderer>().sprite = p1.GetComponent<plChoose>().plSpr[3];
+                    }
+                    else if ((int)slider.GetComponent<Slider>().value == 2)
+                    {
+                        p2.GetComponent<BoxCollider2D>().enabled = false;
+                        p2.GetComponent<SpriteRenderer>().sprite = p2.GetComponent<plChoose>().plSpr[3];
+                    }
+                    else if ((int)slider.GetComponent<Slider>().value == 3)
+                    {
+                        p3.GetComponent<BoxCollider2D>().enabled = false;
+                        p3.GetComponent<SpriteRenderer>().sprite = p3.GetComponent<plChoose>().plSpr[3];
+                    }
+
+                    slider.GetComponent<Slider>().value = 0;
                 }
-                
-                p1.GetComponent<BoxCollider2D>().enabled = false;
-                p2.GetComponent<BoxCollider2D>().enabled = false;
-                p3.GetComponent<BoxCollider2D>().enabled = false;                
+                else  //wait game start
+                {
+                    plProp["myChar"] = (int)slider.GetComponent<Slider>().value; PhotonNetwork.LocalPlayer.SetCustomProperties(plProp);
+
+                    p1.GetComponent<BoxCollider2D>().enabled = false;
+                    p2.GetComponent<BoxCollider2D>().enabled = false;
+                    p3.GetComponent<BoxCollider2D>().enabled = false;
+
+                    if ((int)slider.GetComponent<Slider>().value == 1)
+                    {
+                        PhotonNetwork.SetMasterClient(PhotonNetwork.LocalPlayer);  //char1 owner will host
+
+                        InvokeRepeating("checkOthers", 3f, 2f);
+                    }
+                }
+
             });
 
         }
@@ -143,8 +168,7 @@ namespace m4netgame2
             p1.GetComponent<BoxCollider2D>().enabled = true;
             p2.GetComponent<BoxCollider2D>().enabled = true;
             p3.GetComponent<BoxCollider2D>().enabled = true;
-
-            hash["ready"] = false; PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+            
         }
 
         void NameInputIni()
@@ -189,17 +213,33 @@ namespace m4netgame2
         }
              
 
-        public void checkOthers()
+        public bool isUsed()
         {
-            if (PhotonNetwork.IsMasterClient)
+            foreach (var others in PhotonNetwork.PlayerListOthers)
             {
-                foreach(var gamer in PhotonNetwork.PlayerList)
+                if ((int)others.CustomProperties["myChar"] == (int)slider.GetComponent<Slider>().value)
                 {
-                    if ( (bool)gamer.CustomProperties["ready"] != true ) { return; }
-                }
-
-                PhotonNetwork.LoadLevel("s1");                
+                    return true;
+                }                
             }
+
+            return false;
+        }
+
+
+        void checkOthers()
+        {
+            if (PhotonNetwork.CurrentRoom.PlayerCount < 3) { return; }  //need 3 players to start
+
+            foreach (var others in PhotonNetwork.PlayerListOthers)
+            {
+                if ((int)others.CustomProperties["myChar"] == 0)
+                {
+                    return;
+                }
+            }
+
+            PhotonNetwork.LoadLevel("s1");
         }
 
     }

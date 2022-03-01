@@ -27,18 +27,23 @@ public class goldControl : MonoBehaviour
         pl2 = GameObject.FindGameObjectWithTag("player2");
         pl3 = GameObject.FindGameObjectWithTag("player3");
 
-        hexes = map.mapS.hexes;        
+        hexes = map.mapS.hexes;             
 
+        pv = GetComponent<PhotonView>();
+    }
+
+
+    private void Start()
+    {
+        //can't set in Awake
         gBar1 = map.mapS.gBar1;
         gBar2 = map.mapS.gBar2;
         gBar3 = map.mapS.gBar3;
 
         gBar1.transform.position = hexes[10].transform.position;
+    }
 
-        pv = GetComponent<PhotonView>();
-    }  
 
-    
     void Update()
     {
         //if (!GetComponent<PhotonView>().IsMine) { return; } //host only

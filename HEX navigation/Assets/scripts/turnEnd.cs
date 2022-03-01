@@ -28,9 +28,9 @@ public class turnEnd : MonoBehaviour
     int lastMov3 = 0;
     bool bMove3 = false;
 
-    bool bWait = false;     //if "true", all controls blocked   
-    bool bTurnEnd = false;  //turn end seq. started
-    bool bColEnd = false;  //all collisions ended
+    public bool? bInput = null;     //if "true", we check for bMyTurn. sets "true" by Host (pl1)
+    bool bTurnEnd = false;   //turn end seq. started
+    bool bColEnd = false;    //all collisions ended
     public int turnNo = 1;
 
     public Player[] roomPlayers = new Player[4];
@@ -72,16 +72,29 @@ public class turnEnd : MonoBehaviour
     {
         if (!GetComponent<PhotonView>().IsMine) { return; } //host only
 
-        //print(pl3.GetComponent<stats>().actSkillTrg[0]); 
-
+        
         pl1dist = pl1.GetComponent<stats>().movDist;
         pl2dist = pl2.GetComponent<stats>().movDist;
         pl3dist = pl3.GetComponent<stats>().movDist;
 
-        //if (bWait) { print("WAIT"); }          
-        if (bMove1) { bWait = true; pl1move(mov1StepNo); }
-        if (bMove2) { bWait = true; pl2move(mov2StepNo); }
-        if (bMove3) { bWait = true; pl3move(mov3StepNo); }
+
+        if (bInput == true)
+        {
+            if (pl1.GetComponent<stats>().bMyTurn == false
+            && pl2.GetComponent<stats>().bMyTurn == false
+            && pl3.GetComponent<stats>().bMyTurn == false)
+            {
+                Invoke("endTurn", 2f);  //synch
+                bInput = false;
+            }
+        }
+        ///////////////////////////////////
+
+
+        //char movement         
+        if (bMove1) { pl1move(mov1StepNo); }
+        if (bMove2) { pl2move(mov2StepNo); }
+        if (bMove3) { pl3move(mov3StepNo); }
 
         if (turnNo > 15) {
         //    Camera.main.transform.LookAt(Vector3.up*10); //to avoid map clicks
@@ -92,6 +105,7 @@ public class turnEnd : MonoBehaviour
         //        + "(player3) " + pl3.GetComponent<PhotonView>().Owner.NickName.ToString() + ": " + pl3.GetComponent<stats>().gold.ToString();
         }
 
+        
         //COLLISIONS
         if (bTurnEnd)
         {
@@ -135,9 +149,9 @@ public class turnEnd : MonoBehaviour
                 // print("pl3 hits"); 
                 if (lastMov3 - pl3.GetComponent<stats>().hitCount >= 0)
                 {
-                    pl3.transform.LookAt(p2Path[lastMov3 -pl3.GetComponent<stats>().hitCount +1]);
+                    pl3.transform.LookAt(p3Path[lastMov3 -pl3.GetComponent<stats>().hitCount +1]);
                     pl3.transform.position = Vector3.MoveTowards(pl3.transform.position, p3Path[lastMov3 - pl3.GetComponent<stats>().hitCount], plMovSp * 0.95f * Time.deltaTime);
-                    //pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-bump");
+                    pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-bump");
                 }
             }
         }
@@ -157,9 +171,7 @@ public class turnEnd : MonoBehaviour
             if (plB.transform.position == plC.transform.position)
             {
                 plC.GetComponent<stats>().hitCount++;
-            }
-
-            bWait = true;
+            }                       
 
             StopAllCoroutines();
             StartCoroutine(hitCountClear(plA, plB, plC));  //turn ends if no new collisions
@@ -174,8 +186,7 @@ public class turnEnd : MonoBehaviour
         plA.GetComponent<stats>().hitCount = 0;
         plB.GetComponent<stats>().hitCount = 0;
         plC.GetComponent<stats>().hitCount = 0;
-
-        bWait = false;
+        
         pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-stand");
         pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-stand");
         pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-stand");
@@ -184,7 +195,7 @@ public class turnEnd : MonoBehaviour
     }
 
 
-    public void endTurn()  //runs by pl3
+    public void endTurn()  //runs from Update now  
     {
         //if (!GetComponent<PhotonView>().IsMine) { return; } //host only
         
@@ -260,7 +271,7 @@ public class turnEnd : MonoBehaviour
 
             pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-walk");
         }
-        else { bMove1 = false; lastMov1 = mov1StepNo - 1; mov1StepNo = 1; bWait = false;  pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-stand"); }
+        else { bMove1 = false; lastMov1 = mov1StepNo - 1; mov1StepNo = 1;  pv.RPC("pl1AC", RpcTarget.AllBuffered, "base.pl1-stand"); }
     }
 
     void pl2move(int stepNo)
@@ -306,7 +317,7 @@ public class turnEnd : MonoBehaviour
 
             pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-walk");
         }
-        else { bMove2 = false; lastMov2 = mov2StepNo - 1; mov2StepNo = 1; bWait = false;  pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-stand"); }
+        else { bMove2 = false; lastMov2 = mov2StepNo - 1; mov2StepNo = 1;  pv.RPC("pl2AC", RpcTarget.AllBuffered, "base.pl2-stand"); }
     }
     void pl3move(int stepNo)
     {
@@ -352,7 +363,7 @@ public class turnEnd : MonoBehaviour
 
             pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-walk");
         }
-        else { bMove3 = false; lastMov3 = mov3StepNo - 1; mov3StepNo = 1; bWait = false; pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-stand"); }
+        else { bMove3 = false; lastMov3 = mov3StepNo - 1; mov3StepNo = 1;  pv.RPC("pl3AC", RpcTarget.AllBuffered, "base.pl3-stand"); }
     }
 
     [PunRPC] void pl1AC(string newState)

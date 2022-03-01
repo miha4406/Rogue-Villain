@@ -95,7 +95,7 @@ public class itemControl : MonoBehaviour
             Invoke("GLsynchWait", 1.5f);  //wait for GameLogic synch
             turnEnd.turnEndS.turnNo++;    //next turn      
             rProp["tNo"] = turnNo+1; PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
-            Invoke("pl1startDelay", 2f);  //wait for ownership return before run pl1
+            GetComponent<PhotonView>().RPC("RPC_plStartDelay", RpcTarget.AllBuffered);  //starts next turn
 
 
             movEnd = false; goldEnd = false;
@@ -358,7 +358,6 @@ public class itemControl : MonoBehaviour
     }
 
 
-
     public bool slimeObstacle(Vector3 pos)
     {
         foreach (GameObject slime in GameObject.FindGameObjectsWithTag("slimePref"))
@@ -371,7 +370,6 @@ public class itemControl : MonoBehaviour
     }
 
 
-
     void GLsynchWait()
     {
         pl1.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[1]);
@@ -379,9 +377,23 @@ public class itemControl : MonoBehaviour
         pl3.GetComponent<PhotonView>().TransferOwnership(turnEnd.turnEndS.roomPlayers[3]);
     }
 
-    void pl1startDelay()
+
+    [PunRPC] IEnumerator RPC_plStartDelay()
     {
-        pl1.GetComponent<plControl>().enabled = true;
+        yield return new WaitForSeconds(2f);
+
+        if (PhotonNetwork.LocalPlayer == map.mapS.pl1.GetComponent<PhotonView>().Owner)
+        {
+            map.mapS.pl1.GetComponent<plControl>().enabled = true;
+        }
+        else if (PhotonNetwork.LocalPlayer == map.mapS.pl2.GetComponent<PhotonView>().Owner)
+        {
+            map.mapS.pl2.GetComponent<p2control>().enabled = true;
+        }
+        else if (PhotonNetwork.LocalPlayer == map.mapS.pl3.GetComponent<PhotonView>().Owner)
+        {
+            map.mapS.pl3.GetComponent<p3control>().enabled = true;
+        }
     }
 
     [PunRPC] IEnumerator RPC_itemSynh()

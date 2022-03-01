@@ -64,20 +64,21 @@ public class plControl : MonoBehaviour
         toolTip = GameObject.Find("ScreenCanvas/tipPanel");
         itemTip = GameObject.Find("ScreenCanvas/itemTipPanel");
         btnNT = GameObject.Find("ScreenCanvas/butTurn");
-
-        p1panel = GameObject.Find("ScreenCanvas/p1panel");
-        GameObject.Find("ScreenCanvas/p1panel/but2").GetComponent<Button>().onClick.AddListener(() => { skillTarget = new Vector3(2f,2f,2f); p1panel.SetActive(false); } );
-        GameObject.Find("ScreenCanvas/p1panel/but3").GetComponent<Button>().onClick.AddListener(() => { skillTarget = new Vector3(3f,3f,3f); p1panel.SetActive(false); } );
-        p1panel.SetActive(false);
+                
     }
 
 
-    void Start() //can't set in Awake
+    void Start() 
     {
+        //can't set in Awake
         pNick = GameObject.Find("ScreenCanvas/infoPanel/nicknameText").GetComponent<Text>();
         pNick.text = PhotonNetwork.NickName;
         pGold = GameObject.Find("ScreenCanvas/infoPanel/goldText").GetComponent<Text>();
-        
+
+        p1panel = GameObject.Find("ScreenCanvas/p1panel");
+        GameObject.Find("ScreenCanvas/p1panel/but2").GetComponent<Button>().onClick.AddListener(() => { skillTarget = new Vector3(2f, 2f, 2f); p1panel.SetActive(false); });
+        GameObject.Find("ScreenCanvas/p1panel/but3").GetComponent<Button>().onClick.AddListener(() => { skillTarget = new Vector3(3f, 3f, 3f); p1panel.SetActive(false); });
+        p1panel.SetActive(false);
     }
 
 
@@ -92,13 +93,12 @@ public class plControl : MonoBehaviour
             GameObject.Find("ScreenCanvas/turnText").GetComponent<Text>().text = turnNo.ToString();
 
             GetComponent<stats>().bMyTurn = true;
-        }       
+        }
+                
 
         if (gameObject.GetComponent<stats>().movDist!=2) { gameObject.GetComponent<stats>().movDist = 2; }  //pl1
         plDist = gameObject.GetComponent<stats>().movDist; //renew movDist
-
-
-        //GameObject.Find("ScreenCanvas/charPanel/textPx").GetComponent<Text>().text = "P1";
+        
         map.mapS.enemyLogo1.sprite = map.mapS.pl2logo[0]; map.mapS.enemyLogo2.sprite = map.mapS.pl3logo[0];        
         map.mapS.nick1.text = map.mapS.pl2.GetComponent<PhotonView>().Owner.NickName.ToString();
         map.mapS.nick2.text = map.mapS.pl3.GetComponent<PhotonView>().Owner.NickName.ToString();
@@ -171,7 +171,9 @@ public class plControl : MonoBehaviour
         btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
         btnNT.GetComponent<Button>().onClick.AddListener(() => {
             btnNT.GetComponent<Button>().interactable = false;
-            Invoke("nextTurnDelay", 2f);  //synch
+            //Invoke("nextTurnDelay", 2f);  //synch
+            GetComponent<stats>().bMyTurn = false;
+            GetComponent<plControl>().enabled = false;            
         });
 
         //item buttons
@@ -380,6 +382,9 @@ public class plControl : MonoBehaviour
         //print(slimePos[0]);
         GetComponent<PhotonView>().RPC("RPC_newSlimes", RpcTarget.OthersBuffered, slimePos);
 
+
+        turnEnd.turnEndS.bInput = true;  //start check for bMyTurn
+        map.mapS.bWait = true;
     }
 
 
@@ -809,17 +814,17 @@ public class plControl : MonoBehaviour
     }
 
 
-    [PunRPC] public void RPC_pl2start()
-    {
-        GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = true;
-        //GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = false;
-    }
+    //[PunRPC] public void RPC_pl2start()
+    //{
+    //    GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = true;
+    //    //GameObject.FindGameObjectWithTag("player1").GetComponent<plControl>().enabled = false;
+    //}
 
 
-    private void nextTurnDelay()
-    {        
-        GetComponent<stats>().bMyTurn = false;
-        GetComponent<plControl>().enabled = false;
-        GetComponent<PhotonView>().RPC("RPC_pl2start", GameObject.FindGameObjectWithTag("player2").GetComponent<PhotonView>().Owner);
-    }
+    //private void nextTurnDelay()
+    //{        
+    //    GetComponent<stats>().bMyTurn = false;
+    //    GetComponent<plControl>().enabled = false;
+    //    GetComponent<PhotonView>().RPC("RPC_pl2start", GameObject.FindGameObjectWithTag("player2").GetComponent<PhotonView>().Owner);
+    //}
 }

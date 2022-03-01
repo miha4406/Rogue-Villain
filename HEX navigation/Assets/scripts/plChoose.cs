@@ -9,9 +9,7 @@ public class plChoose : MonoBehaviour
     [SerializeField] GameObject startButton;
     [SerializeField] GameObject[] chars;
     [SerializeField] GameObject statics;
-
-    static ExitGames.Client.Photon.Hashtable rProp = new ExitGames.Client.Photon.Hashtable();    
-    static int[] currChoice = new int[3];
+    
 
     private void Start()
     {  
@@ -28,98 +26,38 @@ public class plChoose : MonoBehaviour
 
     private void OnMouseExit()
     {
-        if (slider.value.ToString() != name) { 
-            GetComponent<SpriteRenderer>().sprite = plSpr[0]; 
+        if (slider.value.ToString() != name) {
+            if (GetComponent<SpriteRenderer>().sprite != this.plSpr[3]) 
+            { GetComponent<SpriteRenderer>().sprite = plSpr[0]; }            
         }        
     }
 
     private void OnMouseDown()
-    {
-        if (rProp["char3"] == null) { return; }  //time to room ini
-
+    {      
         GetComponent<SpriteRenderer>().sprite = plSpr[2];
 
         if (name == "1")
         {
             slider.value = 1;
-            chars[1].GetComponent<SpriteRenderer>().sprite = chars[1].GetComponent<plChoose>().plSpr[0];
-            chars[2].GetComponent<SpriteRenderer>().sprite = chars[2].GetComponent<plChoose>().plSpr[0];
-
-            clearChars();
-            rProp["char1"] = PhotonNetwork.LocalPlayer.ActorNumber;
-            rProp["char2"] = currChoice[1];
-            rProp["char3"] = currChoice[2];
+            if (chars[1].GetComponent<SpriteRenderer>().sprite != chars[1].GetComponent<plChoose>().plSpr[3]) { chars[1].GetComponent<SpriteRenderer>().sprite = chars[1].GetComponent<plChoose>().plSpr[0]; }
+            if (chars[2].GetComponent<SpriteRenderer>().sprite != chars[2].GetComponent<plChoose>().plSpr[3]) { chars[2].GetComponent<SpriteRenderer>().sprite = chars[2].GetComponent<plChoose>().plSpr[0]; }
         }
         else if (name == "2")
         {
             slider.value = 2;
-            chars[0].GetComponent<SpriteRenderer>().sprite = chars[0].GetComponent<plChoose>().plSpr[0];
-            chars[2].GetComponent<SpriteRenderer>().sprite = chars[2].GetComponent<plChoose>().plSpr[0];
-
-            clearChars();
-            rProp["char1"] = currChoice[0];
-            rProp["char2"] = PhotonNetwork.LocalPlayer.ActorNumber;
-            rProp["char3"] = currChoice[2];
+            if (chars[0].GetComponent<SpriteRenderer>().sprite != chars[0].GetComponent<plChoose>().plSpr[3]) { chars[0].GetComponent<SpriteRenderer>().sprite = chars[0].GetComponent<plChoose>().plSpr[0]; }
+            if (chars[2].GetComponent<SpriteRenderer>().sprite != chars[2].GetComponent<plChoose>().plSpr[3]) { chars[2].GetComponent<SpriteRenderer>().sprite = chars[2].GetComponent<plChoose>().plSpr[0]; }
         }
         else
         {
             slider.value = 3;
-            chars[0].GetComponent<SpriteRenderer>().sprite = chars[0].GetComponent<plChoose>().plSpr[0];
-            chars[1].GetComponent<SpriteRenderer>().sprite = chars[1].GetComponent<plChoose>().plSpr[0];
-
-            clearChars();
-            rProp["char1"] = currChoice[0];
-            rProp["char2"] = currChoice[1];
-            rProp["char3"] = PhotonNetwork.LocalPlayer.ActorNumber;
+            if (chars[0].GetComponent<SpriteRenderer>().sprite != chars[0].GetComponent<plChoose>().plSpr[3]) { chars[0].GetComponent<SpriteRenderer>().sprite = chars[0].GetComponent<plChoose>().plSpr[0]; }
+            if (chars[1].GetComponent<SpriteRenderer>().sprite != chars[1].GetComponent<plChoose>().plSpr[3]) { chars[1].GetComponent<SpriteRenderer>().sprite = chars[1].GetComponent<plChoose>().plSpr[0]; }
         }
-
-        //startButton.GetComponent<Button>().interactable = true;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
+                       
 
         statics.GetComponent<AudioSource>().PlayOneShot(statics.GetComponent<Statics>().bgmClips[2], 5.0f);
     }
        
-
-    public void startRefrChars()
-    {
-        rProp["char1"] = 0; rProp["char2"] = 0; rProp["char3"] = 0;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
-        currChoice[0] = 0; currChoice[1] = 0; currChoice[2] = 0;
-
-        InvokeRepeating("refrChars", 2f, 1.5f); //ping
-    }
-    void refrChars()
-    {
-        currChoice[0] = (int)PhotonNetwork.CurrentRoom.CustomProperties["char1"];
-        currChoice[1] = (int)PhotonNetwork.CurrentRoom.CustomProperties["char2"];
-        currChoice[2] = (int)PhotonNetwork.CurrentRoom.CustomProperties["char3"];
-
-        for(int i=0; i<=2; i++)
-        {
-            if (currChoice[i]!=0 && currChoice[i]!=PhotonNetwork.LocalPlayer.ActorNumber)
-            {
-                chars[i].GetComponent<SpriteRenderer>().sprite = chars[i].GetComponent<plChoose>().plSpr[3];
-                chars[i].GetComponent<BoxCollider2D>().enabled = false;
-            }
-            else if(currChoice[i] == 0)
-            {
-                if (chars[i].GetComponent<SpriteRenderer>().sprite.name.Contains("unable") ) 
-                { chars[i].GetComponent<SpriteRenderer>().sprite = chars[i].GetComponent<plChoose>().plSpr[0]; }
-                
-                chars[i].GetComponent<BoxCollider2D>().enabled = true;
-            }
-        }
-
-        print(currChoice[0] +"  " + currChoice[1] + "  " + currChoice[2]);
-    }
-
-    void clearChars()
-    {
-        if (currChoice[0] == PhotonNetwork.LocalPlayer.ActorNumber) { /*rProp["char1"]*/currChoice[0] = 0; }
-        if (currChoice[1] == PhotonNetwork.LocalPlayer.ActorNumber) { /*rProp["char2"]*/currChoice[1] = 0; }
-        if (currChoice[2] == PhotonNetwork.LocalPlayer.ActorNumber) { /*rProp["char3"]*/currChoice[2] = 0; }
-
-        //PhotonNetwork.CurrentRoom.SetCustomProperties(rProp);
-    }
 
 }

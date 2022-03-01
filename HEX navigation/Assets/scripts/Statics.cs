@@ -32,7 +32,7 @@ public class Statics : MonoBehaviourPun
             bScene = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.KeypadMinus)) { BotInstantiate(); }
+        //if (Input.GetKeyDown(KeyCode.KeypadMinus)) { BotInstantiate(); }
 
         if (bStart == false) { gameStart(); }
     }
@@ -106,7 +106,7 @@ public class Statics : MonoBehaviourPun
                 }
             }
 
-            //GameObject.Find("ScreenCanvas/butRank").GetComponent<Button>().interactable = true;
+            
             map.mapS.pl1 = GameObject.FindGameObjectWithTag("player1");
             map.mapS.pl2 = GameObject.FindGameObjectWithTag("player2");
             map.mapS.pl3 = GameObject.FindGameObjectWithTag("player3");
@@ -118,12 +118,37 @@ public class Statics : MonoBehaviourPun
                 }
             }
 
-            if (PhotonNetwork.IsMasterClient) {    //we own pl1 and start it
-                map.mapS.pl1.GetComponent<plControl>().enabled = true;
-            }                
-            
-            bStart = true;
+            //if (PhotonNetwork.IsMasterClient) {    //we own pl1 and start it
+            //    map.mapS.pl1.GetComponent<plControl>().enabled = true;
+            //}                
+
+            if (GameObject.FindGameObjectWithTag("GameLogic") != null 
+                && GameObject.FindGameObjectWithTag("gBar1") != null) 
+            {
+
+                Invoke("gameStartDelay", 2f);  //synch
+
+                bStart = true;
+            }
+
+            //bStart = true;
         }        
+    }
+
+    void gameStartDelay()
+    {
+        if (map.mapS.pl1.GetComponent<PhotonView>().Owner == PhotonNetwork.LocalPlayer)
+        {
+            map.mapS.pl1.GetComponent<plControl>().enabled = true;
+        }
+        else if (map.mapS.pl2.GetComponent<PhotonView>().Owner == PhotonNetwork.LocalPlayer)
+        {
+            map.mapS.pl2.GetComponent<p2control>().enabled = true;
+        }
+        else if (map.mapS.pl3.GetComponent<PhotonView>().Owner == PhotonNetwork.LocalPlayer)
+        {
+            map.mapS.pl3.GetComponent<p3control>().enabled = true;
+        }
     }
 
     

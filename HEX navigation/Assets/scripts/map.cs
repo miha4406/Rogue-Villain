@@ -21,6 +21,9 @@ public class map : MonoBehaviour
     [SerializeField] public Image enemyLogo1, enemyLogo2;
     [SerializeField] public Text nick1, nick2, gold1, gold2;
     [SerializeField] Button menuBtn;
+    [SerializeField] Text waitText;
+    public bool bWait = false;
+    byte a = 255;
 
     //item
     public Vector3[] itemPos = new Vector3[3];
@@ -67,6 +70,14 @@ public class map : MonoBehaviour
 
             bNewItem = false;            
         }
+
+        if (bWait) { waitText.enabled = true; waitText.color = new Color32(0, 0, 0, a); a--; }
+        else { waitText.enabled = false; }
+        if (pl1!=null && pl2!=null && pl3!=null)
+        {
+            if (!pl1.GetComponent<stats>().bMyTurn && !pl2.GetComponent<stats>().bMyTurn && !pl3.GetComponent<stats>().bMyTurn) { bWait = false; }
+        }
+        
 
         //enemy panel update
         if (pl1 != null && pl2 != null && pl3 != null) 

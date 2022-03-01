@@ -73,6 +73,8 @@ public class p3control : MonoBehaviour
         map.mapS.gBar1 = GameObject.FindGameObjectWithTag("gBar1");
         map.mapS.gBar2 = GameObject.FindGameObjectWithTag("gBar2");
         map.mapS.gBar3 = GameObject.FindGameObjectWithTag("gBar3");
+
+        GameObject.Find("ScreenCanvas/p1panel").SetActive(false);
     }
 
 
@@ -157,7 +159,7 @@ public class p3control : MonoBehaviour
         btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
         btnNT.GetComponent<Button>().onClick.AddListener(() => {
             btnNT.GetComponent<Button>().interactable = false;
-            Invoke("StopPl3", 3f);  //so pl3 has time to synch
+            //Invoke("StopPl3", 3f);  //so pl3 has time to synch
             GetComponent<stats>().bMyTurn = false;
             GetComponent<p3control>().enabled = false;
         });
@@ -363,6 +365,7 @@ public class p3control : MonoBehaviour
         //print(slimePos[0]);
         GetComponent<PhotonView>().RPC("RPC_newSlimes", RpcTarget.OthersBuffered, slimePos);
 
+        map.mapS.bWait = true;
     }
 
 
@@ -781,18 +784,18 @@ public class p3control : MonoBehaviour
     }
 
 
-    [PunRPC] public void RPC_pl3stop()
-    {        
-        //GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
-        turnEnd.turnEndS.endTurn(); //last one!           
+    //[PunRPC] public void RPC_pl3stop()
+    //{        
+    //    //GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = false;
+    //    turnEnd.turnEndS.endTurn(); //last one!           
        
-    }
+    //}
 
-    void StopPl3()
-    {
-        //print(GetComponent<stats>().actSkillTrg[0] + " " + GetComponent<PhotonView>().Owner);
-        GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only      
+    //void StopPl3()
+    //{
+    //    //print(GetComponent<stats>().actSkillTrg[0] + " " + GetComponent<PhotonView>().Owner);
+    //    GetComponent<PhotonView>().RPC("RPC_pl3stop", RpcTarget.MasterClient);  //to Host only      
        
-    }
+    //}
 }
 

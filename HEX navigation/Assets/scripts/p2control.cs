@@ -83,6 +83,8 @@ public class p2control : MonoBehaviour
         map.mapS.gBar1 = GameObject.FindGameObjectWithTag("gBar1");
         map.mapS.gBar2 = GameObject.FindGameObjectWithTag("gBar2");
         map.mapS.gBar3 = GameObject.FindGameObjectWithTag("gBar3");
+
+        GameObject.Find("ScreenCanvas/p1panel").SetActive(false);
     }
 
 
@@ -181,7 +183,9 @@ public class p2control : MonoBehaviour
         btnNT.GetComponent<Button>().onClick.RemoveAllListeners();
         btnNT.GetComponent<Button>().onClick.AddListener(() => {
             btnNT.GetComponent<Button>().interactable = false;
-            Invoke("nextTurnDelay", 2f);  //synch
+            //Invoke("nextTurnDelay", 2f);  //synch
+            GetComponent<stats>().bMyTurn = false;
+            GetComponent<p2control>().enabled = false;
         });
 
         //item buttons
@@ -388,6 +392,7 @@ public class p2control : MonoBehaviour
         }        
         GetComponent<PhotonView>().RPC("RPC_newSlimes", RpcTarget.OthersBuffered, slimePos);
 
+        map.mapS.bWait = true;
     }
 
 
@@ -899,17 +904,17 @@ public class p2control : MonoBehaviour
     }
 
 
-    [PunRPC] public void RPC_pl3start()
-    {
-        GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = true;
-        //GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = false;
-    }
+    //[PunRPC] public void RPC_pl3start()
+    //{
+    //    GameObject.FindGameObjectWithTag("player3").GetComponent<p3control>().enabled = true;
+    //    //GameObject.FindGameObjectWithTag("player2").GetComponent<p2control>().enabled = false;
+    //}
 
-    private void nextTurnDelay()
-    {        
-        GetComponent<stats>().bMyTurn = false;
-        GetComponent<p2control>().enabled = false;
-        GetComponent<PhotonView>().RPC("RPC_pl3start", GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
-    }
+    //private void nextTurnDelay()
+    //{        
+    //    GetComponent<stats>().bMyTurn = false;
+    //    GetComponent<p2control>().enabled = false;
+    //    GetComponent<PhotonView>().RPC("RPC_pl3start", GameObject.FindGameObjectWithTag("player3").GetComponent<PhotonView>().Owner);
+    //}
 }
 

@@ -51,6 +51,7 @@ MonoBehaviour:
   - RPC_AC
   - RPC_itemSound
   - RPC_messageSystem
+  - RPC_plStartDelay
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1
